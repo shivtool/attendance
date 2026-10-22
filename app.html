@@ -167,10 +167,11 @@ async function mark(t){if(busy||!pos)return;
  if(!p){mg.className="msg bad";mg.textContent="Location nahi mili, dobara try karein";busy=false;upd();return}
  const r=await api({a:"mark",type:t,...cred(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy});
  mg.className="msg "+(r.ok?"good":"bad");mg.textContent=r.ok?(t==="in"?"Check In":"Check Out")+" ho gaya: "+r.time+" ("+r.dist+" m)":r.msg;
+ if(r.ok){const dt=iso(new Date());rec=t==="in"?{date:dt,inTime:r.time,outTime:"",status:"",local:1}:{...(rec||{date:dt}),outTime:r.time,local:1}}
  await load();busy=false;upd()}
 
 async function load(){const r=await api({a:"history",...cred()});if(!r.ok){if(/band|galat/.test(r.msg))logout();return}
- const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||null;const au=!!rec&&rec.status==="AUTO";
+ const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||(rec&&rec.local&&rec.date===t?rec:null);const au=!!rec&&rec.status==="AUTO";
  $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime?(au?"Auto "+rec.outTime:rec.outTime):"--:--";$("th").textContent=au?"Absent":rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
  const p=r.list.filter(x=>x.date.startsWith(ym)&&x.status!=="AUTO").length,d=new Date(),sun=n=>{let c=0;for(let i=1;i<=n;i++)if(new Date(d.getFullYear(),d.getMonth(),i).getDay()===0)c++;return c};
  $("hp").textContent=p;$("ha").textContent=Math.max(d.getDate()-sun(d.getDate())-p,0)}
