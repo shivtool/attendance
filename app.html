@@ -32,7 +32,7 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background
 .punch::before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff}
 .punch .in{position:relative;text-align:center}
 .punch .ic{font-size:44px;line-height:1}.punch .lb{font-size:21px;font-weight:800;margin-top:6px;color:var(--c)}.punch .sb{font-size:12px;color:var(--mut);margin-top:2px}
-.punch.ok{--c:var(--ok)}.punch.amb{--c:#d98a0b}.punch.no{--c:var(--bad)}.punch.done{--c:var(--navy2)}
+.punch.ok{--c:var(--ok)}.punch.amb{--c:#d98a0b}.punch.no{--c:var(--bad)}.punch.done{--c:var(--navy2)}.punch.wait{--c:#c98a1b}.punch.abs{--c:var(--bad)}
 .punch:disabled{cursor:default}
 .punch.ready::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--c);animation:pl 2s ease-out infinite}
 @keyframes pl{from{transform:scale(1);opacity:.7}to{transform:scale(1.22);opacity:0}}
@@ -67,6 +67,7 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background
 .ab{border:0;border-radius:14px;padding:14px;font-weight:700;font-size:15px;background:var(--navy);color:#fff}.ab.g{background:#fff;color:var(--navy);box-shadow:0 2px 10px #0f2a430d}
 .empty{text-align:center;color:var(--mut);padding:18px;font-size:14px}
 
+.rule{margin:12px 16px 0;padding:10px 12px;border-radius:12px;background:#fff4d6;color:#7a5200;font-size:12.5px;line-height:1.5}
 /* nav */
 .nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:480px;margin:auto}
 .nav button{flex:1;border:0;background:none;padding:8px;border-radius:14px;color:var(--mut);font-weight:600;font-size:13px}
@@ -91,6 +92,7 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background
    <div class="clock" id="ck">--:--:--</div><div class="date" id="dt"></div></div>
   <button class="punch" id="pn" disabled onclick="punch()"><div class="in"><div class="ic" id="pi">&#128205;</div><div class="lb" id="pl">Location...</div><div class="sb" id="ps"></div></div></button>
   <div class="msg" id="mg"></div>
+  <div class="rule" id="rule"></div>
   <div class="chip"><span class="dot" id="dot"></span><div><b id="zs">Location dhoondh rahe hain...</b><small id="zd"></small></div></div>
   <div class="three"><div class="mini"><small>Check In</small><b id="ti">--:--</b></div><div class="mini"><small>Check Out</small><b id="to">--:--</b></div><div class="mini"><small>Kaam ke ghante</small><b id="th">-</b></div></div>
   <div class="sec"><h3>Is mahine ka sar</h3><div class="stats" style="margin:0"><div class="st p"><small>Present</small><b id="hp">0</b></div><div class="st a"><small>Absent</small><b id="ha">0</b></div></div></div>
@@ -131,36 +133,45 @@ async function login(){const m=$("m").value.trim(),u=$("u").value.trim(),e=$("lm
  if(!r.ok){e.textContent=r.msg;return}localStorage.setItem("att_me",JSON.stringify({m,u}));start({m,u},r)}
 function logout(){localStorage.removeItem("att_me");location.reload()}
 async function start(s,r){S=s;cfg=r;$("lg").hidden=true;$("hm").hidden=false;
- $("nm").textContent=r.name;$("rn").textContent=r.name;$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
+ $("nm").textContent=r.name;$("rn").textContent=r.name;$("rule").textContent="Niyam: Check In aur Check Out din mein sirf ek-ek baar. Check Out, Check In ke "+((r.minStay||120)/60)+" ghante baad. Shaam "+(r.autoTime||"20:00")+" tak Check Out na hua to auto-out hoga aur us din Absent maana jayega.";$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
  const h=new Date().getHours();$("gr").textContent=h<12?"Suprabhat":h<17?"Namaste":"Shubh sandhya";
  clock();setInterval(clock,1000);await load();
  if(!navigator.geolocation){$("zs").textContent="GPS support nahi hai";return}
  navigator.geolocation.watchPosition(p=>{pos=p;upd()},er=>{$("zs").textContent=er.code===1?"Location permission band hai":"Location nahi mil rahi";$("zd").textContent="Phone ki Location on karke Allow dein";$("dot").className="dot out";setP("no","&#128683;","Band","")},{enableHighAccuracy:true,maximumAge:0,timeout:20000})}
-function clock(){const d=new Date();$("ck").textContent=d.toLocaleTimeString("en-GB");$("dt").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+function clock(){if(new Date().getSeconds()===0&&cfg)upd();const d=new Date();$("ck").textContent=d.toLocaleTimeString("en-GB");$("dt").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
 function tab(t){$("vHome").hidden=t!=="Home";$("vRep").hidden=t!=="Rep";$("n1").classList.toggle("on",t==="Home");$("n2").classList.toggle("on",t==="Rep");scrollTo(0,0);if(t==="Rep")report()}
 
 function setP(c,ic,lb,sb,p,ready,dis=true){const b=$("pn");b.className="punch "+c+(ready?" ready":"");b.style.setProperty("--p",p||0);b.disabled=dis;$("pi").innerHTML=ic;$("pl").textContent=lb;$("ps").textContent=sb||""}
-function upd(){if(!cfg)return;
- if(rec&&rec.outTime){setP("done","&#9989;","Poora hua","Aaj ka kaam: "+fh(mins(rec.inTime,rec.outTime)),100,false);if(!pos)return}
- if(!pos)return;
- const R=cfg.radius,d=Math.round(hav(pos.coords.latitude,pos.coords.longitude,cfg.lat,cfg.lng)),acc=Math.round(pos.coords.accuracy),inn=d<=R,ok=acc<=MAX_ACC;
- $("dot").className="dot "+(inn&&ok?"in":"out");$("zs").textContent=!ok?"GPS signal kamzor hai":inn?"Aap office ke andar hain":"Aap office se bahar hain";
- $("zd").textContent=`Doori ${d} m  •  Limit ${R} m  •  GPS ±${acc} m`;
- if(rec&&rec.outTime)return;const p=Math.min(100,R/Math.max(d,R)*100),can=inn&&ok&&!busy;
- if(!rec)can?setP("ok","&#128073;","Check In","Dabayein",p,true,false):setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-R)+" m aur paas aayein",p,false);
- else can?setP("amb","&#128170;","Check Out","In: "+rec.inTime,p,true,false):setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-R)+" m aur paas aayein",p,false)}
+const MIN=()=>cfg.minStay||120,AUTO=()=>cfg.autoTime||"20:00";
+const toMin=s=>{const p=String(s).split(":");return p[0]*60+ +p[1]},nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const remain=()=>rec&&rec.inTime?Math.max(MIN()-(nowMin()-toMin(rec.inTime)),0):0;
+function upd(){if(!cfg)return;let d=0,acc=0,inn=false,ok=false,p=0;
+ if(pos){d=Math.round(hav(pos.coords.latitude,pos.coords.longitude,cfg.lat,cfg.lng));acc=Math.round(pos.coords.accuracy);inn=d<=cfg.radius;ok=acc<=MAX_ACC;p=Math.min(100,cfg.radius/Math.max(d,cfg.radius)*100);
+  $("dot").className="dot "+(inn&&ok?"in":"out");$("zs").textContent=!ok?"GPS signal kamzor hai":inn?"Aap office ke andar hain":"Aap office se bahar hain";
+  $("zd").textContent=`Doori ${d} m  \u2022  Limit ${cfg.radius} m  \u2022  GPS \u00b1${acc} m`}
+ if(rec&&rec.status==="AUTO"){setP("abs","&#9940;","Absent","Auto out "+AUTO()+" - aaj absent",100,false);return}
+ if(rec&&rec.outTime){setP("done","&#9989;","Poora hua","Aaj ka kaam: "+fh(mins(rec.inTime,rec.outTime)),100,false);return}
+ if(busy||!pos)return;
+ const far=()=>setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-cfg.radius)+" m aur paas aayein",p,false),can=inn&&ok;
+ if(!rec){if(nowMin()>=toMin(AUTO()))setP("no","&#128339;","Samay samapt","Check In "+AUTO()+" tak",100,false);
+  else can?setP("ok","&#128073;","Check In","Ek baar dabayein",p,true,false):far()}
+ else{const rem=remain();if(rem>0)setP("wait","&#9203;","Check Out",fh(rem)+" baad khulega",p,false);
+  else can?setP("amb","&#128170;","Check Out","In: "+rec.inTime,p,true,false):far()}}
 function punch(){mark(rec?"out":"in")}
-async function mark(t){if(busy||!pos)return;busy=true;$("pn").disabled=true;const mg=$("mg");mg.className="msg";mg.textContent="Location jaanch rahe hain...";
+async function mark(t){if(busy||!pos)return;
+ if(t==="in"&&rec)return;if(t==="out"&&(!rec||rec.outTime||remain()>0))return;
+ if(t==="out"&&!confirm("Check Out karein?\nAaj ke liye Check Out sirf ek baar hota hai."))return;
+ busy=true;$("pn").disabled=true;$("pl").textContent="Ruko...";const mg=$("mg");mg.className="msg";mg.textContent="Location jaanch rahe hain...";
  const p=await new Promise(r=>navigator.geolocation.getCurrentPosition(r,()=>r(null),{enableHighAccuracy:true,maximumAge:0,timeout:15000}));
  if(!p){mg.className="msg bad";mg.textContent="Location nahi mili, dobara try karein";busy=false;upd();return}
  const r=await api({a:"mark",type:t,...cred(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy});
  mg.className="msg "+(r.ok?"good":"bad");mg.textContent=r.ok?(t==="in"?"Check In":"Check Out")+" ho gaya: "+r.time+" ("+r.dist+" m)":r.msg;
- busy=false;await load();upd()}
+ await load();busy=false;upd()}
 
 async function load(){const r=await api({a:"history",...cred()});if(!r.ok){if(/band|galat/.test(r.msg))logout();return}
- const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||null;
- $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime||"--:--";$("th").textContent=rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
- const p=r.list.filter(x=>x.date.startsWith(ym)).length,d=new Date(),sun=n=>{let c=0;for(let i=1;i<=n;i++)if(new Date(d.getFullYear(),d.getMonth(),i).getDay()===0)c++;return c};
+ const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||null;const au=!!rec&&rec.status==="AUTO";
+ $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime?(au?"Auto "+rec.outTime:rec.outTime):"--:--";$("th").textContent=au?"Absent":rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
+ const p=r.list.filter(x=>x.date.startsWith(ym)&&x.status!=="AUTO").length,d=new Date(),sun=n=>{let c=0;for(let i=1;i<=n;i++)if(new Date(d.getFullYear(),d.getMonth(),i).getDay()===0)c++;return c};
  $("hp").textContent=p;$("ha").textContent=Math.max(d.getDate()-sun(d.getDate())-p,0)}
 
 /* ---- report ---- */
@@ -173,11 +184,11 @@ async function report(){const y=rm.getFullYear(),m=rm.getMonth(),last=new Date(y
  const map={},td=iso(now);rrows.forEach(x=>map[x.date]=x);let pr=0,ab=0,wk=0,mn=0;
  let h='<div class="wd">र</div><div class="wd">सो</div><div class="wd">मं</div><div class="wd">बु</div><div class="wd">गु</div><div class="wd">शु</div><div class="wd">श</div>'+'<div></div>'.repeat(new Date(y,m,1).getDay());
  for(let d=1;d<=last;d++){const ds=ym+"-"+String(d).padStart(2,"0"),dw=new Date(y,m,d).getDay(),x=map[ds];let c="";
-  if(x){c="p";pr++;mn+=mins(x.inTime,x.outTime)}else if(ds<=td&&dw!==0&&ds<td){c="a";ab++}else if(dw===0)c="off";
+  if(x&&x.status==="AUTO"){c="a";ab++}else if(x){c="p";pr++;mn+=mins(x.inTime,x.outTime)}else if(ds<=td&&dw!==0&&ds<td){c="a";ab++}else if(dw===0)c="off";
   if(ds<=td&&dw!==0)wk++;h+=`<div class="cd ${c}${ds===td?" t":""}">${d}</div>`}
  $("cg").innerHTML=h;$("rp").textContent=pr;$("ra").textContent=ab;$("rh").textContent=mn?Math.floor(mn/60)+"h":"0h";$("rr").textContent=wk?Math.min(100,Math.round(pr/wk*100))+"%":"0%";
- $("rl").innerHTML=rrows.map(x=>`<div class="row"><div><b>${dmy(x.date)}</b><small>${["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"][new Date(x.date).getDay()]}</small></div><div class="t"><b>${x.inTime||"-"} &rarr; ${x.outTime||"-"}</b><small>${fh(mins(x.inTime,x.outTime))}${x.inDist?" • "+x.inDist+" m":""}</small></div></div>`).join("")||'<div class="empty">Is mahine ka koi record nahi</div>'}
-function csv(){if(!rrows.length)return;const c=[["Date","In","Out","Hours","Distance(m)"],...[...rrows].reverse().map(x=>[dmy(x.date),x.inTime,x.outTime,fh(mins(x.inTime,x.outTime)),x.inDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
+ $("rl").innerHTML=rrows.map(x=>`<div class="row"><div><b>${dmy(x.date)}</b><small>${["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"][new Date(x.date).getDay()]}</small></div><div class="t"><b>${x.inTime||"-"} &rarr; ${x.outTime||"-"}</b><small${x.status==="AUTO"?' style="color:var(--bad);font-weight:700"':""}>${x.status==="AUTO"?"Auto Check Out - Absent":fh(mins(x.inTime,x.outTime))}${x.inDist?" • "+x.inDist+" m":""}</small></div></div>`).join("")||'<div class="empty">Is mahine ka koi record nahi</div>'}
+function csv(){if(!rrows.length)return;const c=[["Date","In","Out","Hours","Distance(m)"],...[...rrows].reverse().map(x=>[dmy(x.date),x.inTime,x.outTime,x.status==="AUTO"?"Absent (Auto)":fh(mins(x.inTime,x.outTime)),x.inDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="my_attendance_"+iso(rm).slice(0,7)+".csv";a.click()}
 
 (async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok)start(s,r);else $("lg").hidden=false})();
