@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f2a43">
+<title>Shiv Attendance</title>
+<style>
+:root{--navy:#0f2a43;--navy2:#1b4468;--ink:#10243a;--mut:#6a7d90;--bg:#eaf0f5;--card:#fff;--ok:#16a06f;--okb:#dcf5ea;--bad:#d64550;--badb:#fde6e8;--amb:#f0a92e;--ambb:#fdf0d5;--line:#dde6ee}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+[hidden]{display:none!important}
+.app{max-width:480px;margin:auto}
+
+/* login */
+#lg{min-height:100vh;background:linear-gradient(165deg,var(--navy) 0%,var(--navy2) 100%);display:flex;flex-direction:column;justify-content:center;padding:24px;color:#fff;margin:0 auto;max-width:480px}
+.logo{width:72px;height:72px;border-radius:22px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:34px;font-weight:800;margin-bottom:18px}
+#lg h1{margin:0 0 4px;font-size:28px}#lg p{margin:0 0 26px;opacity:.75}
+#lg input{width:100%;padding:15px 16px;border-radius:14px;border:2px solid transparent;font-size:17px;margin-bottom:12px;background:#ffffff;color:var(--ink)}
+#lg input:focus{outline:0;border-color:var(--amb)}
+.go{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;background:var(--amb);color:#3a2600}
+.err{color:#ffb3b8;font-size:14px;min-height:20px;margin-top:10px}
+
+/* hero */
+.hero{background:linear-gradient(165deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 20px 96px;border-radius:0 0 34px 34px}
+.hr{display:flex;justify-content:space-between;align-items:center}
+.hr small{opacity:.7;font-size:13px}.hr b{display:block;font-size:20px;margin-top:2px}
+.av{width:44px;height:44px;border-radius:50%;background:var(--amb);color:#3a2600;display:grid;place-items:center;font-weight:800;font-size:18px;border:0}
+.clock{font-size:44px;font-weight:300;margin-top:14px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.date{opacity:.75;font-size:14px}
+
+/* punch */
+.punch{--p:0;--c:#aab8c6;width:210px;height:210px;border-radius:50%;border:0;margin:-78px auto 0;display:grid;place-items:center;position:relative;background:conic-gradient(var(--c) calc(var(--p) * 1%),#d8e2eb 0);box-shadow:0 14px 30px #0f2a4322;cursor:pointer}
+.punch::before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff}
+.punch .in{position:relative;text-align:center}
+.punch .ic{font-size:44px;line-height:1}.punch .lb{font-size:21px;font-weight:800;margin-top:6px;color:var(--c)}.punch .sb{font-size:12px;color:var(--mut);margin-top:2px}
+.punch.ok{--c:var(--ok)}.punch.amb{--c:#d98a0b}.punch.no{--c:var(--bad)}.punch.done{--c:var(--navy2)}
+.punch:disabled{cursor:default}
+.punch.ready::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--c);animation:pl 2s ease-out infinite}
+@keyframes pl{from{transform:scale(1);opacity:.7}to{transform:scale(1.22);opacity:0}}
+@media (prefers-reduced-motion:reduce){.punch.ready::after{animation:none}}
+
+.chip{margin:16px 16px 0;background:var(--card);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 10px #0f2a430d}
+.dot{width:12px;height:12px;border-radius:50%;background:#aab8c6;flex:none}.dot.in{background:var(--ok);box-shadow:0 0 0 5px #16a06f26}.dot.out{background:var(--bad);box-shadow:0 0 0 5px #d6455026}
+.chip b{font-size:15px}.chip small{display:block;color:var(--mut);margin-top:2px;font-size:12.5px}
+.msg{margin:10px 16px 0;font-size:14px;min-height:18px;text-align:center}.msg.good{color:var(--ok)}.msg.bad{color:var(--bad)}
+
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 16px 0}
+.mini{background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;box-shadow:0 2px 10px #0f2a430d}
+.mini small{color:var(--mut);font-size:12px}.mini b{display:block;font-size:18px;margin-top:3px}
+.sec{margin:18px 16px 0}.sec h3{margin:0 0 10px;font-size:16px}
+
+/* report */
+.mnav{display:flex;align-items:center;justify-content:space-between;margin:16px 16px 0;background:var(--card);border-radius:16px;padding:6px;box-shadow:0 2px 10px #0f2a430d}
+.mnav button{width:44px;height:44px;border:0;background:#eef3f8;border-radius:12px;font-size:20px;color:var(--navy)}.mnav button:disabled{opacity:.35}
+.mnav b{font-size:17px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 16px 0}
+.st{border-radius:16px;padding:14px}.st small{font-size:12.5px;opacity:.8}.st b{display:block;font-size:26px;margin-top:2px}
+.st.p{background:var(--okb);color:#0b6b49}.st.a{background:var(--badb);color:#9a2630}.st.h{background:#e3ecf8;color:#1d4a85}.st.r{background:var(--ambb);color:#8a5a00}
+.cal{background:var(--card);border-radius:18px;padding:12px;margin:12px 16px 0;box-shadow:0 2px 10px #0f2a430d}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cg .wd{font-size:12px;color:var(--mut);padding-bottom:4px}
+.cd{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:600;background:#f2f6fa;color:var(--mut)}
+.cd.p{background:var(--ok);color:#fff}.cd.a{background:var(--badb);color:var(--bad)}.cd.off{background:#e8edf2;color:#9aa8b6}.cd.t{outline:2px solid var(--navy);outline-offset:1px}
+.leg{display:flex;gap:14px;justify-content:center;margin-top:10px;font-size:12px;color:var(--mut)}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.row{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px #0f2a430d}
+.row b{font-size:15px}.row small{display:block;color:var(--mut);font-size:12px;margin-top:2px}.row .t{text-align:right;font-size:14px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 16px 0}
+.ab{border:0;border-radius:14px;padding:14px;font-weight:700;font-size:15px;background:var(--navy);color:#fff}.ab.g{background:#fff;color:var(--navy);box-shadow:0 2px 10px #0f2a430d}
+.empty{text-align:center;color:var(--mut);padding:18px;font-size:14px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:480px;margin:auto}
+.nav button{flex:1;border:0;background:none;padding:8px;border-radius:14px;color:var(--mut);font-weight:600;font-size:13px}
+.nav button span{display:block;font-size:22px}.nav button.on{background:#e7eef6;color:var(--navy)}
+.load{position:fixed;top:0;left:0;right:0;height:3px;background:var(--amb);z-index:50;display:none}
+.phead{display:none}
+@media print{body{background:#fff;padding:0}.hero,.nav,.punch,.chip,.msg,.three,.acts,.mnav button,#vHome,.load{display:none!important}.phead{display:block;padding:10px 16px}.app{max-width:none}.cal,.st,.row{box-shadow:none;border:1px solid #ccd}}
+</style></head><body>
+<div class="load" id="ld"></div>
+
+<div id="lg">
+ <div class="logo">&#10003;</div><h1>Attendance</h1><p>Mobile number aur User ID se login karein</p>
+ <input id="m" type="tel" inputmode="numeric" maxlength="10" placeholder="Mobile number" autocomplete="off">
+ <input id="u" placeholder="User ID" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')login()">
+ <button class="go" id="lb" onclick="login()">Login</button><div class="err" id="lm"></div>
+</div>
+
+<div class="app" id="hm" hidden>
+ <!-- HOME -->
+ <div id="vHome">
+  <div class="hero"><div class="hr"><div><small id="gr">Namaste</small><b id="nm"></b><small id="org"></small></div><button class="av" id="av" onclick="if(confirm('Logout karein?'))logout()"></button></div>
+   <div class="clock" id="ck">--:--:--</div><div class="date" id="dt"></div></div>
+  <button class="punch" id="pn" disabled onclick="punch()"><div class="in"><div class="ic" id="pi">&#128205;</div><div class="lb" id="pl">Location...</div><div class="sb" id="ps"></div></div></button>
+  <div class="msg" id="mg"></div>
+  <div class="chip"><span class="dot" id="dot"></span><div><b id="zs">Location dhoondh rahe hain...</b><small id="zd"></small></div></div>
+  <div class="three"><div class="mini"><small>Check In</small><b id="ti">--:--</b></div><div class="mini"><small>Check Out</small><b id="to">--:--</b></div><div class="mini"><small>Kaam ke ghante</small><b id="th">-</b></div></div>
+  <div class="sec"><h3>Is mahine ka sar</h3><div class="stats" style="margin:0"><div class="st p"><small>Present</small><b id="hp">0</b></div><div class="st a"><small>Absent</small><b id="ha">0</b></div></div></div>
+ </div>
+
+ <!-- REPORT -->
+ <div id="vRep" hidden>
+  <div class="hero" style="padding-bottom:36px"><div class="hr"><div><small>Meri report</small><b id="rn"></b></div></div></div>
+  <div class="phead"><h2 id="pt" style="margin:0"></h2></div>
+  <div class="mnav"><button id="pm" onclick="mv(-1)">&#8249;</button><b id="mt"></b><button id="nx" onclick="mv(1)">&#8250;</button></div>
+  <div class="stats"><div class="st p"><small>Present</small><b id="rp">0</b></div><div class="st a"><small>Absent</small><b id="ra">0</b></div>
+   <div class="st h"><small>Kul ghante</small><b id="rh">0h</b></div><div class="st r"><small>Attendance %</small><b id="rr">0%</b></div></div>
+  <div class="cal"><div class="cg" id="cg"></div>
+   <div class="leg"><span><i style="background:var(--ok)"></i>Present</span><span><i style="background:#f3b9be"></i>Absent</span><span><i style="background:#d5dde6"></i>Chhutti (Ravivar)</span></div></div>
+  <div class="acts"><button class="ab" onclick="print()">Print / PDF</button><button class="ab g" onclick="csv()">CSV download</button></div>
+  <div class="sec"><h3>Din-wise record</h3><div id="rl"></div></div>
+ </div>
+
+ <div class="nav"><button id="n1" class="on" onclick="tab('Home')"><span>&#127968;</span>Aaj</button><button id="n2" onclick="tab('Rep')"><span>&#128197;</span>Meri report</button></div>
+</div>
+
+<script>
+/* ====== APNA APPS SCRIPT URL ====== */
+const API_URL="https://script.google.com/macros/s/AKfycby73nfXpP68MBMEkXhuB2s1rbjfGWnmuCgDSpdP2jk3ygCEndcEAEfl_96bQHGvYXyk/exec";
+const MAX_ACC=60,$=i=>document.getElementById(i);
+const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
+let S=null,cfg=null,pos=null,rec=null,busy=false,rm=new Date(),rrows=[],monthRows=[];rm.setDate(1);
+const api=async b=>{$("ld").style.display="block";try{const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(b)});return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
+const cred=()=>({mobile:S.m,userId:S.u});
+const hav=(a,b,c,d)=>{const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+const mins=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
+const fh=m=>m?Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m":"-";
+const dmy=s=>s.split("-").reverse().join("-");
+
+async function login(){const m=$("m").value.trim(),u=$("u").value.trim(),e=$("lm");e.textContent="";
+ if(!/^\d{10}$/.test(m)||!u){e.textContent="Mobile (10 digit) aur User ID dalein";return}
+ $("lb").disabled=true;$("lb").textContent="Ruko...";const r=await api({a:"login",mobile:m,userId:u});$("lb").disabled=false;$("lb").textContent="Login";
+ if(!r.ok){e.textContent=r.msg;return}localStorage.setItem("att_me",JSON.stringify({m,u}));start({m,u},r)}
+function logout(){localStorage.removeItem("att_me");location.reload()}
+async function start(s,r){S=s;cfg=r;$("lg").hidden=true;$("hm").hidden=false;
+ $("nm").textContent=r.name;$("rn").textContent=r.name;$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
+ const h=new Date().getHours();$("gr").textContent=h<12?"Suprabhat":h<17?"Namaste":"Shubh sandhya";
+ clock();setInterval(clock,1000);await load();
+ if(!navigator.geolocation){$("zs").textContent="GPS support nahi hai";return}
+ navigator.geolocation.watchPosition(p=>{pos=p;upd()},er=>{$("zs").textContent=er.code===1?"Location permission band hai":"Location nahi mil rahi";$("zd").textContent="Phone ki Location on karke Allow dein";$("dot").className="dot out";setP("no","&#128683;","Band","")},{enableHighAccuracy:true,maximumAge:0,timeout:20000})}
+function clock(){const d=new Date();$("ck").textContent=d.toLocaleTimeString("en-GB");$("dt").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+function tab(t){$("vHome").hidden=t!=="Home";$("vRep").hidden=t!=="Rep";$("n1").classList.toggle("on",t==="Home");$("n2").classList.toggle("on",t==="Rep");scrollTo(0,0);if(t==="Rep")report()}
+
+function setP(c,ic,lb,sb,p,ready,dis=true){const b=$("pn");b.className="punch "+c+(ready?" ready":"");b.style.setProperty("--p",p||0);b.disabled=dis;$("pi").innerHTML=ic;$("pl").textContent=lb;$("ps").textContent=sb||""}
+function upd(){if(!cfg)return;
+ if(rec&&rec.outTime){setP("done","&#9989;","Poora hua","Aaj ka kaam: "+fh(mins(rec.inTime,rec.outTime)),100,false);if(!pos)return}
+ if(!pos)return;
+ const R=cfg.radius,d=Math.round(hav(pos.coords.latitude,pos.coords.longitude,cfg.lat,cfg.lng)),acc=Math.round(pos.coords.accuracy),inn=d<=R,ok=acc<=MAX_ACC;
+ $("dot").className="dot "+(inn&&ok?"in":"out");$("zs").textContent=!ok?"GPS signal kamzor hai":inn?"Aap office ke andar hain":"Aap office se bahar hain";
+ $("zd").textContent=`Doori ${d} m  •  Limit ${R} m  •  GPS ±${acc} m`;
+ if(rec&&rec.outTime)return;const p=Math.min(100,R/Math.max(d,R)*100),can=inn&&ok&&!busy;
+ if(!rec)can?setP("ok","&#128073;","Check In","Dabayein",p,true,false):setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-R)+" m aur paas aayein",p,false);
+ else can?setP("amb","&#128170;","Check Out","In: "+rec.inTime,p,true,false):setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-R)+" m aur paas aayein",p,false)}
+function punch(){mark(rec?"out":"in")}
+async function mark(t){if(busy||!pos)return;busy=true;$("pn").disabled=true;const mg=$("mg");mg.className="msg";mg.textContent="Location jaanch rahe hain...";
+ const p=await new Promise(r=>navigator.geolocation.getCurrentPosition(r,()=>r(null),{enableHighAccuracy:true,maximumAge:0,timeout:15000}));
+ if(!p){mg.className="msg bad";mg.textContent="Location nahi mili, dobara try karein";busy=false;upd();return}
+ const r=await api({a:"mark",type:t,...cred(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy});
+ mg.className="msg "+(r.ok?"good":"bad");mg.textContent=r.ok?(t==="in"?"Check In":"Check Out")+" ho gaya: "+r.time+" ("+r.dist+" m)":r.msg;
+ busy=false;await load();upd()}
+
+async function load(){const r=await api({a:"history",...cred()});if(!r.ok){if(/band|galat/.test(r.msg))logout();return}
+ const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||null;
+ $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime||"--:--";$("th").textContent=rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
+ const p=r.list.filter(x=>x.date.startsWith(ym)).length,d=new Date(),sun=n=>{let c=0;for(let i=1;i<=n;i++)if(new Date(d.getFullYear(),d.getMonth(),i).getDay()===0)c++;return c};
+ $("hp").textContent=p;$("ha").textContent=Math.max(d.getDate()-sun(d.getDate())-p,0)}
+
+/* ---- report ---- */
+function mv(n){rm.setMonth(rm.getMonth()+n);report()}
+async function report(){const y=rm.getFullYear(),m=rm.getMonth(),last=new Date(y,m+1,0).getDate(),ym=y+"-"+String(m+1).padStart(2,"0"),now=new Date();
+ $("mt").textContent=rm.toLocaleDateString("en-IN",{month:"long",year:"numeric"});$("nx").disabled=(y===now.getFullYear()&&m===now.getMonth());
+ $("pt").textContent=S?cfg.name+" - Attendance "+$("mt").textContent:"";
+ const r=await api({a:"history",...cred(),from:ym+"-01",to:ym+"-"+String(last).padStart(2,"0")});
+ rrows=(r.ok?r.list:[]).filter(x=>x.date.startsWith(ym)).sort((a,b)=>a.date<b.date?1:-1);
+ const map={},td=iso(now);rrows.forEach(x=>map[x.date]=x);let pr=0,ab=0,wk=0,mn=0;
+ let h='<div class="wd">र</div><div class="wd">सो</div><div class="wd">मं</div><div class="wd">बु</div><div class="wd">गु</div><div class="wd">शु</div><div class="wd">श</div>'+'<div></div>'.repeat(new Date(y,m,1).getDay());
+ for(let d=1;d<=last;d++){const ds=ym+"-"+String(d).padStart(2,"0"),dw=new Date(y,m,d).getDay(),x=map[ds];let c="";
+  if(x){c="p";pr++;mn+=mins(x.inTime,x.outTime)}else if(ds<=td&&dw!==0&&ds<td){c="a";ab++}else if(dw===0)c="off";
+  if(ds<=td&&dw!==0)wk++;h+=`<div class="cd ${c}${ds===td?" t":""}">${d}</div>`}
+ $("cg").innerHTML=h;$("rp").textContent=pr;$("ra").textContent=ab;$("rh").textContent=mn?Math.floor(mn/60)+"h":"0h";$("rr").textContent=wk?Math.min(100,Math.round(pr/wk*100))+"%":"0%";
+ $("rl").innerHTML=rrows.map(x=>`<div class="row"><div><b>${dmy(x.date)}</b><small>${["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"][new Date(x.date).getDay()]}</small></div><div class="t"><b>${x.inTime||"-"} &rarr; ${x.outTime||"-"}</b><small>${fh(mins(x.inTime,x.outTime))}${x.inDist?" • "+x.inDist+" m":""}</small></div></div>`).join("")||'<div class="empty">Is mahine ka koi record nahi</div>'}
+function csv(){if(!rrows.length)return;const c=[["Date","In","Out","Hours","Distance(m)"],...[...rrows].reverse().map(x=>[dmy(x.date),x.inTime,x.outTime,fh(mins(x.inTime,x.outTime)),x.inDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="my_attendance_"+iso(rm).slice(0,7)+".csv";a.click()}
+
+(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok)start(s,r);else $("lg").hidden=false})();
+</script></body></html>
