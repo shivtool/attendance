@@ -120,7 +120,8 @@ const API_URL="https://script.google.com/macros/s/AKfycby73nfXpP68MBMEkXhuB2s1rb
 const MAX_ACC=60,$=i=>document.getElementById(i);
 const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 let S=null,cfg=null,pos=null,rec=null,busy=false,rm=new Date(),rrows=[],monthRows=[];rm.setDate(1);
-const api=async b=>{$("ld").style.display="block";try{const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(b)});return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
+let DEV=localStorage.getItem("att_dev");if(!DEV||DEV.length<16){DEV=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+"xxxx");localStorage.setItem("att_dev",DEV)}
+const api=async b=>{$("ld").style.display="block";try{const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,device:DEV})});return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
 const cred=()=>({mobile:S.m,userId:S.u});
 const hav=(a,b,c,d)=>{const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
 const mins=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
@@ -191,5 +192,5 @@ async function report(){const y=rm.getFullYear(),m=rm.getMonth(),last=new Date(y
 function csv(){if(!rrows.length)return;const c=[["Date","In","Out","Hours","Distance(m)"],...[...rrows].reverse().map(x=>[dmy(x.date),x.inTime,x.outTime,x.status==="AUTO"?"Absent (Auto)":fh(mins(x.inTime,x.outTime)),x.inDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="my_attendance_"+iso(rm).slice(0,7)+".csv";a.click()}
 
-(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok)start(s,r);else $("lg").hidden=false})();
+(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok)start(s,r);else{$("lg").hidden=false;$("lm").textContent=r.msg||""}})();
 </script></body></html>
