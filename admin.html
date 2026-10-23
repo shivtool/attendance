@@ -69,6 +69,7 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
 <div class="hdr"><b id="org">Attendance Admin</b><button onclick="logout()">Logout</button></div>
 <nav id="nav"></nav>
 <main>
+<div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"><b>Chetavni:</b> Server ka code purana hai, isliye "ek staff = ek phone" lock kaam nahi kar raha. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.</div>
 <section id="t-dash"><div class="grid" id="stats"></div><div class="card"><h3>Aaj ki attendance <span id="today"></span></h3><div class="tw"><table id="tdash"></table></div></div></section>
 
 <section id="t-staff" hidden>
@@ -127,7 +128,7 @@ if(TOK)boot();
 
 const tabs={dash:"Dashboard",staff:"Staff",rep:"Report",set:"Settings"};
 $("nav").innerHTML=Object.entries(tabs).map(([k,v])=>`<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("");
-function enter(r){$("login").hidden=true;$("app").hidden=false;sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
+function enter(r){$("login").hidden=true;$("app").hidden=false;$("warn").hidden=!!r.deviceLock;sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
 function sync(r){users=r.users;cfg=r.cfg;$("org").textContent=cfg.org||"Attendance Admin";
  $("rs").innerHTML='<option value="">Sabhi staff</option>'+users.map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join("")}
 async function tab(k){for(const t in tabs)$("t-"+t).hidden=t!==k;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
