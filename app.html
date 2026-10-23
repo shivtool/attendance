@@ -120,7 +120,11 @@ const API_URL="https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm
 const MAX_ACC=60,$=i=>document.getElementById(i);
 const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 let S=null,cfg=null,pos=null,rec=null,busy=false,rm=new Date(),rrows=[],monthRows=[];rm.setDate(1);
-let DEV=localStorage.getItem("att_dev");if(!DEV||DEV.length<16){DEV=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+"xxxx");localStorage.setItem("att_dev",DEV)}
+const gc=n=>{const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=([^;]*)"));return m?decodeURIComponent(m[1]):""};
+let DEV=localStorage.getItem("att_dev")||gc("att_dev");
+if(!DEV||DEV.length<16)DEV=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+"xxxx");
+try{localStorage.setItem("att_dev",DEV)}catch(e){}
+document.cookie="att_dev="+encodeURIComponent(DEV)+";max-age=315360000;path=/;SameSite=Lax"+(location.protocol==="https:"?";Secure":"");
 const api=async b=>{$("ld").style.display="block";try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),25000);const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,device:DEV}),signal:ac.signal});clearTimeout(tm);return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
 const cred=()=>({mobile:S.m,userId:S.u});
 const hav=(a,b,c,d)=>{const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
@@ -131,7 +135,7 @@ const dmy=s=>s.split("-").reverse().join("-");
 async function login(){const m=$("m").value.trim(),u=$("u").value.trim(),e=$("lm");e.textContent="";
  if(!/^\d{10}$/.test(m)||!u){e.textContent="Mobile (10 digit) aur User ID dalein";return}
  $("lb").disabled=true;$("lb").textContent="Ruko...";const r=await api({a:"login",mobile:m,userId:u});$("lb").disabled=false;$("lb").textContent="Login";
- if(!r.ok){e.textContent=r.msg;return}localStorage.setItem("att_me",JSON.stringify({m,u}));start({m,u},r)}
+ if(!r.ok){e.textContent=r.msg;return}if(!r.deviceLock){e.textContent="Server purana hai (phone lock band). Admin se Apps Script mein New version Deploy karwayein";return}localStorage.setItem("att_me",JSON.stringify({m,u}));start({m,u},r)}
 function logout(){localStorage.removeItem("att_me");location.reload()}
 async function start(s,r){S=s;cfg=r;$("lg").hidden=true;$("hm").hidden=false;
  $("nm").textContent=r.name;$("rn").textContent=r.name;$("rule").textContent="Niyam: Check In aur Check Out din mein sirf ek-ek baar. Check Out, Check In ke "+((r.minStay||120)/60)+" ghante baad. Shaam "+(r.autoTime||"20:00")+" tak Check Out na hua to auto-out hoga aur us din Absent maana jayega.";$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
@@ -200,5 +204,5 @@ async function report(){const y=rm.getFullYear(),m=rm.getMonth(),last=new Date(y
 function csv(){if(!rrows.length)return;const c=[["Date","In","Out","Hours","Distance(m)"],...[...rrows].reverse().map(x=>[dmy(x.date),x.inTime,x.outTime,x.status==="AUTO"?"Absent (Auto)":fh(mins(x.inTime,x.outTime)),x.inDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="my_attendance_"+iso(rm).slice(0,7)+".csv";a.click()}
 
-(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok)start(s,r);else{$("lg").hidden=false;$("lm").textContent=r.msg||""}})();
+(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok&&r.deviceLock)start(s,r);else{$("lg").hidden=false;$("lm").textContent=r.ok?"Server purana hai (phone lock band). Admin se New version Deploy karwayein":(r.msg||"")}})();
 </script></body></html>
