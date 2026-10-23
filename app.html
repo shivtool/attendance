@@ -116,12 +116,12 @@ body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background
 
 <script>
 /* ====== APNA APPS SCRIPT URL ====== */
-const API_URL="https://script.google.com/macros/s/AKfycby73nfXpP68MBMEkXhuB2s1rbjfGWnmuCgDSpdP2jk3ygCEndcEAEfl_96bQHGvYXyk/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm9c7Qx8mq1fQwTEIeWw4mxNOFQwaaKhnqoU5radUJi3/exec";
 const MAX_ACC=60,$=i=>document.getElementById(i);
 const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 let S=null,cfg=null,pos=null,rec=null,busy=false,rm=new Date(),rrows=[],monthRows=[];rm.setDate(1);
 let DEV=localStorage.getItem("att_dev");if(!DEV||DEV.length<16){DEV=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+"xxxx");localStorage.setItem("att_dev",DEV)}
-const api=async b=>{$("ld").style.display="block";try{const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,device:DEV})});return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
+const api=async b=>{$("ld").style.display="block";try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),25000);const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,device:DEV}),signal:ac.signal});clearTimeout(tm);return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
 const cred=()=>({mobile:S.m,userId:S.u});
 const hav=(a,b,c,d)=>{const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
 const mins=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
@@ -136,6 +136,7 @@ function logout(){localStorage.removeItem("att_me");location.reload()}
 async function start(s,r){S=s;cfg=r;$("lg").hidden=true;$("hm").hidden=false;
  $("nm").textContent=r.name;$("rn").textContent=r.name;$("rule").textContent="Niyam: Check In aur Check Out din mein sirf ek-ek baar. Check Out, Check In ke "+((r.minStay||120)/60)+" ghante baad. Shaam "+(r.autoTime||"20:00")+" tak Check Out na hua to auto-out hoga aur us din Absent maana jayega.";$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
  const h=new Date().getHours();$("gr").textContent=h<12?"Suprabhat":h<17?"Namaste":"Shubh sandhya";
+ const cs=JSON.parse(localStorage.getItem("att_rec")||"null");if(cs&&cs.m===S.m&&cs.date===iso(new Date())&&cs.rec)rec={...cs.rec,cached:1};
  clock();setInterval(clock,1000);await load();
  if(!navigator.geolocation){$("zs").textContent="GPS support nahi hai";return}
  navigator.geolocation.watchPosition(p=>{pos=p;upd()},er=>{$("zs").textContent=er.code===1?"Location permission band hai":"Location nahi mil rahi";$("zd").textContent="Phone ki Location on karke Allow dein";$("dot").className="dot out";setP("no","&#128683;","Band","")},{enableHighAccuracy:true,maximumAge:0,timeout:20000})}
@@ -150,6 +151,7 @@ function upd(){if(!cfg)return;let d=0,acc=0,inn=false,ok=false,p=0;
  if(pos){d=Math.round(hav(pos.coords.latitude,pos.coords.longitude,cfg.lat,cfg.lng));acc=Math.round(pos.coords.accuracy);inn=d<=cfg.radius;ok=acc<=MAX_ACC;p=Math.min(100,cfg.radius/Math.max(d,cfg.radius)*100);
   $("dot").className="dot "+(inn&&ok?"in":"out");$("zs").textContent=!ok?"GPS signal kamzor hai":inn?"Aap office ke andar hain":"Aap office se bahar hain";
   $("zd").textContent=`Doori ${d} m  \u2022  Limit ${cfg.radius} m  \u2022  GPS \u00b1${acc} m`}
+ if(!loaded&&!rec){setP("idle","&#8987;","Ruko...","Status load ho raha hai",0,false);return}
  if(rec&&rec.status==="AUTO"){setP("abs","&#9940;","Absent","Auto out "+AUTO()+" - aaj absent",100,false);return}
  if(rec&&rec.outTime){setP("done","&#9989;","Poora hua","Aaj ka kaam: "+fh(mins(rec.inTime,rec.outTime)),100,false);return}
  if(busy||!pos)return;
@@ -159,7 +161,7 @@ function upd(){if(!cfg)return;let d=0,acc=0,inn=false,ok=false,p=0;
  else{const rem=remain();if(rem>0)setP("wait","&#9203;","Check Out",fh(rem)+" baad khulega",p,false);
   else can?setP("amb","&#128170;","Check Out","In: "+rec.inTime,p,true,false):far()}}
 function punch(){mark(rec?"out":"in")}
-async function mark(t){if(busy||!pos)return;
+async function mark(t){if(busy||!pos||!loaded)return;
  if(t==="in"&&rec)return;if(t==="out"&&(!rec||rec.outTime||remain()>0))return;
  if(t==="out"&&!confirm("Check Out karein?\nAaj ke liye Check Out sirf ek baar hota hai."))return;
  busy=true;$("pn").disabled=true;$("pl").textContent="Ruko...";const mg=$("mg");mg.className="msg";mg.textContent="Location jaanch rahe hain...";
@@ -170,8 +172,13 @@ async function mark(t){if(busy||!pos)return;
  if(r.ok){const dt=iso(new Date());rec=t==="in"?{date:dt,inTime:r.time,outTime:"",status:"",local:1}:{...(rec||{date:dt}),outTime:r.time,local:1}}
  await load();busy=false;upd()}
 
-async function load(){const r=await api({a:"history",...cred()});if(!r.ok){if(/band|galat/.test(r.msg))logout();return}
- const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||(rec&&rec.local&&rec.date===t?rec:null);const au=!!rec&&rec.status==="AUTO";
+let loaded=false,retrying=false;
+async function load(){let r=await api({a:"history",...cred()});if(!r.ok&&/Network/.test(r.msg))r=await api({a:"history",...cred()});
+ if(!r.ok){if(/band|galat|juda/.test(r.msg)){logout();return}
+  $("mg").className="msg bad";$("mg").textContent="Server se jaankari nahi mili, dobara koshish ho rahi hai...";
+  if(!retrying){retrying=true;setTimeout(async()=>{retrying=false;await load();upd()},5000)}upd();return}
+ loaded=true;if(/koshish/.test($("mg").textContent))$("mg").textContent="";
+ const t=r.today,ym=t.slice(0,7);rec=r.list.find(x=>x.date===t)||(rec&&rec.local&&rec.date===t?rec:null);const au=!!rec&&rec.status==="AUTO";rec?localStorage.setItem("att_rec",JSON.stringify({m:S.m,date:t,rec:{...rec,local:0,cached:0}})):localStorage.removeItem("att_rec");
  $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime?(au?"Auto "+rec.outTime:rec.outTime):"--:--";$("th").textContent=au?"Absent":rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
  const p=r.list.filter(x=>x.date.startsWith(ym)&&x.status!=="AUTO").length,d=new Date(),sun=n=>{let c=0;for(let i=1;i<=n;i++)if(new Date(d.getFullYear(),d.getMonth(),i).getDay()===0)c++;return c};
  $("hp").textContent=p;$("ha").textContent=Math.max(d.getDate()-sun(d.getDate())-p,0)}
