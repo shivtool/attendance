@@ -20,7 +20,7 @@ input,select{width:100%;padding:10px;border:1px solid #cfd5e1;border-radius:8px;
 .btn{background:var(--pri);color:#fff;border:0;padding:10px 16px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer}.btn.g{background:#eef1f6;color:var(--ink)}.btn.r{background:var(--bad)}.btn.s{padding:6px 10px;font-size:13px}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}
 th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;white-space:nowrap}th{background:#f6f8fb;color:var(--mut)}
-.tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}.tag.p{background:#dff5ea;color:var(--ok)}.tag.a{background:#fde4e6;color:var(--bad)}
+.tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}.tag.p{background:#dff5ea;color:var(--ok)}.tag.a{background:#fde4e6;color:var(--bad)}.tag.l{background:#fdf0d5;color:#8a5a00}.tag.b{background:#e0ecff;color:#1d4a85}.tag.h{background:#ece6ff;color:#5a3fb0}
 #login{max-width:380px;margin:10vh auto;padding:0 16px}#msg{color:var(--bad);font-size:13px;margin-top:8px;min-height:18px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;z-index:9;display:none}
 .load{position:fixed;top:0;left:0;right:0;height:3px;background:var(--pri);z-index:20;display:none}
@@ -39,6 +39,7 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
 .reg td,.reg th{padding:3px 2px;text-align:center;font-size:11.5px;min-width:23px}.reg td.nm,.reg th.nm{text-align:left;padding:4px 6px;min-width:130px;white-space:nowrap}
 .reg th small{display:block;font-weight:400;color:#667;font-size:9.5px}
 .cP{color:#0b6b49;font-weight:700;background:#e3f6ee}.cA{color:#b3202e;font-weight:700;background:#fde8ea}.cX{color:#fff;font-weight:700;background:#c62f3e}.cS{color:#8795a6;background:#edf0f4}
+.cH{color:#5a3fb0;background:#ece6ff;font-weight:700}.cCL,.cML{color:#8a5a00;background:#fdf0d5;font-weight:700}.cOW{color:#1d4a85;background:#e0ecff;font-weight:700}
 .leg{font-size:11.5px;color:#445;margin-top:8px}.leg span{margin-right:14px}
 .sign{display:flex;justify-content:space-between;margin-top:46px;font-size:12.5px;color:#334}.sign div{border-top:1px solid #556;padding-top:6px;min-width:190px;text-align:center}
 .gen{font-size:11px;color:#778;text-align:center;margin-top:16px}
@@ -69,14 +70,30 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
 <div class="hdr"><b id="org">Attendance Admin</b><button onclick="logout()">Logout</button></div>
 <nav id="nav"></nav>
 <main>
-<div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"><b>Chetavni:</b> Server ka code purana hai, isliye "ek staff = ek phone" lock kaam nahi kar raha. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.</div>
-<section id="t-dash"><div class="grid" id="stats"></div><div class="card"><h3>Aaj ki attendance <span id="today"></span></h3><div class="tw"><table id="tdash"></table></div></div></section>
+<div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"><b>Chetavni:</b> Server ka code purana hai, isliye phone lock aur chhutti / admin-mark jaisi suvidhayein kaam nahi karengi. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.</div>
+<section id="t-dash"><div class="note" id="hbanner" hidden style="background:#ece6ff;color:#43359a;margin:0 0 14px"></div><div class="grid" id="stats"></div><div class="card"><h3>Aaj ki attendance <span id="today"></span></h3><div class="tw"><table id="tdash"></table></div></div></section>
 
 <section id="t-staff" hidden>
  <div class="card"><h3>Staff add / edit</h3><div class="row">
  <div><label>Name</label><input id="sn"></div><div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10"></div>
  <div><label>User ID</label><input id="su"></div><div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button></div></div>
  <div class="card"><h3>Staff list</h3><div class="tw"><table id="tstaff"></table></div></div></section>
+
+<section id="t-mark" hidden>
+ <div class="card"><h3>Attendance mark karein (Admin)</h3><div class="row">
+  <div><label>Tarikh (From)</label><input id="mf" type="date" onchange="loadMark()"></div>
+  <div><label>Tak (khali = sirf ek din)</label><input id="mto" type="date"></div>
+  <div><label>Kya mark karein</label><select id="mty"><option value="FULL">Full day (Present)</option><option value="CL">CL - Casual Leave</option><option value="ML">ML - Medical Leave</option><option value="OW">Office Work (On Duty)</option><option value="CLEAR">Admin ka mark hatayein (Clear)</option></select></div>
+  <button class="btn" onclick="applyMark()">Mark karein</button></div>
+  <div class="note"><b>Dhyan dein:</b> Neeche se staff chunein (ek ya kai). Kai din chunne par Ravivar aur chhutti ke din apne aap chhoot jaate hain; sirf ek din chunne par wahi din mark hota hai. Full day sirf aaj tak ki tarikh par ho sakta hai, CL/ML/Office Work aage ki tarikh par bhi. Mark kiye hue din staff Check In nahi kar sakta. Auto-out se Absent hue din ko Full day mark karke sudhaar sakte hain.</div></div>
+ <div class="card"><h3>Staff chunein <span id="mdate"></span></h3><div class="tw"><table id="tmark"></table></div></div></section>
+
+<section id="t-hol" hidden>
+ <div class="card"><h3>Chhutti jodein</h3><div class="row">
+  <div><label>Tarikh (From)</label><input id="hf" type="date"></div><div><label>Tak (khali = sirf ek din)</label><input id="ht" type="date"></div>
+  <div><label>Chhutti ka naam</label><input id="hn" maxlength="60" placeholder="jaise Diwali, Gandhi Jayanti"></div><button class="btn" onclick="addHol()">Jodein</button></div>
+  <div class="note">Ravivar apne aap saptahik chhutti mana jata hai, use jodne ki zarurat nahi. Chhutti ke din staff Check In nahi kar sakta aur wo din Absent nahi ginta. Kisi se chhutti ke din kaam karwana ho to Attendance tab se us din Full day ya Office Work mark karein.</div></div>
+ <div class="card"><h3>Chhuttiyon ki list &nbsp;<select id="hy" onchange="holList()" style="width:auto;display:inline-block;padding:6px 10px"></select></h3><div class="tw"><table id="thol"></table></div></div></section>
 
 <section id="t-rep" hidden>
  <div class="card noprint"><h3>Report banayein</h3><div class="row">
@@ -111,7 +128,7 @@ const $=i=>document.getElementById(i),iso=d=>{const z=new Date(d.getTime()-d.get
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dmy=s=>String(s).split("-").reverse().join("-");
 const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2800)};
-let TOK=sessionStorage.getItem("at")||"",users=[],cfg={},rows=[],sumRows=[],lastTy="full",lastTitle="";
+let TOK=sessionStorage.getItem("at")||"",users=[],hols=[],cfg={},rows=[],sumRows=[],lastTy="full",lastTitle="";
 
 async function api(b){$("ld").style.display="block";
  try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),30000);
@@ -126,22 +143,34 @@ async function logout(){await api({a:"adminLogout"});TOK="";sessionStorage.remov
 async function boot(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(!r.ok)return;enter(r)}
 if(TOK)boot();
 
-const tabs={dash:"Dashboard",staff:"Staff",rep:"Report",set:"Settings"};
+const tabs={dash:"Dashboard",staff:"Staff",mark:"Attendance",hol:"Holiday",rep:"Report",set:"Settings"};
 $("nav").innerHTML=Object.entries(tabs).map(([k,v])=>`<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("");
-function enter(r){$("login").hidden=true;$("app").hidden=false;$("warn").hidden=!!r.deviceLock;sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
-function sync(r){users=r.users;cfg=r.cfg;$("org").textContent=cfg.org||"Attendance Admin";
+function enter(r){$("login").hidden=true;$("app").hidden=false;$("warn").hidden=!!(r.deviceLock&&r.hol);sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
+function sync(r){users=r.users;hols=r.hol||[];cfg=r.cfg;$("org").textContent=cfg.org||"Attendance Admin";
  $("rs").innerHTML='<option value="">Sabhi staff</option>'+users.map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join("")}
 async function tab(k){for(const t in tabs)$("t-"+t).hidden=t!==k;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
  if(k==="dash"){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);dash(r)}}
- if(k==="staff")stf();
+ if(k==="staff")stf();if(k==="mark")loadMark();if(k==="hol")refreshHol();
  if(k==="set"){$("on").value=cfg.org||"";$("la").value=cfg.lat||"";$("lo").value=cfg.lng||"";$("ra").value=cfg.radius||100}}
 
 /* ---------- dashboard ---------- */
-function dash(r){const all=r.att,a=all.filter(x=>x.status!=="AUTO"),au=all.filter(x=>x.status==="AUTO"),act=users.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile));$("today").textContent="("+dmy(iso(new Date()))+")";
- $("stats").innerHTML=[["Total staff",act.length],["Present",a.length],["Absent",Math.max(act.length-a.length,0)],["Checked out",a.filter(x=>x.outTime&&x.status!=="AUTO").length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
- $("tdash").innerHTML="<tr><th>Name</th><th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+a.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"}</td><td>${x.inDist||"-"} m</td><td><span class="tag p">Present</span></td></tr>`).join("")
- +au.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"} (auto)</td><td>${x.inDist||"-"} m</td><td><span class="tag a">Absent (Auto out)</span></td></tr>`).join("")
- +act.filter(s=>!got.has(s.mobile)).map(s=>`<tr><td>${esc(s.name)}</td><td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join("")}
+const WD=["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"];
+const holName=ds=>(hols.find(h=>h.date===ds)||{}).name||"";
+function stTag(x){const k=x.status||"";
+ if(k==="AUTO")return'<span class="tag a">Absent (Auto out)</span>';
+ if(k==="CL")return'<span class="tag l">CL - Casual Leave</span>';
+ if(k==="ML")return'<span class="tag l">ML - Medical Leave</span>';
+ if(k==="OW")return'<span class="tag b">Office Work</span>';
+ if(k==="FULL")return'<span class="tag p">Present (Admin - Full day)</span>';
+ return'<span class="tag p">Present</span>'}
+function dash(r){const t=iso(new Date()),all=r.att,act=users.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile));
+ const pr=all.filter(x=>!x.status||x.status==="FULL"||x.status==="OW"),lv=all.filter(x=>x.status==="CL"||x.status==="ML"),au=all.filter(x=>x.status==="AUTO");
+ const hn=holName(t),off=!!hn||new Date().getDay()===0;
+ $("today").textContent="("+dmy(t)+")";$("hbanner").hidden=!off;$("hbanner").textContent=hn?"Aaj chhutti hai: "+hn+" (staff Check In nahi kar sakta)":"Aaj Ravivar (saptahik chhutti) hai";
+ $("stats").innerHTML=[["Total staff",act.length],["Present",pr.length],["Leave (CL/ML)",lv.length],["Absent",off?0:Math.max(act.length-pr.length-lv.length,0)],["Checked out",pr.filter(x=>x.outTime).length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
+ const row=(x,o)=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"}${o||""}</td><td>${x.inDist?x.inDist+" m":"-"}</td><td>${stTag(x)}</td></tr>`;
+ $("tdash").innerHTML="<tr><th>Name</th><th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+pr.map(x=>row(x)).join("")+lv.map(x=>row(x)).join("")+au.map(x=>row(x," (auto)")).join("")
+ +(off?"":act.filter(s=>!got.has(s.mobile)).map(s=>`<tr><td>${esc(s.name)}</td><td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join(""))}
 
 /* ---------- staff ---------- */
 function stf(){$("tstaff").innerHTML="<tr><th>Name</th><th>Mobile</th><th>User ID</th><th>Designation</th><th>Status</th><th>Phone</th><th></th></tr>"+users.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.mobile}</td><td>${esc(s.userId)}</td><td>${esc(s.designation)}</td><td><span class="tag ${s.active==="YES"?"p":"a"}">${s.active==="YES"?"Active":"Blocked"}</span></td>
@@ -157,9 +186,38 @@ function editS(m){const s=users.find(x=>x.mobile===m);$("sn").value=s.name;$("sm
 async function togS(m){const s=users.find(x=>x.mobile===m);await api({a:"adminSaveUser",name:s.name,mobile:s.mobile,userId:s.userId,designation:s.designation,active:s.active==="YES"?"NO":"YES"});reload()}
 async function delS(m){if(confirm("Staff delete karein?")){await api({a:"adminDelUser",mobile:m});reload()}}
 
+/* ---------- admin attendance marking ---------- */
+async function loadMark(){if(!$("mf").value)$("mf").value=iso(new Date());const dt=$("mf").value;
+ const r=await api({a:"adminData",from:dt,to:dt});if(!r.ok)return;sync(r);renderMark(r.att)}
+function renderMark(att){const dt=$("mf").value,dw=new Date(dt+"T00:00:00").getDay(),hn=holName(dt),act=users.filter(s=>s.active==="YES"),m={};att.forEach(x=>m[x.mobile]=x);
+ $("mdate").textContent="("+dmy(dt)+(hn?" - "+esc(hn):dw===0?" - Ravivar":"")+")";
+ $("tmark").innerHTML='<tr><th><input type="checkbox" onchange="mAll(this.checked)" aria-label="Sabhi chunein"></th><th>Naam</th><th>Pad</th><th>Us din ki sthiti</th></tr>'+act.map(s=>{const x=m[s.mobile];let st;
+  if(x)st=stTag(x);else if(hn)st='<span class="tag h">Chhutti</span>';else if(dw===0)st='<span class="tag h">Ravivar</span>';else if(dt>iso(new Date()))st="-";else st='<span class="tag a">Absent</span>';
+  return`<tr><td><input type="checkbox" class="mc" value="${s.mobile}"></td><td>${esc(s.name)}</td><td>${esc(s.designation)}</td><td>${st}</td></tr>`}).join("")}
+function mAll(v){document.querySelectorAll(".mc").forEach(c=>c.checked=v)}
+async function applyMark(){const f=$("mf").value,t=$("mto").value||f,ty=$("mty").value,sel=[...document.querySelectorAll(".mc:checked")].map(c=>c.value);
+ if(!f)return toast("Tarikh chunein");if(t<f)return toast("'Tak' tarikh 'From' se pehle nahi ho sakti");if(!sel.length)return toast("Kam se kam ek staff chunein");
+ const nm={FULL:"Full day (Present)",CL:"CL - Casual Leave",ML:"ML - Medical Leave",OW:"Office Work (On Duty)",CLEAR:"Admin ka mark hatana"}[ty];
+ if(!confirm(sel.length+" staff ke liye\n"+dmy(f)+(t!==f?" se "+dmy(t)+" tak":"")+"\n\n"+nm+"\n\nKya aap pakka karna chahte hain?"))return;
+ const r=await api({a:"adminMark",type:ty,from:f,to:t,mobiles:sel});if(!r.ok)return toast(r.msg);
+ toast(r.changed+" entry hui"+(r.skipped?", "+r.skipped+" chhodi gayin (Ravivar / chhutti / koi mark nahi)":""));$("mto").value="";loadMark()}
+
+/* ---------- holiday ---------- */
+function holList(){const sel=$("hy"),cur=sel.value||String(new Date().getFullYear()),ys=new Set([new Date().getFullYear()-1,new Date().getFullYear(),new Date().getFullYear()+1]);
+ hols.forEach(h=>ys.add(+h.date.slice(0,4)));sel.innerHTML=[...ys].sort().map(y=>`<option${String(y)===cur?" selected":""}>${y}</option>`).join("");
+ const list=hols.filter(h=>h.date.startsWith(sel.value)).sort((a,b)=>a.date<b.date?-1:1);
+ $("thol").innerHTML="<tr><th>#</th><th>Tarikh</th><th>Din</th><th>Chhutti ka naam</th><th></th></tr>"+(list.map((h,i)=>`<tr><td>${i+1}</td><td>${dmy(h.date)}</td><td>${WD[new Date(h.date+"T00:00:00").getDay()]}</td><td>${esc(h.name)}</td><td><button class="btn r s" onclick="delHol('${h.date}')">Hatayein</button></td></tr>`).join("")||'<tr><td colspan="5">Is saal ki koi chhutti nahi jodi gayi</td></tr>')}
+async function refreshHol(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);holList()}}
+async function addHol(){const f=$("hf").value,t=$("ht").value||f,n=$("hn").value.trim();
+ if(!f)return toast("Tarikh chunein");if(t<f)return toast("'Tak' tarikh 'From' se pehle nahi ho sakti");if(!n)return toast("Chhutti ka naam likhein");
+ const r=await api({a:"adminAddHoliday",from:f,to:t,name:n});if(!r.ok)return toast(r.msg);
+ toast(r.added+" din jude"+(r.skipped?", "+r.skipped+" pehle se the":""));$("hn").value="";$("ht").value="";refreshHol()}
+async function delHol(dt){if(!confirm(dmy(dt)+" ki chhutti hatayein?"))return;const r=await api({a:"adminDelHoliday",date:dt});if(!r.ok)return toast(r.msg);toast("Chhutti hata di gayi");refreshHol()}
+
 /* ---------- report ---------- */
 const mm=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
 const fh=m=>m?Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m":"-";
+const SLB={"":"Present",FULL:"Present (Admin - Full day)",CL:"CL - Casual Leave",ML:"ML - Medical Leave",OW:"Office Work (On Duty)",AUTO:"Absent (Auto out)"};
 function eachDay(f,t){const a=[],d=new Date(f+"T00:00:00"),e=new Date(t+"T00:00:00");for(;d<=e;d.setDate(d.getDate()+1))a.push(iso(d));return a}
 function quick(w,silent){const n=new Date();let a,b;if(w==="m"){a=new Date(n.getFullYear(),n.getMonth(),1);b=n}else{a=new Date(n.getFullYear(),n.getMonth()-1,1);b=new Date(n.getFullYear(),n.getMonth(),0)}
  $("rf").value=iso(a);$("rt").value=iso(b);if(!silent)report()}
@@ -169,48 +227,59 @@ async function report(){
  if(!f||!t||f>t)return toast("Sahi date chunein (From, To se pehle ho)");
  if((new Date(t)-new Date(f))/864e5>366)return toast("Zyada se zyada 1 saal ka range chunein");
  const r=await api({a:"adminData",from:f,to:t});if(!r.ok)return toast(r.msg);sync(r);$("rs").value=sel;
- const days=eachDay(f,t),now=new Date(),today=iso(now),late=now.getHours()>=20;
+ const days=eachDay(f,t),now=new Date(),today=iso(now),late=now.getHours()>=20,HS={};hols.forEach(h=>HS[h.date]=h.name);
  const att=r.att.filter(x=>!sel||x.mobile===sel),map={};att.forEach(x=>map[x.mobile+"|"+x.date]=x);const has=new Set(att.map(x=>x.mobile));
  const list=users.filter(s=>(!sel||s.mobile===sel)&&(s.active==="YES"||has.has(s.mobile)));
- sumRows=list.map(s=>{let P=0,A=0,AU=0,W=0,mn=0;const cells=days.map(ds=>{const x=map[s.mobile+"|"+ds],dw=new Date(ds+"T00:00:00").getDay();
-   if(x&&x.status!=="AUTO"){P++;W++;mn+=mm(x.inTime,x.outTime);return"P"}
-   if(x){A++;AU++;W++;return"X"}
+ sumRows=list.map(s=>{let P=0,OW=0,CL=0,ML=0,A=0,AU=0,W=0,H=0,mn=0,hd=0;
+  const hr=x=>{const m=mm(x.inTime,x.outTime);if(m){mn+=m;hd++}};
+  const cells=days.map(ds=>{const x=map[s.mobile+"|"+ds],dw=new Date(ds+"T00:00:00").getDay();
+   if(x){const k=x.status;
+    if(k==="AUTO"){A++;AU++;W++;return"X"}
+    if(k==="CL"){CL++;W++;return"CL"}
+    if(k==="ML"){ML++;W++;return"ML"}
+    if(k==="OW"){OW++;W++;hr(x);return"OW"}
+    P++;W++;hr(x);return"P"}
+   if(HS[ds]){H++;return"H"}
+   if(dw===0)return"S";
    if(ds>today||(ds===today&&!late))return"";
-   if(dw===0)return"S";A++;W++;return"A"});
-  return{s,P,A,AU,W,mn,pct:W?Math.round(P/W*100):0,cells}});
+   A++;W++;return"A"});
+  return{s,P,OW,CL,ML,A,AU,W,H,mn,hd,pct:W?Math.round((P+OW)/W*100):0,cells}});
  rows=att.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name));
  lastTy=ty;lastTitle="Attendance_Report_"+f+"_to_"+t;
- const nm=sel?esc((users.find(u=>u.mobile===sel)||{}).name||""):"Sabhi staff",org=esc(cfg.org||"Attendance"),per=dmy(f)+" se "+dmy(t);
+ const nm=sel?esc((users.find(u=>u.mobile===sel)||{}).name||""):"Sabhi staff",org=esc(cfg.org||"Attendance"),per=dmy(f)+" se "+dmy(t),hl=hols.filter(h=>h.date>=f&&h.date<=t);
  let h=`<div class="sheet"><div class="lh"><div><h2>${org}</h2><div class="sub">ATTENDANCE REPORT &bull; ${ty==="sum"?"Summary":ty==="reg"?"Register":ty==="det"?"Details":"Poori report"}</div></div>
   <div class="meta">Avadhi: <b>${per}</b> (${days.length} din)<br>Staff: <b>${nm}</b><br>Taiyar kiya: ${dmy(today)} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</div></div>`;
- if(ty==="full"||ty==="sum")h+=summaryHTML();
+ if(ty==="full"||ty==="sum")h+=summaryHTML(hl);
  if(ty==="full"||ty==="reg")h+=(ty==="full"?'<div class="pb"></div>':"")+registerHTML(days);
  if(ty==="full"||ty==="det")h+=(ty==="full"?'<div class="pb"></div>':"")+detailsHTML();
  h+=`<div class="sign"><div>Taiyar karne wale ke hastakshar</div><div>Pradhanacharya / Adhikrit hastakshar</div></div><div class="gen">Computer dwara taiyar report &bull; ${org}</div></div>`;
  $("rout").innerHTML=h;$("rout").scrollIntoView({behavior:"smooth"})}
 
-function summaryHTML(){let tp=0,ta=0,tu=0,tw=0,tm=0;
- const b=sumRows.map((o,i)=>{tp+=o.P;ta+=o.A;tu+=o.AU;tw+=o.W;tm+=o.mn;
-  return`<tr><td class="c">${i+1}</td><td>${esc(o.s.name)}</td><td>${esc(o.s.designation)}</td><td class="n">${o.W}</td><td class="n">${o.P}</td><td class="n">${o.A}</td><td class="n">${o.AU}</td><td class="n">${o.pct}%</td><td class="n">${fh(o.mn)}</td><td class="n">${o.P?fh(Math.round(o.mn/o.P)):"-"}</td></tr>`}).join("");
- return`<h4>1. Staff-wise Summary</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Naam</th><th>Pad</th><th>Karya divas</th><th>Present</th><th>Absent</th><th>Auto-out (Absent)</th><th>Upasthiti %</th><th>Kul ghante</th><th>Ausat / din</th></tr></thead><tbody>${b||'<tr><td colspan="10" class="c">Koi staff nahi</td></tr>'}</tbody>
- <tfoot><tr><td></td><td colspan="2">Kul</td><td class="n">${tw}</td><td class="n">${tp}</td><td class="n">${ta}</td><td class="n">${tu}</td><td class="n">${tw?Math.round(tp/tw*100):0}%</td><td class="n">${fh(tm)}</td><td></td></tr></tfoot></table></div>
- <div class="leg">Karya divas = Ravivar ke bina beete hue din (Ravivar ko upasthit hone par wo din bhi judta hai). Auto-out: shaam 8 baje tak Check Out nahi hua, isliye Absent ginta gaya.</div>`}
+function summaryHTML(hl){const T={W:0,P:0,OW:0,CL:0,ML:0,A:0,AU:0,mn:0};
+ const b=sumRows.map((o,i)=>{for(const k in T)T[k]+=o[k];
+  return`<tr><td class="c">${i+1}</td><td>${esc(o.s.name)}</td><td>${esc(o.s.designation)}</td><td class="n">${o.W}</td><td class="n">${o.P}</td><td class="n">${o.OW}</td><td class="n">${o.CL}</td><td class="n">${o.ML}</td><td class="n">${o.A}</td><td class="n">${o.AU}</td><td class="n">${o.pct}%</td><td class="n">${fh(o.mn)}</td><td class="n">${o.hd?fh(Math.round(o.mn/o.hd)):"-"}</td></tr>`}).join("");
+ const hh=hl.length?`<div class="leg"><b>Chhuttiyan (${hl.length}):</b> ${hl.map(h=>dmy(h.date).slice(0,5)+" "+esc(h.name)).join(", ")}</div>`:"";
+ return`<h4>1. Staff-wise Summary</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Naam</th><th>Pad</th><th>Karya divas</th><th>Present</th><th>Office Work</th><th>CL</th><th>ML</th><th>Absent</th><th>Auto-out (Absent)</th><th>Upasthiti %</th><th>Kul ghante</th><th>Ausat / din</th></tr></thead><tbody>${b||'<tr><td colspan="13" class="c">Koi staff nahi</td></tr>'}</tbody>
+ <tfoot><tr><td></td><td colspan="2">Kul</td><td class="n">${T.W}</td><td class="n">${T.P}</td><td class="n">${T.OW}</td><td class="n">${T.CL}</td><td class="n">${T.ML}</td><td class="n">${T.A}</td><td class="n">${T.AU}</td><td class="n">${T.W?Math.round((T.P+T.OW)/T.W*100):0}%</td><td class="n">${fh(T.mn)}</td><td></td></tr></tfoot></table></div>
+ <div class="leg">Karya divas = Ravivar aur chhutti ke bina beete hue din (in din upasthit hone par wo din bhi judta hai). Upasthiti % = (Present + Office Work) &divide; Karya divas. CL/ML chhutti ke din alag ginte jaate hain. Auto-out: shaam 8 baje tak Check Out nahi hua, isliye Absent ginta gaya.</div>${hh}`}
 
 function registerHTML(days){
  if(days.length>31)return`<h4>2. Register (P / A)</h4><div class="note">Register ke liye 31 din tak ka range chunein. Lambe range ke liye Summary ya Details dekhein.</div>`;
  const wd=["र","सो","मं","बु","गु","शु","श"],hd=days.map(d=>`<th>${+d.slice(8)}<small>${wd[new Date(d+"T00:00:00").getDay()]}</small></th>`).join("");
- const b=sumRows.map((o,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(o.s.name)}</td>${o.cells.map(c=>`<td class="${c?"c"+c:""}">${c==="X"?"A*":c}</td>`).join("")}<td class="cP">${o.P}</td><td class="cA">${o.A}</td></tr>`).join("");
- return`<h4>2. Din-wise Register</h4><div class="tw"><table class="reg"><thead><tr><th>#</th><th class="nm">Naam</th>${hd}<th>P</th><th>A</th></tr></thead><tbody>${b}</tbody></table></div>
- <div class="leg"><span><b>P</b> Present</span><span><b>A</b> Absent</span><span><b>A*</b> Auto Check-out (Absent)</span><span><b>S</b> Ravivar</span><span>Khali = abhi baaki din</span></div>`}
+ const b=sumRows.map((o,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(o.s.name)}</td>${o.cells.map(c=>`<td class="${c?"c"+c:""}">${c==="X"?"A*":c}</td>`).join("")}<td class="cP">${o.P+o.OW}</td><td class="cCL">${o.CL+o.ML}</td><td class="cA">${o.A}</td></tr>`).join("");
+ return`<h4>2. Din-wise Register</h4><div class="tw"><table class="reg"><thead><tr><th>#</th><th class="nm">Naam</th>${hd}<th>P</th><th>L</th><th>A</th></tr></thead><tbody>${b}</tbody></table></div>
+ <div class="leg"><span><b>P</b> Present</span><span><b>A</b> Absent</span><span><b>A*</b> Auto Check-out (Absent)</span><span><b>CL</b> Casual Leave</span><span><b>ML</b> Medical Leave</span><span><b>OW</b> Office Work</span><span><b>H</b> Chhutti</span><span><b>S</b> Ravivar</span><span>Khali = abhi baaki din</span><br>Aakhri 3 stambh: P = Present + Office Work, L = CL + ML, A = Absent</div>`}
 
 function detailsHTML(){
- const b=rows.map((r,i)=>{const au=r.status==="AUTO";return`<tr><td class="c">${i+1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td><td>${r.mobile}</td><td class="c">${r.inTime||"-"}</td><td class="c">${r.outTime||"-"}${au?" (auto)":""}</td><td class="n">${au?"-":fh(mm(r.inTime,r.outTime))}</td><td class="c">${au?'<span class="tag a">Absent (Auto out)</span>':'<span class="tag p">Present</span>'}</td><td class="n">${r.inDist||"-"} m</td><td class="nop">${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>`:"-"}</td></tr>`}).join("");
+ const cl=k=>k==="AUTO"?"a":k==="CL"||k==="ML"?"l":k==="OW"?"b":"p";
+ const b=rows.map((r,i)=>{const k=r.status||"",hrs=(k===""||k==="FULL"||k==="OW")?fh(mm(r.inTime,r.outTime)):"-";
+  return`<tr><td class="c">${i+1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td><td>${r.mobile}</td><td class="c">${r.inTime||"-"}</td><td class="c">${r.outTime||"-"}${k==="AUTO"?" (auto)":""}</td><td class="n">${hrs}</td><td class="c"><span class="tag ${cl(k)}">${SLB[k]||k}</span></td><td class="n">${r.inDist?r.inDist+" m":"-"}</td><td class="nop">${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>`:"-"}</td></tr>`}).join("");
  return`<h4>3. Poora Vivaran (Details)</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Tarikh</th><th>Naam</th><th>Mobile</th><th>In</th><th>Out</th><th>Ghante</th><th>Sthiti</th><th>In doori</th><th class="nop">Map</th></tr></thead><tbody>${b||'<tr><td colspan="10" class="c">Is avadhi mein koi record nahi</td></tr>'}</tbody></table></div>`}
 
 function printRep(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");const old=document.title;document.title=lastTitle;window.onafterprint=()=>{document.title=old};print()}
 function csv(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");
- let c;if(lastTy==="sum")c=[["Naam","Pad","Mobile","Karya divas","Present","Absent","Auto-out Absent","Upasthiti %","Kul ghante"],...sumRows.map(o=>[o.s.name,o.s.designation,o.s.mobile,o.W,o.P,o.A,o.AU,o.pct+"%",fh(o.mn)])];
- else c=[["Date","Name","Mobile","In","Out","Hours","Status","InDistance(m)","OutDistance(m)"],...rows.map(r=>[dmy(r.date),r.name,r.mobile,r.inTime,r.outTime,r.status==="AUTO"?"":fh(mm(r.inTime,r.outTime)),r.status==="AUTO"?"Absent (Auto out)":"Present",r.inDist,r.outDist])];
+ let c;if(lastTy==="sum")c=[["Naam","Pad","Mobile","Karya divas","Present","Office Work","CL","ML","Absent","Auto-out Absent","Chhuttiyan","Upasthiti %","Kul ghante"],...sumRows.map(o=>[o.s.name,o.s.designation,o.s.mobile,o.W,o.P,o.OW,o.CL,o.ML,o.A,o.AU,o.H,o.pct+"%",fh(o.mn)])];
+ else c=[["Date","Name","Mobile","In","Out","Hours","Status","InDistance(m)","OutDistance(m)"],...rows.map(r=>{const k=r.status||"";return[dmy(r.date),r.name,r.mobile,r.inTime,r.outTime,(k===""||k==="FULL"||k==="OW")?fh(mm(r.inTime,r.outTime)):"",SLB[k]||k,r.inDist,r.outDist]})];
  const t=c.map(a=>a.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),a=document.createElement("a");
  a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download=lastTitle+(lastTy==="sum"?"_summary":"")+".csv";a.click()}
 
