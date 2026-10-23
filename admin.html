@@ -3,89 +3,146 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Attendance Admin</title>
 <style>
-:root{--bg:#f3f5f9;--ink:#14213d;--mut:#6b7488;--pri:#0b5ed7;--ok:#12855a;--bad:#c62f3e;--line:#e2e6ee}
+:root{--bg:#eef2f7;--ink:#14213d;--mut:#66758a;--pri:#0b5ed7;--ok:#12855a;--bad:#c62f3e;--line:#dce3ec;--navy:#0f2a43}
 *{box-sizing:border-box}html,body{margin:0}
-body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
-.hdr{background:var(--ink);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+.hdr{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
 .hdr b{font-size:17px}.hdr button{background:#ffffff22;color:#fff;border:0;padding:7px 12px;border-radius:8px}
 nav{display:flex;gap:4px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);padding:6px 10px;position:sticky;top:52px;z-index:4}
 nav button{flex:1;white-space:nowrap;border:0;background:none;padding:10px 14px;border-radius:8px;font-weight:600;color:var(--mut)}nav button.on{background:#e8f0fe;color:var(--pri)}
-main{max-width:1100px;margin:auto;padding:14px}
+main{max-width:1150px;margin:auto;padding:14px}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}h3{margin:0 0 10px;font-size:16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.stat small{color:var(--mut)}.stat div{font-size:28px;font-weight:700;margin-top:4px}
 label{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
 input,select{width:100%;padding:10px;border:1px solid #cfd5e1;border-radius:8px;font-size:15px;background:#fff}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;align-items:end}
-.btn{background:var(--pri);color:#fff;border:0;padding:10px 16px;border-radius:8px;font-weight:600;font-size:15px}.btn.g{background:#eef1f6;color:var(--ink)}.btn.r{background:var(--bad)}.btn.s{padding:6px 10px;font-size:13px}.btn:disabled{opacity:.6}
+.btn{background:var(--pri);color:#fff;border:0;padding:10px 16px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer}.btn.g{background:#eef1f6;color:var(--ink)}.btn.r{background:var(--bad)}.btn.s{padding:6px 10px;font-size:13px}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:560px}
-th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;white-space:nowrap}th{background:#f7f8fb;color:var(--mut)}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;white-space:nowrap}th{background:#f6f8fb;color:var(--mut)}
 .tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}.tag.p{background:#dff5ea;color:var(--ok)}.tag.a{background:#fde4e6;color:var(--bad)}
-#login{max-width:380px;margin:12vh auto;padding:0 16px}#msg{color:var(--bad);font-size:13px;margin-top:8px}
+#login{max-width:380px;margin:10vh auto;padding:0 16px}#msg{color:var(--bad);font-size:13px;margin-top:8px;min-height:18px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;z-index:9;display:none}
 .load{position:fixed;top:0;left:0;right:0;height:3px;background:var(--pri);z-index:20;display:none}
-[hidden]{display:none!important}@media print{.hdr,nav,.noprint{display:none!important}body{background:#fff}}
+.note{background:#fff4d6;color:#7a5200;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px;line-height:1.5}
+[hidden]{display:none!important}
+
+/* ---- report sheet (screen + print) ---- */
+.sheet{background:#fff;border:1px solid var(--line);border-radius:6px;padding:22px;margin-bottom:14px;color:#111}
+.lh{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;border-bottom:3px double #0f2a43;padding-bottom:10px;margin-bottom:14px;flex-wrap:wrap}
+.lh h2{margin:0;font-size:22px;color:#0f2a43;letter-spacing:.3px}.lh .sub{font-size:13px;color:#445;margin-top:3px}
+.lh .meta{font-size:12.5px;color:#334;text-align:right;line-height:1.6}
+.sheet h4{margin:18px 0 8px;font-size:14px;color:#0f2a43;text-transform:uppercase;letter-spacing:.6px;border-left:4px solid #0b5ed7;padding-left:8px}
+.sheet table{min-width:0;border:1px solid #b9c4d2}.sheet th,.sheet td{border:1px solid #cdd6e1;padding:6px 7px;font-size:12.5px}
+.sheet th{background:#e9eff7;color:#0f2a43}.sheet tfoot td{background:#f3f6fa;font-weight:700}
+.sheet td.n{text-align:right}.sheet td.c,.sheet th.c{text-align:center}
+.reg td,.reg th{padding:3px 2px;text-align:center;font-size:11.5px;min-width:23px}.reg td.nm,.reg th.nm{text-align:left;padding:4px 6px;min-width:130px;white-space:nowrap}
+.reg th small{display:block;font-weight:400;color:#667;font-size:9.5px}
+.cP{color:#0b6b49;font-weight:700;background:#e3f6ee}.cA{color:#b3202e;font-weight:700;background:#fde8ea}.cX{color:#fff;font-weight:700;background:#c62f3e}.cS{color:#8795a6;background:#edf0f4}
+.leg{font-size:11.5px;color:#445;margin-top:8px}.leg span{margin-right:14px}
+.sign{display:flex;justify-content:space-between;margin-top:46px;font-size:12.5px;color:#334}.sign div{border-top:1px solid #556;padding-top:6px;min-width:190px;text-align:center}
+.gen{font-size:11px;color:#778;text-align:center;margin-top:16px}
+.pb{page-break-before:always}
+
+@media print{
+ @page{size:A4 landscape;margin:10mm}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{background:#fff;font-size:11px}
+ .hdr,nav,.noprint,.toast,.load,#login{display:none!important}
+ main{padding:0;max-width:none}
+ section:not(#t-rep){display:none!important}
+ .sheet{border:0;padding:0;margin:0}.tw{overflow:visible}
+ .nop{display:none!important}
+ tr{page-break-inside:avoid}
+}
 </style></head><body>
 <div class="load" id="ld"></div>
-<div id="login"><div class="card"><h3 style="font-size:20px">Admin Login</h3>
-<label>Admin Password</label><input id="pw" type="password" onkeydown="if(event.key==='Enter')doLogin()">
-<button class="btn" style="width:100%;margin-top:14px" onclick="doLogin()">Login</button><div id="msg"></div></div></div>
+
+<div id="login"><div class="card">
+ <h3 style="font-size:20px">Admin Login</h3>
+ <label>Admin ID</label><input id="au" autocomplete="username" autocapitalize="off">
+ <label>Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+ <button class="btn" style="width:100%;margin-top:14px" onclick="doLogin()">Login</button><div id="msg"></div>
+</div></div>
 
 <div id="app" hidden>
 <div class="hdr"><b id="org">Attendance Admin</b><button onclick="logout()">Logout</button></div>
 <nav id="nav"></nav>
 <main>
 <section id="t-dash"><div class="grid" id="stats"></div><div class="card"><h3>Aaj ki attendance <span id="today"></span></h3><div class="tw"><table id="tdash"></table></div></div></section>
+
 <section id="t-staff" hidden>
  <div class="card"><h3>Staff add / edit</h3><div class="row">
  <div><label>Name</label><input id="sn"></div><div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10"></div>
  <div><label>User ID</label><input id="su"></div><div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button></div></div>
  <div class="card"><h3>Staff list</h3><div class="tw"><table id="tstaff"></table></div></div></section>
+
 <section id="t-rep" hidden>
- <div class="card noprint"><h3>Report</h3><div class="row">
- <div><label>From</label><input id="rf" type="date"></div><div><label>To</label><input id="rt" type="date"></div>
- <div><label>Staff</label><select id="rs"><option value="">All</option></select></div>
- <button class="btn" onclick="report()">Show</button><button class="btn g" onclick="csv()">CSV</button><button class="btn g" onclick="print()">Print</button></div></div>
- <div class="card"><h3>Summary</h3><div class="tw"><table id="tsum"></table></div></div>
- <div class="card"><h3>Details</h3><div class="tw"><table id="trep"></table></div></div></section>
+ <div class="card noprint"><h3>Report banayein</h3><div class="row">
+  <div><label>From</label><input id="rf" type="date"></div><div><label>To</label><input id="rt" type="date"></div>
+  <div><label>Staff</label><select id="rs"><option value="">Sabhi staff</option></select></div>
+  <div><label>Report ka prakar</label><select id="rty"><option value="full">Poori report (Summary + Register + Details)</option><option value="sum">Sirf Summary</option><option value="reg">Sirf Register (P / A)</option><option value="det">Sirf Details</option></select></div>
+ </div>
+ <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="report()">Report dekhein</button><button class="btn g" onclick="printRep()">Print / PDF</button><button class="btn g" onclick="csv()">CSV (Excel)</button>
+  <button class="btn g" onclick="quick('m')">Is mahine</button><button class="btn g" onclick="quick('p')">Pichhla mahina</button></div>
+ <div class="note">Print dabane par "Save as PDF" chunkar PDF bhi bana sakte hain. Page A4 landscape mein set hai.</div></div>
+ <div id="rout"></div>
+</section>
+
 <section id="t-set" hidden>
  <div class="card"><h3>Office location</h3><div class="row">
  <div><label>Organisation name</label><input id="on"></div><div><label>Latitude</label><input id="la"></div>
  <div><label>Longitude</label><input id="lo"></div><div><label>Radius (meter)</label><input id="ra" type="number"></div></div>
- <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri current location lo</button><button class="btn" onclick="saveSet()">Save</button></div>
- <p style="color:var(--mut);font-size:13px">Admin password badalne ke liye Google Sheet ke Config tab mein adminPass badlein.</p></div></section>
+ <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri current location lo</button><button class="btn" onclick="saveSet()">Save</button></div></div>
+ <div class="card"><h3>Admin ID / Password badlein</h3><div class="row">
+ <div><label>Naya Admin ID (kam se kam 4 akshar)</label><input id="nu" autocapitalize="off"></div>
+ <div><label>Naya Password (kam se kam 8 akshar)</label><input id="np" type="password" autocomplete="new-password"></div>
+ <button class="btn" onclick="saveAuth()">Badlein</button></div>
+ <div class="note">Password sheet mein sidha nahi, chhupe (hash) roop mein save hota hai. Admin ID kisi staff ki User ID jaisi nahi honi chahiye. Badalne ke baad naye ID/Password se dobara login karna hoga.</div></div>
+</section>
 </main></div>
 <div class="toast" id="toast"></div>
 
 <script>
 /* ====== APNA APPS SCRIPT URL ====== */
-const API_URL="https://script.google.com/macros/s/AKfycby73nfXpP68MBMEkXhuB2s1rbjfGWnmuCgDSpdP2jk3ygCEndcEAEfl_96bQHGvYXyk/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm9c7Qx8mq1fQwTEIeWw4mxNOFQwaaKhnqoU5radUJi3/exec";
 const $=i=>document.getElementById(i),iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2600)};
-let PASS=sessionStorage.getItem("ap")||"",users=[],cfg={},rows=[];
-async function api(b){$("ld").style.display="block";try{const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,pass:PASS})});return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}}
+const dmy=s=>String(s).split("-").reverse().join("-");
+const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2800)};
+let TOK=sessionStorage.getItem("at")||"",users=[],cfg={},rows=[],sumRows=[],lastTy="full",lastTitle="";
 
-async function doLogin(){PASS=$("pw").value;$("msg").textContent="";const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});
- if(!r.ok){$("msg").textContent=r.msg;return}sessionStorage.setItem("ap",PASS);enter(r)}
-function logout(){sessionStorage.removeItem("ap");location.reload()}
-(async()=>{if(PASS){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok)enter(r)}})();
+async function api(b){$("ld").style.display="block";
+ try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),30000);
+  const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,token:TOK}),signal:ac.signal});clearTimeout(tm);const j=await r.json();
+  if(j.expired){TOK="";sessionStorage.removeItem("at");location.reload()}return j}
+ catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}}
+
+async function doLogin(){$("msg").textContent="";const u=$("au").value.trim(),p=$("pw").value;if(!u||!p){$("msg").textContent="Admin ID aur Password dalein";return}
+ const r=await api({a:"adminLogin",user:u,pass:p});if(!r.ok){$("msg").textContent=r.msg;return}
+ TOK=r.token;sessionStorage.setItem("at",TOK);$("pw").value="";boot()}
+async function logout(){await api({a:"adminLogout"});TOK="";sessionStorage.removeItem("at");location.reload()}
+async function boot(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(!r.ok)return;enter(r)}
+if(TOK)boot();
 
 const tabs={dash:"Dashboard",staff:"Staff",rep:"Report",set:"Settings"};
 $("nav").innerHTML=Object.entries(tabs).map(([k,v])=>`<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("");
-function enter(r){$("login").hidden=true;$("app").hidden=false;sync(r);const d=new Date();d.setDate(1);$("rf").value=iso(d);$("rt").value=iso(new Date());dash(r)}
+function enter(r){$("login").hidden=true;$("app").hidden=false;sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
 function sync(r){users=r.users;cfg=r.cfg;$("org").textContent=cfg.org||"Attendance Admin";
- $("rs").innerHTML='<option value="">All</option>'+users.map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join("")}
+ $("rs").innerHTML='<option value="">Sabhi staff</option>'+users.map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join("")}
 async function tab(k){for(const t in tabs)$("t-"+t).hidden=t!==k;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
  if(k==="dash"){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);dash(r)}}
- if(k==="staff")stf();if(k==="rep")report();
+ if(k==="staff")stf();
  if(k==="set"){$("on").value=cfg.org||"";$("la").value=cfg.lat||"";$("lo").value=cfg.lng||"";$("ra").value=cfg.radius||100}}
-document.querySelector('#nav button').classList.add("on");
 
-function dash(r){const all=r.att,a=all.filter(x=>x.status!=="AUTO"),au=all.filter(x=>x.status==="AUTO"),act=users.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile));$("today").textContent="("+iso(new Date())+")";
- $("stats").innerHTML=[["Total staff",act.length],["Present",a.length],["Absent",Math.max(act.length-a.length,0)],["Checked out",a.filter(x=>x.outTime).length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
- $("tdash").innerHTML="<tr><th>Name</th><th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+a.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"}</td><td>${x.inDist||"-"} m</td><td><span class="tag p">Present</span></td></tr>`).join("")+au.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"} (auto)</td><td>${x.inDist||"-"} m</td><td><span class="tag a">Absent (Auto out)</span></td></tr>`).join("")+act.filter(s=>!got.has(s.mobile)).map(s=>`<tr><td>${esc(s.name)}</td><td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join("")}
+/* ---------- dashboard ---------- */
+function dash(r){const all=r.att,a=all.filter(x=>x.status!=="AUTO"),au=all.filter(x=>x.status==="AUTO"),act=users.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile));$("today").textContent="("+dmy(iso(new Date()))+")";
+ $("stats").innerHTML=[["Total staff",act.length],["Present",a.length],["Absent",Math.max(act.length-a.length,0)],["Checked out",a.filter(x=>x.outTime&&x.status!=="AUTO").length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
+ $("tdash").innerHTML="<tr><th>Name</th><th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+a.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"}</td><td>${x.inDist||"-"} m</td><td><span class="tag p">Present</span></td></tr>`).join("")
+ +au.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"} (auto)</td><td>${x.inDist||"-"} m</td><td><span class="tag a">Absent (Auto out)</span></td></tr>`).join("")
+ +act.filter(s=>!got.has(s.mobile)).map(s=>`<tr><td>${esc(s.name)}</td><td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join("")}
 
+/* ---------- staff ---------- */
 function stf(){$("tstaff").innerHTML="<tr><th>Name</th><th>Mobile</th><th>User ID</th><th>Designation</th><th>Status</th><th>Phone</th><th></th></tr>"+users.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.mobile}</td><td>${esc(s.userId)}</td><td>${esc(s.designation)}</td><td><span class="tag ${s.active==="YES"?"p":"a"}">${s.active==="YES"?"Active":"Blocked"}</span></td>
  <td><span class="tag ${s.bound==="YES"?"p":"a"}">${s.bound==="YES"?"Juda hua":"Abhi nahi"}</span></td>
  <td><button class="btn g s" onclick="editS('${s.mobile}')">Edit</button> <button class="btn g s" onclick="togS('${s.mobile}')">${s.active==="YES"?"Block":"Unblock"}</button>${s.bound==="YES"?` <button class="btn g s" onclick="resetD('${s.mobile}')">Phone reset</button>`:""} <button class="btn r s" onclick="delS('${s.mobile}')">Delete</button></td></tr>`).join("")}
@@ -96,21 +153,71 @@ async function saveStaff(){const m=$("sm").value.trim(),n=$("sn").value.trim(),u
  if(!r.ok)return toast(r.msg);["sn","sm","su","sd"].forEach(i=>$(i).value="");toast("Saved");reload()}
 async function resetD(m){if(confirm("Is staff ka phone link hata dein? Wo naye phone se login karke dobara juda sakta hai.")){const r=await api({a:"adminResetDevice",mobile:m});toast(r.ok?"Phone reset ho gaya":r.msg);reload()}}
 function editS(m){const s=users.find(x=>x.mobile===m);$("sn").value=s.name;$("sm").value=s.mobile;$("su").value=s.userId;$("sd").value=s.designation;scrollTo(0,0)}
-async function togS(m){const s=users.find(x=>x.mobile===m);await api({a:"adminSaveUser",...s,active:s.active==="YES"?"NO":"YES"});reload()}
+async function togS(m){const s=users.find(x=>x.mobile===m);await api({a:"adminSaveUser",name:s.name,mobile:s.mobile,userId:s.userId,designation:s.designation,active:s.active==="YES"?"NO":"YES"});reload()}
 async function delS(m){if(confirm("Staff delete karein?")){await api({a:"adminDelUser",mobile:m});reload()}}
 
-function hrs(a,b){if(!a||!b)return"-";const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?Math.floor(m/60)+"h "+m%60+"m":"-"}
-async function report(){const f=$("rf").value,t=$("rt").value,s=$("rs").value;if(!f||!t)return toast("Date chunein");
- const r=await api({a:"adminData",from:f,to:t});if(!r.ok)return toast(r.msg);sync(r);$("rs").value=s;
- rows=r.att.filter(x=>!s||x.mobile===s).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name));
- const days=Math.round((new Date(t)-new Date(f))/864e5)+1;
- $("tsum").innerHTML="<tr><th>Name</th><th>Present</th><th>Absent</th><th>Days</th></tr>"+(s?users.filter(x=>x.mobile===s):users.filter(x=>x.active==="YES")).map(x=>{const c=rows.filter(r=>r.mobile===x.mobile&&r.status!=="AUTO").length;return`<tr><td>${esc(x.name)}</td><td>${c}</td><td>${Math.max(days-c,0)}</td><td>${days}</td></tr>`}).join("");
- $("trep").innerHTML="<tr><th>Date</th><th>Name</th><th>Mobile</th><th>In</th><th>Out</th><th>Hours</th><th>In dist.</th><th>Map</th></tr>"+rows.map(r=>`<tr><td>${r.date}</td><td>${esc(r.name)}</td><td>${r.mobile}</td><td>${r.inTime||"-"}</td><td>${r.outTime||"-"}${r.status==="AUTO"?' <span class="tag a">Auto - Absent</span>':""}</td><td>${r.status==="AUTO"?"-":hrs(r.inTime,r.outTime)}</td><td>${r.inDist||"-"} m</td><td>${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">View</a>`:"-"}</td></tr>`).join("")||"<tr><td colspan=8>Koi record nahi</td></tr>"}
-function csv(){if(!rows.length)return toast("Pehle report dekhein");
- const c=[["Date","Name","Mobile","In","Out","Hours","InDistance(m)","OutDistance(m)"],...rows.map(r=>[r.date,r.name,r.mobile,r.inTime,r.outTime,hrs(r.inTime,r.outTime),r.inDist,r.outDist])].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
- const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="attendance_"+$("rf").value+"_to_"+$("rt").value+".csv";a.click()}
+/* ---------- report ---------- */
+const mm=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
+const fh=m=>m?Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m":"-";
+function eachDay(f,t){const a=[],d=new Date(f+"T00:00:00"),e=new Date(t+"T00:00:00");for(;d<=e;d.setDate(d.getDate()+1))a.push(iso(d));return a}
+function quick(w,silent){const n=new Date();let a,b;if(w==="m"){a=new Date(n.getFullYear(),n.getMonth(),1);b=n}else{a=new Date(n.getFullYear(),n.getMonth()-1,1);b=new Date(n.getFullYear(),n.getMonth(),0)}
+ $("rf").value=iso(a);$("rt").value=iso(b);if(!silent)report()}
 
+async function report(){
+ const f=$("rf").value,t=$("rt").value,sel=$("rs").value,ty=$("rty").value;
+ if(!f||!t||f>t)return toast("Sahi date chunein (From, To se pehle ho)");
+ if((new Date(t)-new Date(f))/864e5>366)return toast("Zyada se zyada 1 saal ka range chunein");
+ const r=await api({a:"adminData",from:f,to:t});if(!r.ok)return toast(r.msg);sync(r);$("rs").value=sel;
+ const days=eachDay(f,t),now=new Date(),today=iso(now),late=now.getHours()>=20;
+ const att=r.att.filter(x=>!sel||x.mobile===sel),map={};att.forEach(x=>map[x.mobile+"|"+x.date]=x);const has=new Set(att.map(x=>x.mobile));
+ const list=users.filter(s=>(!sel||s.mobile===sel)&&(s.active==="YES"||has.has(s.mobile)));
+ sumRows=list.map(s=>{let P=0,A=0,AU=0,W=0,mn=0;const cells=days.map(ds=>{const x=map[s.mobile+"|"+ds],dw=new Date(ds+"T00:00:00").getDay();
+   if(x&&x.status!=="AUTO"){P++;W++;mn+=mm(x.inTime,x.outTime);return"P"}
+   if(x){A++;AU++;W++;return"X"}
+   if(ds>today||(ds===today&&!late))return"";
+   if(dw===0)return"S";A++;W++;return"A"});
+  return{s,P,A,AU,W,mn,pct:W?Math.round(P/W*100):0,cells}});
+ rows=att.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name));
+ lastTy=ty;lastTitle="Attendance_Report_"+f+"_to_"+t;
+ const nm=sel?esc((users.find(u=>u.mobile===sel)||{}).name||""):"Sabhi staff",org=esc(cfg.org||"Attendance"),per=dmy(f)+" se "+dmy(t);
+ let h=`<div class="sheet"><div class="lh"><div><h2>${org}</h2><div class="sub">ATTENDANCE REPORT &bull; ${ty==="sum"?"Summary":ty==="reg"?"Register":ty==="det"?"Details":"Poori report"}</div></div>
+  <div class="meta">Avadhi: <b>${per}</b> (${days.length} din)<br>Staff: <b>${nm}</b><br>Taiyar kiya: ${dmy(today)} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</div></div>`;
+ if(ty==="full"||ty==="sum")h+=summaryHTML();
+ if(ty==="full"||ty==="reg")h+=(ty==="full"?'<div class="pb"></div>':"")+registerHTML(days);
+ if(ty==="full"||ty==="det")h+=(ty==="full"?'<div class="pb"></div>':"")+detailsHTML();
+ h+=`<div class="sign"><div>Taiyar karne wale ke hastakshar</div><div>Pradhanacharya / Adhikrit hastakshar</div></div><div class="gen">Computer dwara taiyar report &bull; ${org}</div></div>`;
+ $("rout").innerHTML=h;$("rout").scrollIntoView({behavior:"smooth"})}
+
+function summaryHTML(){let tp=0,ta=0,tu=0,tw=0,tm=0;
+ const b=sumRows.map((o,i)=>{tp+=o.P;ta+=o.A;tu+=o.AU;tw+=o.W;tm+=o.mn;
+  return`<tr><td class="c">${i+1}</td><td>${esc(o.s.name)}</td><td>${esc(o.s.designation)}</td><td class="n">${o.W}</td><td class="n">${o.P}</td><td class="n">${o.A}</td><td class="n">${o.AU}</td><td class="n">${o.pct}%</td><td class="n">${fh(o.mn)}</td><td class="n">${o.P?fh(Math.round(o.mn/o.P)):"-"}</td></tr>`}).join("");
+ return`<h4>1. Staff-wise Summary</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Naam</th><th>Pad</th><th>Karya divas</th><th>Present</th><th>Absent</th><th>Auto-out (Absent)</th><th>Upasthiti %</th><th>Kul ghante</th><th>Ausat / din</th></tr></thead><tbody>${b||'<tr><td colspan="10" class="c">Koi staff nahi</td></tr>'}</tbody>
+ <tfoot><tr><td></td><td colspan="2">Kul</td><td class="n">${tw}</td><td class="n">${tp}</td><td class="n">${ta}</td><td class="n">${tu}</td><td class="n">${tw?Math.round(tp/tw*100):0}%</td><td class="n">${fh(tm)}</td><td></td></tr></tfoot></table></div>
+ <div class="leg">Karya divas = Ravivar ke bina beete hue din (Ravivar ko upasthit hone par wo din bhi judta hai). Auto-out: shaam 8 baje tak Check Out nahi hua, isliye Absent ginta gaya.</div>`}
+
+function registerHTML(days){
+ if(days.length>31)return`<h4>2. Register (P / A)</h4><div class="note">Register ke liye 31 din tak ka range chunein. Lambe range ke liye Summary ya Details dekhein.</div>`;
+ const wd=["र","सो","मं","बु","गु","शु","श"],hd=days.map(d=>`<th>${+d.slice(8)}<small>${wd[new Date(d+"T00:00:00").getDay()]}</small></th>`).join("");
+ const b=sumRows.map((o,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(o.s.name)}</td>${o.cells.map(c=>`<td class="${c?"c"+c:""}">${c==="X"?"A*":c}</td>`).join("")}<td class="cP">${o.P}</td><td class="cA">${o.A}</td></tr>`).join("");
+ return`<h4>2. Din-wise Register</h4><div class="tw"><table class="reg"><thead><tr><th>#</th><th class="nm">Naam</th>${hd}<th>P</th><th>A</th></tr></thead><tbody>${b}</tbody></table></div>
+ <div class="leg"><span><b>P</b> Present</span><span><b>A</b> Absent</span><span><b>A*</b> Auto Check-out (Absent)</span><span><b>S</b> Ravivar</span><span>Khali = abhi baaki din</span></div>`}
+
+function detailsHTML(){
+ const b=rows.map((r,i)=>{const au=r.status==="AUTO";return`<tr><td class="c">${i+1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td><td>${r.mobile}</td><td class="c">${r.inTime||"-"}</td><td class="c">${r.outTime||"-"}${au?" (auto)":""}</td><td class="n">${au?"-":fh(mm(r.inTime,r.outTime))}</td><td class="c">${au?'<span class="tag a">Absent (Auto out)</span>':'<span class="tag p">Present</span>'}</td><td class="n">${r.inDist||"-"} m</td><td class="nop">${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>`:"-"}</td></tr>`}).join("");
+ return`<h4>3. Poora Vivaran (Details)</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Tarikh</th><th>Naam</th><th>Mobile</th><th>In</th><th>Out</th><th>Ghante</th><th>Sthiti</th><th>In doori</th><th class="nop">Map</th></tr></thead><tbody>${b||'<tr><td colspan="10" class="c">Is avadhi mein koi record nahi</td></tr>'}</tbody></table></div>`}
+
+function printRep(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");const old=document.title;document.title=lastTitle;window.onafterprint=()=>{document.title=old};print()}
+function csv(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");
+ let c;if(lastTy==="sum")c=[["Naam","Pad","Mobile","Karya divas","Present","Absent","Auto-out Absent","Upasthiti %","Kul ghante"],...sumRows.map(o=>[o.s.name,o.s.designation,o.s.mobile,o.W,o.P,o.A,o.AU,o.pct+"%",fh(o.mn)])];
+ else c=[["Date","Name","Mobile","In","Out","Hours","Status","InDistance(m)","OutDistance(m)"],...rows.map(r=>[dmy(r.date),r.name,r.mobile,r.inTime,r.outTime,r.status==="AUTO"?"":fh(mm(r.inTime,r.outTime)),r.status==="AUTO"?"Absent (Auto out)":"Present",r.inDist,r.outDist])];
+ const t=c.map(a=>a.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download=lastTitle+(lastTy==="sum"?"_summary":"")+".csv";a.click()}
+
+/* ---------- settings ---------- */
 function myLoc(){navigator.geolocation.getCurrentPosition(p=>{$("la").value=p.coords.latitude.toFixed(6);$("lo").value=p.coords.longitude.toFixed(6);toast("Location mil gayi")},()=>toast("Location permission dein"),{enableHighAccuracy:true})}
 async function saveSet(){const la=parseFloat($("la").value),lo=parseFloat($("lo").value);if(isNaN(la)||isNaN(lo))return toast("Latitude/Longitude dalein");
  const r=await api({a:"adminSaveConfig",org:$("on").value.trim(),lat:la,lng:lo,radius:parseInt($("ra").value)||100});toast(r.ok?"Saved":r.msg);if(r.ok){cfg={org:$("on").value.trim(),lat:la,lng:lo,radius:$("ra").value};$("org").textContent=cfg.org||"Attendance Admin"}}
+async function saveAuth(){const u=$("nu").value.trim(),p=$("np").value;if(u.length<4||p.length<8)return toast("ID 4+ aur Password 8+ akshar ka rakhein");
+ if(!confirm("Admin ID/Password badal dein? Dobara login karna hoga."))return;
+ const r=await api({a:"adminSaveAuth",user:u,newPass:p});if(!r.ok)return toast(r.msg);toast("Badal gaya, dobara login karein");setTimeout(logout,1200)}
 </script></body></html>
