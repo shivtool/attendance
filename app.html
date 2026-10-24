@@ -1,235 +1,502 @@
 <!DOCTYPE html>
-<html lang="hi"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f2a43">
-<title>Shiv Attendance</title>
-<style>
-:root{--navy:#0f2a43;--navy2:#1b4468;--ink:#10243a;--mut:#6a7d90;--bg:#d0ecd5;--card:#fff;--ok:#16a06f;--okb:#dcf5ea;--bad:#d64550;--badb:#fde6e8;--amb:#f0a92e;--ambb:#fdf0d5;--line:#dde6ee}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%}
-body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:calc(78px + env(safe-area-inset-bottom))}
-[hidden]{display:none!important}
-.app{max-width:480px;margin:auto}
+<html lang="hi">
 
-/* login */
-#lg{min-height:100vh;background:linear-gradient(165deg,var(--navy) 0%,var(--navy2) 100%);display:flex;flex-direction:column;justify-content:center;padding:24px;color:#fff;margin:0 auto;max-width:480px}
-.logo{width:72px;height:72px;border-radius:22px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:34px;font-weight:800;margin-bottom:18px}
-#lg h1{margin:0 0 4px;font-size:28px}#lg p{margin:0 0 26px;opacity:.75}
-#lg input{width:100%;padding:15px 16px;border-radius:14px;border:2px solid transparent;font-size:17px;margin-bottom:12px;background:#ffffff;color:var(--ink)}
-#lg input:focus{outline:0;border-color:var(--amb)}
-.go{width:100%;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;background:var(--amb);color:#3a2600}
-.err{color:#ffb3b8;font-size:14px;min-height:20px;margin-top:10px}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#060b1a">
+  <title>Shiv Attendance</title>
+  <style>
+    :root {
+      --bg0: #1a2d68; --bg1: #0c1a38; --navy: #0c1a38; --navy2: #14306b;
+      --ink: #eaf2ff; --mut: #8da2c6;
+      --ok: #2de2a6; --bad: #ff5d73; --amb: #ffb83d; --vio: #a596ff; --sky: #4cc3ff;
+      --gl2: rgba(255, 255, 255, .13);
+      --nav: calc(96px + env(safe-area-inset-bottom))
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent }
+    html { background: var(--bg0) }
+    body {
+      margin: 0; min-height: 100vh; min-height: 100dvh; color: var(--ink); background: var(--bg0);
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      padding-bottom: var(--nav); overflow-x: hidden
+    }
+    button, input { font-family: inherit }
+    button { cursor: pointer }
+    [hidden] { display: none !important }
 
-/* hero */
-.hero{background:linear-gradient(165deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;padding:calc(16px + env(safe-area-inset-top)) 20px 96px;border-radius:0 0 34px 34px}
-.hr{display:flex;justify-content:space-between;align-items:center}
-.hr small{opacity:.7;font-size:13px}.hr b{display:block;font-size:20px;margin-top:2px}
-.av{width:44px;height:44px;border-radius:50%;background:var(--amb);color:#3a2600;display:grid;place-items:center;font-weight:800;font-size:18px;border:0}
-.clock{font-size:44px;font-weight:300;margin-top:14px;letter-spacing:1px;font-variant-numeric:tabular-nums}
-.date{opacity:.75;font-size:14px}
+    /* ===== animated 3D background ===== */
+    .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: radial-gradient(120% 80% at 50% 0%, #17387c 0%, var(--bg1) 45%, var(--bg0) 100%) }
+    .orb { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .5; animation: drift 14s ease-in-out infinite alternate; translate: calc(var(--gx, 0) * 1px) calc(var(--gy, 0) * 1px); transition: translate .4s }
+    .o1 { width: 60vmax; height: 60vmax; left: -25vmax; top: -22vmax; background: #12c7a0 }
+    .o2 { width: 55vmax; height: 55vmax; right: -25vmax; top: 18vh; background: #6a4cff; animation-duration: 18s }
+    .o3 { width: 40vmax; height: 40vmax; left: 10vw; bottom: -20vmax; background: #ff9f43; opacity: .28; animation-duration: 22s }
+    .grid {
+      position: absolute; left: -50%; right: -50%; bottom: -8%; height: 50%;
+      background: linear-gradient(rgba(120, 170, 255, .2) 1px, transparent 1px), linear-gradient(90deg, rgba(120, 170, 255, .2) 1px, transparent 1px);
+      background-size: 46px 46px; transform: perspective(520px) rotateX(64deg);
+      -webkit-mask-image: linear-gradient(transparent, #000 75%); mask-image: linear-gradient(transparent, #000 75%);
+      animation: gridmove 3s linear infinite
+    }
+    .load { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50; display: none; overflow: hidden }
+    .load::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; background: linear-gradient(90deg, transparent, var(--ok), var(--sky), transparent); animation: ldb 1s linear infinite }
 
-/* punch */
-.punch{--p:0;--c:#aab8c6;width:210px;height:210px;border-radius:50%;border:0;margin:-78px auto 0;display:grid;place-items:center;position:relative;background:conic-gradient(var(--c) calc(var(--p) * 1%),#d8e2eb 0);box-shadow:0 14px 30px #0f2a4322;cursor:pointer}
-.punch::before{content:"";position:absolute;inset:12px;border-radius:50%;background:#fff}
-.punch .in{position:relative;text-align:center}
-.punch .ic{font-size:44px;line-height:1}.punch .lb{font-size:21px;font-weight:800;margin-top:6px;color:var(--c)}.punch .sb{font-size:12px;color:var(--mut);margin-top:2px}
-.punch.ok{--c:var(--ok)}.punch.amb{--c:#d98a0b}.punch.no{--c:var(--bad)}.punch.done{--c:var(--navy2)}.punch.wait{--c:#c98a1b}.punch.abs{--c:var(--bad)}
-.punch:disabled{cursor:default}
-.punch.ready::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid var(--c);animation:pl 2s ease-out infinite}
-@keyframes pl{from{transform:scale(1);opacity:.7}to{transform:scale(1.22);opacity:0}}
-@media (prefers-reduced-motion:reduce){.punch.ready::after{animation:none}}
+    /* ===== glass ===== */
+    .chip, .mini, .mnav, .cal, .row, .ruled {
+      background: linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .04));
+      border: 15px solid rgba(255, 255, 255, .12); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 12px 24px -12px #000b, inset 0 1px 0 rgba(255, 255, 255, .18)
+    }
 
-.chip{margin:16px 16px 0;background:var(--card);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 10px #0f2a430d}
-.dot{width:12px;height:12px;border-radius:50%;background:#aab8c6;flex:none}.dot.in{background:var(--ok);box-shadow:0 0 0 5px #16a06f26}.dot.out{background:var(--bad);box-shadow:0 0 0 5px #d6455026}
-.chip b{font-size:15px}.chip small{display:block;color:var(--mut);margin-top:2px;font-size:12.5px}
-.msg{margin:10px 16px 0;font-size:14px;min-height:18px;text-align:center}.msg.good{color:var(--ok)}.msg.bad{color:var(--bad)}
+    /* ===== login ===== */
+    #lg { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: calc(20px + env(safe-area-inset-top)) 20px 20px; perspective: 900px }
+    .lcard {
+      width: min(100%, 400px); padding: clamp(22px, 6vw, 34px); border-radius: 30px; color: #fff;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .04));
+      border: 10px solid var(--gl2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 40px 70px -24px #000, 0 0 60px -20px rgba(76, 195, 255, .5), inset 0 1px 0 rgba(255, 255, 255, .28);
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .2s; animation: enter .9s cubic-bezier(.2, .9, .3, 1.15) backwards
+    }
+    .logo {
+      width: 78px; height: 78px; border-radius: 26px; display: grid; place-items: center; margin-bottom: 20px; color: #04281d; position: relative; overflow: hidden;
+      background: linear-gradient(145deg, #5bf5c4, #1bb48a 60%, #12907a); box-shadow: 0 9px 0 #0a6a58, 0 24px 30px -6px rgba(45, 226, 166, .55), inset 0 2px 0 rgba(255, 255, 255, .55);
+      animation: float 4s ease-in-out infinite
+    }
+    .logo::after { content: ""; position: absolute; top: -50%; bottom: -50%; width: 30%; background: rgba(255, 255, 255, .55); transform: skewX(-20deg); animation: shine 3.5s ease-in-out infinite }
+    #lg h1 { margin: 0 0 4px; font-size: clamp(28px, 8vw, 34px); letter-spacing: .3px }
+    #lg p { margin: 0 0 24px; color: var(--mut); font-size: 14.5px }
+    #lg input {
+      width: 100%; height: 56px; padding: 0 16px; border-radius: 16px; font-size: 17px; margin-bottom: 12px; color: #fff;
+      background: rgba(5, 12, 30, .55); border: 2px solid rgba(255, 255, 255, .1); box-shadow: inset 0 3px 8px rgba(0, 0, 0, .4); transition: .2s
+    }
+    #lg input::placeholder { color: #6f86ad }
+    #lg input:focus { outline: 0; border-color: var(--sky); box-shadow: inset 0 3px 8px rgba(0, 0, 0, .4), 0 0 0 4px rgba(76, 195, 255, .22) }
+    .go {
+      width: 100%; border: 0; border-radius: 16px; padding: 17px; font-size: 17px; font-weight: 800; color: #3a2100; position: relative; overflow: hidden; margin-top: 4px;
+      background: linear-gradient(180deg, #ffd06a, #ffa81f); box-shadow: 0 7px 0 #b46a00, 0 18px 26px -8px rgba(255, 170, 0, .5), inset 0 2px 0 rgba(255, 255, 255, .6); transition: transform .12s, box-shadow .12s
+    }
+    .go::after { content: ""; position: absolute; top: 0; bottom: 0; width: 28%; background: rgba(255, 255, 255, .5); transform: skewX(-20deg); animation: shine 3s ease-in-out infinite .6s }
+    .go:active { transform: translateY(5px); box-shadow: 0 2px 0 #b46a00, 0 8px 14px -6px rgba(255, 170, 0, .5), inset 0 2px 0 rgba(255, 255, 255, .6) }
+    .go:disabled { opacity: .7 }
+    .err { color: #ff9aa8; font-size: 14px; min-height: 20px; margin-top: 12px }
 
-.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 16px 0}
-.mini{background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;box-shadow:0 2px 10px #0f2a430d}
-.mini small{color:var(--mut);font-size:12px}.mini b{display:block;font-size:18px;margin-top:3px}
-.sec{margin:18px 16px 0}.sec h3{margin:0 0 10px;font-size:16px}
+    /* ===== app shell ===== */
+    .app { max-width: 540px; margin: auto; min-height: calc(100vh - var(--nav)); min-height: calc(100dvh - var(--nav)); display: flex; flex-direction: column }
+    #vHome, #vRep { animation: view .5s cubic-bezier(.2, .8, .2, 1) backwards }
+    #vHome { flex: 1; display: flex; flex-direction: column }
+    .hero { padding: calc(14px + env(safe-area-inset-top)) 20px 4px }
+    .hr { display: flex; justify-content: space-between; align-items: center; gap: 12px }
+    .hr small { color: var(--mut); font-size: 13px }
+    .hr b { display: block; font-size: clamp(19px, 5.6vw, 25px); margin: 2px 0; letter-spacing: .2px }
+    .av {
+      width: 48px; height: 48px; flex: none; border-radius: 50%; border: 0; display: grid; place-items: center; font-weight: 800; font-size: 19px; color: #3a2100;
+      background: linear-gradient(145deg, #ffd47a, #ff9a1f); box-shadow: 0 5px 0 #a45f00, 0 12px 18px -4px #000a, inset 0 2px 0 rgba(255, 255, 255, .6); transition: .12s
+    }
+    .av:active { transform: translateY(4px); box-shadow: 0 1px 0 #a45f00, 0 4px 8px -2px #000a }
+    .clock { font-size: clamp(40px, 13vw, 60px); font-weight: 200; letter-spacing: 2px; margin-top: 8px; font-variant-numeric: tabular-nums; line-height: 1.1; background: linear-gradient(180deg, #fff 30%, #8fb8ff); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 16px rgba(76, 195, 255, .35)) }
+    .date { color: var(--mut); font-size: 14px; margin-top: 2px }
 
-/* report */
-.mnav{display:flex;align-items:center;justify-content:space-between;margin:16px 16px 0;background:var(--card);border-radius:16px;padding:6px;box-shadow:0 2px 10px #0f2a430d}
-.mnav button{width:44px;height:44px;border:0;background:#eef3f8;border-radius:12px;font-size:20px;color:var(--navy)}.mnav button:disabled{opacity:.35}
-.mnav b{font-size:17px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 16px 0}
-.st{border-radius:16px;padding:14px}.st small{font-size:12.5px;opacity:.8}.st b{display:block;font-size:26px;margin-top:2px}
-.st.p{background:var(--okb);color:#0b6b49}.st.a{background:var(--badb);color:#9a2630}.st.h{background:#e3ecf8;color:#1d4a85}.st.r{background:var(--ambb);color:#8a5a00}.st.l{background:#ffe8cc;color:#9a4a00}.st.o{background:#e0ecff;color:#1d4a85}
-.cal{background:var(--card);border-radius:18px;padding:12px;margin:12px 16px 0;box-shadow:0 2px 10px #0f2a430d}
-.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
-.cg .wd{font-size:12px;color:var(--mut);padding-bottom:4px}
-.cd{aspect-ratio:1;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:600;background:#f2f6fa;color:var(--mut)}
-.cd.p{background:var(--ok);color:#fff}.cd.l{background:#f6d58a;color:#7a5200}.cd.o{background:#9cc3f3;color:#123a6b}.cd.h{background:#c9b8f5;color:#3b2a85}.cd.a{background:var(--badb);color:var(--bad)}.cd.off{background:#e8edf2;color:#9aa8b6}.cd.t{outline:2px solid var(--navy);outline-offset:1px}
-.leg{display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:10px;font-size:12px;color:var(--mut)}.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.row{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:0 2px 10px #0f2a430d}
-.row b{font-size:15px}.row small{display:block;color:var(--mut);font-size:12px;margin-top:2px}.row .t{text-align:right;font-size:14px}
-.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 16px 0}
-.ab{border:0;border-radius:14px;padding:14px;font-weight:700;font-size:15px;background:var(--navy);color:#fff}.ab.g{background:#fff;color:var(--navy);box-shadow:0 2px 10px #0f2a430d}
-.empty{text-align:center;color:var(--mut);padding:18px;font-size:14px}
+    /* ===== 3D punch button ===== */
+    .stagewrap { flex: 1; display: grid; place-items: center; min-height: 190px; padding: 14px 0 22px }
+    .stage { perspective: 800px; position: relative; animation: float 5s ease-in-out infinite }
+    .stage::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: -26px; height: 20px; border-radius: 50%; background: radial-gradient(#000c, transparent 70%); filter: blur(5px); animation: gshadow 5s ease-in-out infinite }
+    .punch {
+      --p: 0; --c: #8aa0c8; --c2: #3d4f78; --g: rgba(138, 160, 200, .35); --sz: clamp(160px, min(56vw, 30dvh), 250px);
+      width: var(--sz); height: var(--sz); border: 0; padding: 0; border-radius: 50%; position: relative; display: grid; place-items: center; color: #fff; transform-style: preserve-3d;
+      background: conic-gradient(var(--c) calc(var(--p) * 1%), rgba(255, 255, 255, .12) 0);
+      box-shadow: 0 12px 0 rgba(0, 0, 0, .4), 0 30px 46px -8px var(--g), inset 0 2px 0 rgba(255, 255, 255, .35);
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1)); transition: transform .15s, box-shadow .2s
+    }
+    .punch::before {
+      content: ""; position: absolute; inset: calc(var(--sz) * .075); border-radius: 50%;
+      background: radial-gradient(circle at 34% 22%, rgba(255, 255, 255, .34), transparent 38%), radial-gradient(circle at 50% 58%, var(--c2), #0a1226 96%);
+      box-shadow: inset 0 -14px 26px rgba(0, 0, 0, .55), inset 0 8px 16px rgba(255, 255, 255, .16), 0 0 0 4px rgba(0, 0, 0, .3)
+    }
+    .punch .in { position: relative; z-index: 1; text-align: center; padding: 0 12px; transform: translateZ(30px) }
+    .punch .ic { font-size: calc(var(--sz) * .22); line-height: 1; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .5)) }
+    .punch .lb { font-size: calc(var(--sz) * .095); font-weight: 800; margin-top: 6px; color: #fff; text-shadow: 0 0 14px var(--c), 0 2px 4px rgba(0, 0, 0, .5) }
+    .punch .sb { font-size: clamp(10.5px, calc(var(--sz) * .05), 13px); color: rgba(255, 255, 255, .75); margin-top: 3px; line-height: 1.25 }
+    .punch:not(:disabled):active { --s: .95; box-shadow: 0 4px 0 rgba(0, 0, 0, .4), 0 14px 26px -8px var(--g), inset 0 2px 0 rgba(255, 255, 255, .35) }
+    .punch:disabled { cursor: default }
+    .punch.ok { --c: #2de2a6; --c2: #0f7a60; --g: rgba(45, 226, 166, .55) }
+    .punch.amb, .punch.wait { --c: #ffb83d; --c2: #86550a; --g: rgba(255, 184, 61, .5) }
+    .punch.no, .punch.abs { --c: #ff5d73; --c2: #7d1c30; --g: rgba(255, 93, 115, .5) }
+    .punch.done { --c: #4cc3ff; --c2: #17578a; --g: rgba(76, 195, 255, .5) }
+    .punch.ready { animation: glowp 2s ease-in-out infinite }
+    .punch.ready::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--c); animation: pl 2s ease-out infinite }
+    .rip { position: absolute; inset: 0; border-radius: 50%; border: 4px solid var(--c); pointer-events: none; animation: rip .7s ease-out forwards }
 
-.rule{margin:12px 16px 0;padding:10px 12px;border-radius:12px;background:#fff4d6;color:#7a5200;font-size:12.5px;line-height:1.5}
-/* nav */
-.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom));display:flex;gap:10px;max-width:480px;margin:auto}
-.nav button{flex:1;border:0;background:none;padding:8px;border-radius:14px;color:var(--mut);font-weight:600;font-size:13px}
-.nav button span{display:block;font-size:22px}.nav button.on{background:#e7eef6;color:var(--navy)}
-.load{position:fixed;top:0;left:0;right:0;height:3px;background:var(--amb);z-index:50;display:none}
-.phead{display:none}
-@media print{body{background:#fff;padding:0}.hero,.nav,.punch,.chip,.msg,.three,.acts,.mnav button,#vHome,.load{display:none!important}.phead{display:block;padding:10px 16px}.app{max-width:none}.cal,.st,.row{box-shadow:none;border:1px solid #ccd}}
-</style></head><body>
-<div class="load" id="ld"></div>
+    .msg { margin: 6px 16px 0; font-size: 14px; min-height: 18px; text-align: center; color: var(--mut) }
+    .msg.good { color: var(--ok); animation: pop .4s }
+    .msg.bad { color: #ff8fa0; animation: pop .4s }
+    .ruled { margin: 10px 16px 0; padding: 10px 14px; border-radius: 16px }
+    .ruled summary { list-style: none; font-size: 13px; font-weight: 700; color: var(--amb); display: flex; justify-content: space-between; align-items: center }
+    .ruled summary::-webkit-details-marker { display: none }
+    .ruled summary::after { content: "\25BE"; transition: transform .25s }
+    .ruled[open] summary::after { transform: rotate(180deg) }
+    #rule { font-size: 12.5px; line-height: 1.55; color: #c7d8f5; margin-top: 8px }
+    .chip { margin: 10px 16px 0; border-radius: 18px; padding: 12px 14px; display: flex; gap: 13px; align-items: center }
+    .dot { width: 13px; height: 13px; border-radius: 50%; background: #7d90b3; flex: none }
+    .dot.in { background: var(--ok); box-shadow: 0 0 0 5px rgba(45, 226, 166, .2), 0 0 14px var(--ok); animation: beat 1.6s ease-in-out infinite }
+    .dot.out { background: var(--bad); box-shadow: 0 0 0 5px rgba(255, 93, 115, .2), 0 0 14px var(--bad) }
+    .chip b { font-size: 15px }
+    .chip small { display: block; color: var(--mut); margin-top: 2px; font-size: 12.5px }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 16px 0 }
+    .mini { border-radius: 18px; padding: 12px 6px; text-align: center; transform: perspective(600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .2s }
+    .mini small { color: var(--mut); font-size: 12px }
+    .mini b { display: block; font-size: clamp(16px, 4.6vw, 19px); margin-top: 3px }
+    .sec { margin: 14px 16px 0 }
+    .sec h3 { margin: 0 0 10px; font-size: 15px; color: #cfe0ff }
 
-<div id="lg">
- <div class="logo">&#10003;</div><h1>Attendance</h1><p>Mobile number aur User ID se login karein</p>
- <input id="m" type="tel" inputmode="numeric" maxlength="10" placeholder="Mobile number" autocomplete="off">
- <input id="u" placeholder="User ID" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')login()">
- <button class="go" id="lb" onclick="login()">Login</button><div class="err" id="lm"></div>
-</div>
+    /* ===== report ===== */
+    .mnav { display: flex; align-items: center; justify-content: space-between; margin: 12px 16px 0; border-radius: 20px; padding: 6px }
+    .mnav button { width: 46px; height: 46px; border: 0; border-radius: 14px; font-size: 24px; color: #fff; background: linear-gradient(160deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .06)); box-shadow: 0 4px 0 rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .25); transition: .12s }
+    .mnav button:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, .3) }
+    .mnav button:disabled { opacity: .3 }
+    .mnav b { font-size: 17px }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 14px 16px 0 }
+    .st { border-radius: 18px; padding: 14px; border: 1px solid rgba(255, 255, 255, .1); background: linear-gradient(160deg, var(--t1), var(--t2)); box-shadow: 0 5px 0 rgba(0, 0, 0, .3), 0 16px 24px -12px var(--t1), inset 0 1px 0 rgba(255, 255, 255, .2); transform: perspective(600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .2s }
+    .st small { font-size: 12.5px; color: var(--ac) }
+    .st b { display: block; font-size: 28px; margin-top: 2px; color: #fff }
+    .st.p { --t1: rgba(45, 226, 166, .38); --t2: rgba(45, 226, 166, .08); --ac: #8ff5d2 }
+    .st.a { --t1: rgba(255, 93, 115, .38); --t2: rgba(255, 93, 115, .08); --ac: #ffa3b0 }
+    .st.h { --t1: rgba(76, 195, 255, .38); --t2: rgba(76, 195, 255, .08); --ac: #a3dfff }
+    .st.r { --t1: rgba(255, 184, 61, .38); --t2: rgba(255, 184, 61, .08); --ac: #ffd88f }
+    .st.l { --t1: rgba(255, 140, 60, .38); --t2: rgba(255, 140, 60, .08); --ac: #ffbb8a }
+    .st.o { --t1: rgba(110, 140, 255, .38); --t2: rgba(110, 140, 255, .08); --ac: #b9c8ff }
+    .cal { border-radius: 22px; padding: 14px; margin: 14px 16px 0 }
+    .cg { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; text-align: center }
+    .cg .wd { font-size: 12px; color: var(--mut); padding-bottom: 4px }
+    .cd { aspect-ratio: 1; border-radius: 12px; display: grid; place-items: center; font-size: clamp(12px, 3.7vw, 15px); font-weight: 700; background: rgba(255, 255, 255, .07); color: var(--mut); box-shadow: 0 3px 0 rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .1); animation: pop .45s backwards }
+    .cg>:nth-child(7n+2) { animation-delay: .03s } .cg>:nth-child(7n+3) { animation-delay: .06s } .cg>:nth-child(7n+4) { animation-delay: .09s }
+    .cg>:nth-child(7n+5) { animation-delay: .12s } .cg>:nth-child(7n+6) { animation-delay: .15s } .cg>:nth-child(7n) { animation-delay: .18s }
+    .cd.p { background: linear-gradient(160deg, #3ef2b6, #14a67a); color: #03281c; box-shadow: 0 3px 0 #0a6a50, 0 8px 14px -6px rgba(45, 226, 166, .7), inset 0 1px 0 rgba(255, 255, 255, .4) }
+    .cd.l { background: linear-gradient(160deg, #ffd27a, #f0a020); color: #4a2f00; box-shadow: 0 3px 0 #a86a0a, inset 0 1px 0 rgba(255, 255, 255, .4) }
+    .cd.o { background: linear-gradient(160deg, #94d6ff, #3c9be6); color: #06284a; box-shadow: 0 3px 0 #1f64a3, inset 0 1px 0 rgba(255, 255, 255, .4) }
+    .cd.h { background: linear-gradient(160deg, #c9c0ff, #8171ee); color: #1d1250; box-shadow: 0 3px 0 #4f40b0, inset 0 1px 0 rgba(255, 255, 255, .4) }
+    .cd.a { background: linear-gradient(160deg, #ff8d9d, #e0415a); color: #fff; box-shadow: 0 3px 0 #8f1e33, inset 0 1px 0 rgba(255, 255, 255, .35) }
+    .cd.off { background: rgba(255, 255, 255, .03); color: #566a92; box-shadow: none }
+    .cd.t { outline: 2px solid #fff; outline-offset: 2px; animation: pop .45s backwards, tod 1.8s ease-in-out infinite }
+    .leg { display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; margin-top: 12px; font-size: 12px; color: var(--mut) }
+    .leg i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; border-radius: 16px; padding: 12px 14px; margin-bottom: 9px; animation: rise .45s backwards }
+    .row:nth-child(2) { animation-delay: .05s } .row:nth-child(3) { animation-delay: .1s } .row:nth-child(4) { animation-delay: .15s } .row:nth-child(n+5) { animation-delay: .2s }
+    .row b { font-size: 15px }
+    .row small { display: block; color: var(--mut); font-size: 12px; margin-top: 2px }
+    .row .t { text-align: right; font-size: 14px }
+    .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 16px 0 }
+    .ab { border: 0; border-radius: 16px; padding: 15px; font-weight: 800; font-size: 15px; color: #04243a; background: linear-gradient(180deg, #7fd6ff, #3ba7ee); box-shadow: 0 6px 0 #1b6aa6, 0 14px 22px -8px rgba(76, 195, 255, .5), inset 0 2px 0 rgba(255, 255, 255, .5); transition: .12s }
+    .ab.g { color: #fff; background: linear-gradient(160deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .06)); box-shadow: 0 6px 0 rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .25) }
+    .ab:active { transform: translateY(5px); box-shadow: 0 1px 0 #1b6aa6 }
+    .ab.g:active { box-shadow: 0 1px 0 rgba(0, 0, 0, .35) }
+    .empty { text-align: center; color: var(--mut); padding: 18px; font-size: 14px }
 
-<div class="app" id="hm" hidden>
- <!-- HOME -->
- <div id="vHome">
-  <div class="hero"><div class="hr"><div><small id="gr">Namaste</small><b id="nm"></b><small id="org"></small></div><button class="av" id="av" onclick="if(confirm('Logout karein?'))logout()"></button></div>
-   <div class="clock" id="ck">--:--:--</div><div class="date" id="dt"></div></div>
-  <button class="punch" id="pn" disabled onclick="punch()"><div class="in"><div class="ic" id="pi">&#128205;</div><div class="lb" id="pl">Location...</div><div class="sb" id="ps"></div></div></button>
-  <div class="msg" id="mg"></div>
-  <div class="rule" id="rule"></div>
-  <div class="chip"><span class="dot" id="dot"></span><div><b id="zs">Location dhoondh rahe hain...</b><small id="zd"></small></div></div>
-  <div class="three"><div class="mini"><small>Check In</small><b id="ti">--:--</b></div><div class="mini"><small>Check Out</small><b id="to">--:--</b></div><div class="mini"><small>Kaam ke ghante</small><b id="th">-</b></div></div>
-  <div class="sec"><h3>Is mahine ka sar</h3><div class="stats" style="margin:0"><div class="st p"><small>Present</small><b id="hp">0</b></div><div class="st a"><small>Absent</small><b id="ha">0</b></div></div></div>
- </div>
+    /* ===== floating nav ===== */
+    .nav {
+      position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom)); width: min(calc(100% - 28px), 420px); transform: translateX(-50%); z-index: 20;
+      display: flex; gap: 6px; padding: 7px; border-radius: 26px; background: rgba(12, 24, 54, .75); border: 1px solid rgba(255, 255, 255, .14);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 18px 36px -10px #000d, inset 0 1px 0 rgba(255, 255, 255, .2)
+    }
+    .nav button { flex: 1; border: 0; background: none; color: var(--mut); padding: 9px 6px 8px; border-radius: 20px; font-weight: 700; font-size: 12.5px; transition: .25s }
+    .nav svg { display: block; margin: 0 auto 3px; width: 24px; height: 24px; transition: .25s }
+    .nav button.on { color: #fff; background: linear-gradient(160deg, rgba(76, 195, 255, .38), rgba(45, 226, 166, .22)); box-shadow: 0 4px 0 rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .3) }
+    .nav button.on svg { transform: translateY(-2px) scale(1.12); filter: drop-shadow(0 4px 6px rgba(76, 195, 255, .7)) }
+    .phead { display: none }
 
- <!-- REPORT -->
- <div id="vRep" hidden>
-  <div class="hero" style="padding-bottom:36px"><div class="hr"><div><small>Meri report</small><b id="rn"></b></div></div></div>
-  <div class="phead"><h2 id="pt" style="margin:0"></h2></div>
-  <div class="mnav"><button id="pm" onclick="mv(-1)">&#8249;</button><b id="mt"></b><button id="nx" onclick="mv(1)">&#8250;</button></div>
-  <div class="stats"><div class="st p"><small>Present</small><b id="rp">0</b></div><div class="st a"><small>Absent</small><b id="ra">0</b></div>
-   <div class="st l"><small>Leave (CL / ML)</small><b id="rl2">0</b></div><div class="st o"><small>Office work</small><b id="ro">0</b></div>
-   <div class="st h"><small>Kul ghante</small><b id="rh">0h</b></div><div class="st r"><small>Attendance %</small><b id="rr">0%</b></div></div>
-  <div class="cal"><div class="cg" id="cg"></div>
-   <div class="leg"><span><i style="background:var(--ok)"></i>Present</span><span><i style="background:#f3b9be"></i>Absent</span><span><i style="background:#f6d58a"></i>Leave</span><span><i style="background:#9cc3f3"></i>Office work</span><span><i style="background:#c9b8f5"></i>Chhutti</span><span><i style="background:#d5dde6"></i>Ravivar</span></div></div>
-  <div class="acts"><button class="ab" onclick="print()">Print / PDF</button><button class="ab g" onclick="csv()">CSV download</button></div>
-  <div class="sec"><h3>Din-wise record</h3><div id="rl"></div></div>
- </div>
+    /* ===== keyframes ===== */
+    @keyframes drift { to { transform: translate(8vw, 6vh) scale(1.15) } }
+    @keyframes gridmove { to { background-position: 0 46px } }
+    @keyframes ldb { from { left: -40% } to { left: 100% } }
+    @keyframes enter { from { opacity: 0; transform: translateY(50px) rotateX(28deg) scale(.9) } }
+    @keyframes view { from { opacity: 0; transform: translateY(20px) scale(.98) } }
+    @keyframes float { 50% { transform: translateY(-9px) } }
+    @keyframes gshadow { 50% { transform: scale(.82); opacity: .6 } }
+    @keyframes shine { 0%, 55% { left: -40% } 100% { left: 130% } }
+    @keyframes pl { from { transform: scale(1); opacity: .7 } to { transform: scale(1.25); opacity: 0 } }
+    @keyframes glowp { 50% { filter: brightness(1.12) } }
+    @keyframes rip { from { transform: scale(1); opacity: .9 } to { transform: scale(1.5); opacity: 0 } }
+    @keyframes beat { 50% { transform: scale(1.25) } }
+    @keyframes pop { from { opacity: 0; transform: scale(.7) } }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px) } }
+    @keyframes tod { 50% { outline-color: var(--sky) } }
+    @media (max-height:640px) { .clock { font-size: 38px } .punch { --sz: clamp(140px, min(50vw, 28dvh), 200px) } .stagewrap { padding: 8px 0 16px } }
+    @media (prefers-reduced-motion:reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
 
- <div class="nav"><button id="n1" class="on" onclick="tab('Home')"><span>&#127968;</span>Aaj</button><button id="n2" onclick="tab('Rep')"><span>&#128197;</span>Meri report</button></div>
-</div>
+    @media print {
+      :root { --ink: #000; --mut: #555 }
+      body { background: #fff; color: #000; padding: 0 }
+      .bg, .hero, .nav, .punch, .chip, .msg, .three, .acts, .mnav button, #vHome, .load { display: none !important }
+      .phead { display: block; padding: 10px 16px }
+      .app { max-width: none }
+      * { animation: none !important; backdrop-filter: none !important }
+      .cal, .st, .row, .mnav { background: #fff; box-shadow: none; border: 1px solid #ccd }
+      .st b, .st small { color: #000 }
+      .cd { box-shadow: none; border: 1px solid #ccd; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+    }
+  </style>
+</head>
 
-<script>
-/* ====== APNA APPS SCRIPT URL ====== */
-const API_URL="https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm9c7Qx8mq1fQwTEIeWw4mxNOFQwaaKhnqoU5radUJi3/exec";
-const MAX_ACC=60,$=i=>document.getElementById(i);
-const iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
-let S=null,cfg=null,pos=null,rec=null,busy=false,TODAYHOL="",rm=new Date(),rrows=[],monthRows=[];rm.setDate(1);
-const gc=n=>{const m=document.cookie.match(new RegExp("(?:^|; )"+n+"=([^;]*)"));return m?decodeURIComponent(m[1]):""};
-let DEV=localStorage.getItem("att_dev")||gc("att_dev");
-if(!DEV||DEV.length<16)DEV=(window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2)+"xxxx");
-try{localStorage.setItem("att_dev",DEV)}catch(e){}
-document.cookie="att_dev="+encodeURIComponent(DEV)+";max-age=315360000;path=/;SameSite=Lax"+(location.protocol==="https:"?";Secure":"");
-const api=async b=>{$("ld").style.display="block";try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),25000);const r=await fetch(API_URL,{method:"POST",body:JSON.stringify({...b,device:DEV}),signal:ac.signal});clearTimeout(tm);return await r.json()}catch(e){return{ok:false,msg:"Network error, internet check karein"}}finally{$("ld").style.display="none"}};
-const cred=()=>({mobile:S.m,userId:S.u});
-const hav=(a,b,c,d)=>{const R=6371000,r=x=>x*Math.PI/180,dl=r(c-a),dn=r(d-b),h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
-const mins=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
-const fh=m=>m?Math.floor(m/60)+"h "+String(m%60).padStart(2,"0")+"m":"-";
-const dmy=s=>s.split("-").reverse().join("-");
+<body>
+  <div class="bg"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><div class="grid"></div></div>
+  <div class="load" id="ld"></div>
 
-async function login(){const m=$("m").value.trim(),u=$("u").value.trim(),e=$("lm");e.textContent="";
- if(!/^\d{10}$/.test(m)||!u){e.textContent="Mobile (10 digit) aur User ID dalein";return}
- $("lb").disabled=true;$("lb").textContent="Ruko...";const r=await api({a:"login",mobile:m,userId:u});$("lb").disabled=false;$("lb").textContent="Login";
- if(!r.ok){e.textContent=r.msg;return}if(!r.deviceLock){e.textContent="Server purana hai (phone lock band). Admin se Apps Script mein New version Deploy karwayein";return}localStorage.setItem("att_me",JSON.stringify({m,u}));start({m,u},r)}
-function logout(){localStorage.removeItem("att_me");location.reload()}
-async function start(s,r){S=s;cfg=r;$("lg").hidden=true;$("hm").hidden=false;
- $("nm").textContent=r.name;$("rn").textContent=r.name;$("rule").textContent="Niyam: Check In aur Check Out din mein sirf ek-ek baar. Check Out, Check In ke "+((r.minStay||120)/60)+" ghante baad. Shaam "+(r.autoTime||"20:00")+" tak Check Out na hua to auto-out hoga aur us din Absent maana jayega.";$("org").textContent=r.org||"";$("av").textContent=(r.name||"?").trim()[0].toUpperCase();
- const h=new Date().getHours();$("gr").textContent=h<12?"Suprabhat":h<17?"Namaste":"Shubh sandhya";
- const cs=JSON.parse(localStorage.getItem("att_rec")||"null");if(cs&&cs.m===S.m&&cs.date===iso(new Date())&&cs.rec)rec={...cs.rec,cached:1};
- clock();setInterval(clock,1000);await load();
- if(!navigator.geolocation){$("zs").textContent="GPS support nahi hai";return}
- navigator.geolocation.watchPosition(p=>{pos=p;upd()},er=>{$("zs").textContent=er.code===1?"Location permission band hai":"Location nahi mil rahi";$("zd").textContent="Phone ki Location on karke Allow dein";$("dot").className="dot out";setP("no","&#128683;","Band","")},{enableHighAccuracy:true,maximumAge:0,timeout:20000})}
-function clock(){if(new Date().getSeconds()===0&&cfg)upd();const d=new Date();$("ck").textContent=d.toLocaleTimeString("en-GB");$("dt").textContent=d.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
-function tab(t){$("vHome").hidden=t!=="Home";$("vRep").hidden=t!=="Rep";$("n1").classList.toggle("on",t==="Home");$("n2").classList.toggle("on",t==="Rep");scrollTo(0,0);if(t==="Rep")report()}
+  <div id="lg">
+    <div class="lcard" data-tilt="8">
+      <div class="logo"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></div>
+      <h1>Attendance</h1>
+      <p>Mobile number aur User ID se login karein</p>
+      <input id="m" type="tel" inputmode="numeric" maxlength="10" placeholder="Mobile number" autocomplete="off">
+      <input id="u" placeholder="User ID" autocapitalize="off" autocomplete="off" onkeydown="if(event.key==='Enter')login()">
+      <button class="go" id="lb" onclick="login()">Login</button>
+      <div class="err" id="lm"></div>
+    </div>
+  </div>
 
-function setP(c,ic,lb,sb,p,ready,dis=true){const b=$("pn");b.className="punch "+c+(ready?" ready":"");b.style.setProperty("--p",p||0);b.disabled=dis;$("pi").innerHTML=ic;$("pl").textContent=lb;$("ps").textContent=sb||""}
-const AD={FULL:["&#9989;","Full day","Admin ne Full day mark kiya","Full day"],CL:["&#127796;","Casual Leave","Admin ne CL mark kiya","CL"],ML:["&#127973;","Medical Leave","Admin ne ML mark kiya","ML"],OW:["&#128188;","Office Work","Admin ne Office Work mark kiya","Office work"]};
-const MIN=()=>cfg.minStay||120,AUTO=()=>cfg.autoTime||"20:00";
-const toMin=s=>{const p=String(s).split(":");return p[0]*60+ +p[1]},nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
-const remain=()=>rec&&rec.inTime?Math.max(MIN()-(nowMin()-toMin(rec.inTime)),0):0;
-function upd(){if(!cfg)return;let d=0,acc=0,inn=false,ok=false,p=0;
- if(pos){d=Math.round(hav(pos.coords.latitude,pos.coords.longitude,cfg.lat,cfg.lng));acc=Math.round(pos.coords.accuracy);inn=d<=cfg.radius;ok=acc<=MAX_ACC;p=Math.min(100,cfg.radius/Math.max(d,cfg.radius)*100);
-  $("dot").className="dot "+(inn&&ok?"in":"out");$("zs").textContent=!ok?"GPS signal kamzor hai":inn?"Aap office ke andar hain":"Aap office se bahar hain";
-  $("zd").textContent=`Doori ${d} m  \u2022  Limit ${cfg.radius} m  \u2022  GPS \u00b1${acc} m`}
- if(!loaded&&!rec){setP("idle","&#8987;","Ruko...","Status load ho raha hai",0,false);return}
- const ST=rec&&rec.status;
- if(ST&&AD[ST]&&!(ST==="FULL"&&rec.inTime&&!rec.outTime)){setP("done",AD[ST][0],AD[ST][1],AD[ST][2],100,false);return}
- if(!rec&&TODAYHOL){setP("done","&#127881;","Chhutti",TODAYHOL,100,false);return}
- if(rec&&rec.status==="AUTO"){setP("abs","&#9940;","Absent","Auto out "+AUTO()+" - aaj absent",100,false);return}
- if(rec&&rec.outTime){setP("done","&#9989;","Poora hua","Aaj ka kaam: "+fh(mins(rec.inTime,rec.outTime)),100,false);return}
- if(busy||!pos)return;
- const far=()=>setP("no","&#128205;",inn?"Wait":"Door hain",!ok?"GPS kamzor":(d-cfg.radius)+" m aur paas aayein",p,false),can=inn&&ok;
- if(!rec){if(nowMin()>=toMin(AUTO()))setP("no","&#128339;","Samay samapt","Check In "+AUTO()+" tak",100,false);
-  else can?setP("ok","&#128073;","Check In","Ek baar dabayein",p,true,false):far()}
- else{const rem=remain();if(rem>0)setP("wait","&#9203;","Check Out",fh(rem)+" baad khulega",p,false);
-  else can?setP("amb","&#128170;","Check Out","In: "+rec.inTime,p,true,false):far()}}
-function punch(){mark(rec?"out":"in")}
-async function mark(t){if(busy||!pos||!loaded)return;
- if(t==="in"&&rec)return;if(t==="out"&&(!rec||rec.outTime||remain()>0))return;
- if(t==="out"&&!confirm("Check Out karein?\nAaj ke liye Check Out sirf ek baar hota hai."))return;
- busy=true;$("pn").disabled=true;$("pl").textContent="Ruko...";const mg=$("mg");mg.className="msg";mg.textContent="Location jaanch rahe hain...";
- const p=await new Promise(r=>navigator.geolocation.getCurrentPosition(r,()=>r(null),{enableHighAccuracy:true,maximumAge:0,timeout:15000}));
- if(!p){mg.className="msg bad";mg.textContent="Location nahi mili, dobara try karein";busy=false;upd();return}
- const r=await api({a:"mark",type:t,...cred(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy});
- mg.className="msg "+(r.ok?"good":"bad");mg.textContent=r.ok?(t==="in"?"Check In":"Check Out")+" ho gaya: "+r.time+" ("+r.dist+" m)":r.msg;
- if(r.ok){const dt=iso(new Date());rec=t==="in"?{date:dt,inTime:r.time,outTime:"",status:"",local:1}:{...(rec||{date:dt}),outTime:r.time,local:1}}
- await load();busy=false;upd()}
+  <div class="app" id="hm" hidden>
+    <!-- HOME -->
+    <div id="vHome">
+      <div class="hero">
+        <div class="hr">
+          <div><small id="gr">Namaste</small><b id="nm"></b><small id="org"></small></div>
+          <button class="av" id="av" onclick="if(confirm('Logout karein?'))logout()"></button>
+        </div>
+        <div class="clock" id="ck">--:--:--</div>
+        <div class="date" id="dt"></div>
+      </div>
+      <div class="stagewrap">
+        <div class="stage">
+          <button class="punch" id="pn" disabled onclick="punch()">
+            <div class="in">
+              <div class="ic" id="pi">&#128205;</div>
+              <div class="lb" id="pl">Location...</div>
+              <div class="sb" id="ps"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="msg" id="mg"></div>
+      <details class="ruled"><summary>Niyam dekhein</summary><div id="rule"></div></details>
+      <div class="chip"><span class="dot" id="dot"></span>
+        <div><b id="zs">Location dhoondh rahe hain...</b><small id="zd"></small></div>
+      </div>
+      <div class="three">
+        <div class="mini" data-tilt="14"><small>Check In</small><b id="ti">--:--</b></div>
+        <div class="mini" data-tilt="14"><small>Check Out</small><b id="to">--:--</b></div>
+        <div class="mini" data-tilt="14"><small>Kaam ke ghante</small><b id="th">-</b></div>
+      </div>
+      <div class="sec">
+        <h3>Is mahine ka sar</h3>
+        <div class="stats" style="margin:0">
+          <div class="st p" data-tilt="10"><small>Present</small><b id="hp">0</b></div>
+          <div class="st a" data-tilt="10"><small>Absent</small><b id="ha">0</b></div>
+        </div>
+      </div>
+    </div>
 
-let loaded=false,retrying=false;
-async function load(){let r=await api({a:"history",...cred()});if(!r.ok&&/Network/.test(r.msg))r=await api({a:"history",...cred()});
- if(!r.ok){if(/band|galat|juda/.test(r.msg)){logout();return}
-  $("mg").className="msg bad";$("mg").textContent="Server se jaankari nahi mili, dobara koshish ho rahi hai...";
-  if(!retrying){retrying=true;setTimeout(async()=>{retrying=false;await load();upd()},5000)}upd();return}
- loaded=true;if(/koshish/.test($("mg").textContent))$("mg").textContent="";
- const t=r.today,ym=t.slice(0,7);TODAYHOL=r.todayHoliday||"";rec=r.list.find(x=>x.date===t)||(rec&&rec.local&&rec.date===t?rec:null);
- const ST=rec&&rec.status,au=ST==="AUTO",adm=!!ST&&!!AD[ST]&&!(ST==="FULL"&&rec.inTime);
- rec?localStorage.setItem("att_rec",JSON.stringify({m:S.m,date:t,rec:{...rec,local:0,cached:0}})):localStorage.removeItem("att_rec");
- $("ti").textContent=rec?.inTime||"--:--";$("to").textContent=rec?.outTime?(au?"Auto "+rec.outTime:rec.outTime):"--:--";
- $("th").textContent=au?"Absent":adm?AD[ST][3]:rec?.outTime?fh(mins(rec.inTime,rec.outTime)):"-";
- const hs={},mp={};(r.hol||[]).forEach(h=>hs[h.date]=1);r.list.filter(x=>x.date.startsWith(ym)).forEach(x=>mp[x.date]=x);
- const dayN=+t.slice(8),late=(r.now||"")>=AUTO();let pc=0,ac=0;
- for(let i=1;i<=dayN;i++){const ds=ym+"-"+String(i).padStart(2,"0"),x=mp[ds],dw=new Date(+ym.slice(0,4),+ym.slice(5,7)-1,i).getDay();
-  if(x){if(!x.status||x.status==="FULL"||x.status==="OW")pc++;else if(x.status==="AUTO")ac++}
-  else if(!hs[ds]&&dw!==0&&(ds<t||late))ac++}
- $("hp").textContent=pc;$("ha").textContent=ac}
+    <!-- REPORT -->
+    <div id="vRep" hidden>
+      <div class="hero">
+        <div class="hr">
+          <div><small>Meri report</small><b id="rn"></b></div>
+        </div>
+      </div>
+      <div class="phead">
+        <h2 id="pt" style="margin:0"></h2>
+      </div>
+      <div class="mnav"><button id="pm" onclick="mv(-1)">&#8249;</button><b id="mt"></b><button id="nx" onclick="mv(1)">&#8250;</button></div>
+      <div class="stats">
+        <div class="st p" data-tilt="10"><small>Present</small><b id="rp">0</b></div>
+        <div class="st a" data-tilt="10"><small>Absent</small><b id="ra">0</b></div>
+        <div class="st l" data-tilt="10"><small>Leave (CL / ML)</small><b id="rl2">0</b></div>
+        <div class="st o" data-tilt="10"><small>Office work</small><b id="ro">0</b></div>
+        <div class="st h" data-tilt="10"><small>Kul ghante</small><b id="rh">0h</b></div>
+        <div class="st r" data-tilt="10"><small>Attendance %</small><b id="rr">0%</b></div>
+      </div>
+      <div class="cal">
+        <div class="cg" id="cg"></div>
+        <div class="leg"><span><i style="background:#2de2a6"></i>Present</span><span><i style="background:#ff5d73"></i>Absent</span><span><i style="background:#ffb83d"></i>Leave</span><span><i style="background:#4cc3ff"></i>Office work</span><span><i style="background:#a596ff"></i>Chhutti</span><span><i style="background:#4a5d85"></i>Ravivar</span></div>
+      </div>
+      <div class="acts"><button class="ab" onclick="print()">Print / PDF</button><button class="ab g" onclick="csv()">CSV download</button></div>
+      <div class="sec">
+        <h3>Din-wise record</h3>
+        <div id="rl"></div>
+      </div>
+    </div>
 
-/* ---- report ---- */
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-function mv(n){rm.setMonth(rm.getMonth()+n);report()}
-const WDN=["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"];
-function rowHTML(o){const wd=WDN[new Date(o.d+"T00:00:00").getDay()];
- if(o.h)return`<div class="row"><div><b>${dmy(o.d)}</b><small>${wd}</small></div><div class="t"><b style="color:#5a3fb0">Chhutti</b><small>${esc(o.h.name)}</small></div></div>`;
- const x=o.x,k=x.status||"";let top,sub,col="";
- if(k==="CL"||k==="ML"||k==="OW"||(k==="FULL"&&!x.inTime)){top={CL:"Casual Leave (CL)",ML:"Medical Leave (ML)",OW:"Office Work",FULL:"Full day (Present)"}[k];sub="Admin ne mark kiya";col="#8a5a00"}
- else{top=(x.inTime||"-")+" &rarr; "+(x.outTime||"-");
-  if(k==="AUTO"){sub="Auto Check Out - Absent";col="var(--bad)"}
-  else sub=fh(mins(x.inTime,x.outTime))+(x.inDist?" \u2022 "+x.inDist+" m":"")+(k==="FULL"?" \u2022 Admin: Full day":"")}
- return`<div class="row"><div><b>${dmy(x.date)}</b><small>${wd}</small></div><div class="t"><b>${top}</b><small${col?` style="color:${col};font-weight:700"`:""}>${sub}</small></div></div>`}
-async function report(){const y=rm.getFullYear(),m=rm.getMonth(),last=new Date(y,m+1,0).getDate(),ym=y+"-"+String(m+1).padStart(2,"0"),now=new Date();
- $("mt").textContent=rm.toLocaleDateString("en-IN",{month:"long",year:"numeric"});$("nx").disabled=(y===now.getFullYear()&&m===now.getMonth());
- $("pt").textContent=S?cfg.name+" - Attendance "+$("mt").textContent:"";
- const r=await api({a:"history",...cred(),from:ym+"-01",to:ym+"-"+String(last).padStart(2,"0")});
- rrows=(r.ok?r.list:[]).filter(x=>x.date.startsWith(ym)).sort((a,b)=>a.date<b.date?1:-1);
- const hol=(r.ok&&r.hol)||[],hs={};hol.forEach(x=>hs[x.date]=x.name);
- const map={},td=iso(now),late=now.getHours()>=20;rrows.forEach(x=>map[x.date]=x);let pr=0,ab=0,lv=0,ow=0,wk=0,mn=0;
- let h='<div class="wd">र</div><div class="wd">सो</div><div class="wd">मं</div><div class="wd">बु</div><div class="wd">गु</div><div class="wd">शु</div><div class="wd">श</div>'+'<div></div>'.repeat(new Date(y,m,1).getDay());
- for(let d=1;d<=last;d++){const ds=ym+"-"+String(d).padStart(2,"0"),dw=new Date(y,m,d).getDay(),x=map[ds];let c="";
-  if(x){const k=x.status;wk++;
-   if(k==="AUTO"){c="a";ab++}else if(k==="CL"||k==="ML"){c="l";lv++}else if(k==="OW"){c="o";ow++;mn+=mins(x.inTime,x.outTime)}else{c="p";pr++;mn+=mins(x.inTime,x.outTime)}}
-  else if(hs[ds])c="h";else if(dw===0)c="off";else if(ds<td||(ds===td&&late)){c="a";ab++;wk++}
-  h+=`<div class="cd ${c}${ds===td?" t":""}"${hs[ds]?` title="${esc(hs[ds])}"`:""}>${d}</div>`}
- $("cg").innerHTML=h;$("rp").textContent=pr;$("ra").textContent=ab;$("rl2").textContent=lv;$("ro").textContent=ow;$("rh").textContent=mn?Math.floor(mn/60)+"h":"0h";$("rr").textContent=wk?Math.min(100,Math.round((pr+ow)/wk*100))+"%":"0%";
- const items=[...rrows.map(x=>({d:x.date,x})),...hol.filter(x=>!map[x.date]).map(x=>({d:x.date,h:x}))].sort((a,b)=>a.d<b.d?1:-1);
- $("rl").innerHTML=items.map(rowHTML).join("")||'<div class="empty">Is mahine ka koi record nahi</div>'}
-function csv(){if(!rrows.length)return;const L={"":"Present",FULL:"Present (Admin Full day)",CL:"Casual Leave",ML:"Medical Leave",OW:"Office Work",AUTO:"Absent (Auto out)"};
- const c=[["Date","In","Out","Hours","Status","Distance(m)"],...[...rrows].reverse().map(x=>{const k=x.status||"",hr=(k===""||k==="FULL"||k==="OW")?fh(mins(x.inTime,x.outTime)):"";return[dmy(x.date),x.inTime,x.outTime,hr,L[k]||k,x.inDist]})].map(a=>a.map(v=>`"${v||""}"`).join(",")).join("\n");
- const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="my_attendance_"+iso(rm).slice(0,7)+".csv";a.click()}
+    <div class="nav">
+      <button id="n1" class="on" onclick="tab('Home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></svg>Aaj</button>
+      <button id="n2" onclick="tab('Rep')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" /></svg>Meri report</button>
+    </div>
+  </div>
 
-(async()=>{const s=JSON.parse(localStorage.getItem("att_me")||"null");if(!s)return;$("lg").hidden=true;const r=await api({a:"login",mobile:s.m,userId:s.u});if(r.ok&&r.deviceLock)start(s,r);else{$("lg").hidden=false;$("lm").textContent=r.ok?"Server purana hai (phone lock band). Admin se New version Deploy karwayein":(r.msg||"")}})();
-</script></body></html>
+  <script>
+    /* ====== APNA APPS SCRIPT URL ====== */
+    const API_URL = "https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm9c7Qx8mq1fQwTEIeWw4mxNOFQwaaKhnqoU5radUJi3/exec";
+    const MAX_ACC = 60, $ = i => document.getElementById(i);
+    const iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset() * 6e4); return z.toISOString().slice(0, 10) };
+    let S = null, cfg = null, pos = null, rec = null, busy = false, TODAYHOL = "", rm = new Date(), rrows = [], monthRows = []; rm.setDate(1);
+    const gc = n => { const m = document.cookie.match(new RegExp("(?:^|; )" + n + "=([^;]*)")); return m ? decodeURIComponent(m[1]) : "" };
+    let DEV = localStorage.getItem("att_dev") || gc("att_dev");
+    if (!DEV || DEV.length < 16) DEV = (window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + "xxxx");
+    try { localStorage.setItem("att_dev", DEV) } catch (e) { }
+    document.cookie = "att_dev=" + encodeURIComponent(DEV) + ";max-age=315360000;path=/;SameSite=Lax" + (location.protocol === "https:" ? ";Secure" : "");
+    const api = async b => { $("ld").style.display = "block"; try { const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 25000); const r = await fetch(API_URL, { method: "POST", body: JSON.stringify({ ...b, device: DEV }), signal: ac.signal }); clearTimeout(tm); return await r.json() } catch (e) { return { ok: false, msg: "Network error, internet check karein" } } finally { $("ld").style.display = "none" } };
+    const cred = () => ({ mobile: S.m, userId: S.u });
+    const hav = (a, b, c, d) => { const R = 6371000, r = x => x * Math.PI / 180, dl = r(c - a), dn = r(d - b), h = Math.sin(dl / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)) };
+    const mins = (a, b) => { if (!a || !b) return 0; const [x, y] = a.split(":"), [p, q] = b.split(":"), m = (p * 60 + +q) - (x * 60 + +y); return m > 0 ? m : 0 };
+    const fh = m => m ? Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m" : "-";
+    const dmy = s => s.split("-").reverse().join("-");
+
+    async function login() {
+      const m = $("m").value.trim(), u = $("u").value.trim(), e = $("lm"); e.textContent = "";
+      if (!/^\d{10}$/.test(m) || !u) { e.textContent = "Mobile (10 digit) aur User ID dalein"; return }
+      $("lb").disabled = true; $("lb").textContent = "Ruko..."; const r = await api({ a: "login", mobile: m, userId: u }); $("lb").disabled = false; $("lb").textContent = "Login";
+      if (!r.ok) { e.textContent = r.msg; return } if (!r.deviceLock) { e.textContent = "Server purana hai (phone lock band). Admin se Apps Script mein New version Deploy karwayein"; return } localStorage.setItem("att_me", JSON.stringify({ m, u })); start({ m, u }, r)
+    }
+    function logout() { localStorage.removeItem("att_me"); location.reload() }
+    async function start(s, r) {
+      S = s; cfg = r; $("lg").hidden = true; $("hm").hidden = false;
+      $("nm").textContent = r.name; $("rn").textContent = r.name; $("rule").textContent = "Niyam: Check In aur Check Out din mein sirf ek-ek baar. Check Out, Check In ke " + ((r.minStay || 120) / 60) + " ghante baad. Shaam " + (r.autoTime || "20:00") + " tak Check Out na hua to auto-out hoga aur us din Absent maana jayega."; $("org").textContent = r.org || ""; $("av").textContent = (r.name || "?").trim()[0].toUpperCase();
+      const h = new Date().getHours(); $("gr").textContent = h < 12 ? "Suprabhat" : h < 17 ? "Namaste" : "Shubh sandhya";
+      const cs = JSON.parse(localStorage.getItem("att_rec") || "null"); if (cs && cs.m === S.m && cs.date === iso(new Date()) && cs.rec) rec = { ...cs.rec, cached: 1 };
+      clock(); setInterval(clock, 1000); await load();
+      if (!navigator.geolocation) { $("zs").textContent = "GPS support nahi hai"; return }
+      navigator.geolocation.watchPosition(p => { pos = p; upd() }, er => { $("zs").textContent = er.code === 1 ? "Location permission band hai" : "Location nahi mil rahi"; $("zd").textContent = "Phone ki Location on karke Allow dein"; $("dot").className = "dot out"; setP("no", "&#128683;", "Band", "") }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 })
+    }
+    function clock() { if (new Date().getSeconds() === 0 && cfg) upd(); const d = new Date(); $("ck").textContent = d.toLocaleTimeString("en-GB"); $("dt").textContent = d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) }
+    function tab(t) { $("vHome").hidden = t !== "Home"; $("vRep").hidden = t !== "Rep"; $("n1").classList.toggle("on", t === "Home"); $("n2").classList.toggle("on", t === "Rep"); scrollTo(0, 0); if (t === "Rep") report() }
+
+    function setP(c, ic, lb, sb, p, ready, dis = true) { const b = $("pn"); b.className = "punch " + c + (ready ? " ready" : ""); b.style.setProperty("--p", p || 0); b.disabled = dis; $("pi").innerHTML = ic; $("pl").textContent = lb; $("ps").textContent = sb || "" }
+    const AD = { FULL: ["&#9989;", "Full day", "Admin ne Full day mark kiya", "Full day"], CL: ["&#127796;", "Casual Leave", "Admin ne CL mark kiya", "CL"], ML: ["&#127973;", "Medical Leave", "Admin ne ML mark kiya", "ML"], OW: ["&#128188;", "Office Work", "Admin ne Office Work mark kiya", "Office work"] };
+    const MIN = () => cfg.minStay || 120, AUTO = () => cfg.autoTime || "20:00";
+    const toMin = s => { const p = String(s).split(":"); return p[0] * 60 + +p[1] }, nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes() };
+    const remain = () => rec && rec.inTime ? Math.max(MIN() - (nowMin() - toMin(rec.inTime)), 0) : 0;
+    function upd() {
+      if (!cfg) return; let d = 0, acc = 0, inn = false, ok = false, p = 0;
+      if (pos) {
+        d = Math.round(hav(pos.coords.latitude, pos.coords.longitude, cfg.lat, cfg.lng)); acc = Math.round(pos.coords.accuracy); inn = d <= cfg.radius; ok = acc <= MAX_ACC; p = Math.min(100, cfg.radius / Math.max(d, cfg.radius) * 100);
+        $("dot").className = "dot " + (inn && ok ? "in" : "out"); $("zs").textContent = !ok ? "GPS signal kamzor hai" : inn ? "Aap office ke andar hain" : "Aap office se bahar hain";
+        $("zd").textContent = `Doori ${d} m  \u2022  Limit ${cfg.radius} m  \u2022  GPS \u00b1${acc} m`
+      }
+      if (!loaded && !rec) { setP("idle", "&#8987;", "Ruko...", "Status load ho raha hai", 0, false); return }
+      const ST = rec && rec.status;
+      if (ST && AD[ST] && !(ST === "FULL" && rec.inTime && !rec.outTime)) { setP("done", AD[ST][0], AD[ST][1], AD[ST][2], 100, false); return }
+      if (!rec && TODAYHOL) { setP("done", "&#127881;", "Chhutti", TODAYHOL, 100, false); return }
+      if (rec && rec.status === "AUTO") { setP("abs", "&#9940;", "Absent", "Auto out " + AUTO() + " - aaj absent", 100, false); return }
+      if (rec && rec.outTime) { setP("done", "&#9989;", "Poora hua", "Aaj ka kaam: " + fh(mins(rec.inTime, rec.outTime)), 100, false); return }
+      if (busy || !pos) return;
+      const far = () => setP("no", "&#128205;", inn ? "Wait" : "Door hain", !ok ? "GPS kamzor" : (d - cfg.radius) + " m aur paas aayein", p, false), can = inn && ok;
+      if (!rec) {
+        if (nowMin() >= toMin(AUTO())) setP("no", "&#128339;", "Samay samapt", "Check In " + AUTO() + " tak", 100, false);
+        else can ? setP("ok", "&#128073;", "Check In", "Ek baar dabayein", p, true, false) : far()
+      }
+      else {
+        const rem = remain(); if (rem > 0) setP("wait", "&#9203;", "Check Out", fh(rem) + " baad khulega", p, false);
+        else can ? setP("amb", "&#128170;", "Check Out", "In: " + rec.inTime, p, true, false) : far()
+      }
+    }
+    function punch() { mark(rec ? "out" : "in") }
+    async function mark(t) {
+      if (busy || !pos || !loaded) return;
+      if (t === "in" && rec) return; if (t === "out" && (!rec || rec.outTime || remain() > 0)) return;
+      if (t === "out" && !confirm("Check Out karein?\nAaj ke liye Check Out sirf ek baar hota hai.")) return;
+      busy = true; $("pn").disabled = true; $("pl").textContent = "Ruko..."; const mg = $("mg"); mg.className = "msg"; mg.textContent = "Location jaanch rahe hain...";
+      const p = await new Promise(r => navigator.geolocation.getCurrentPosition(r, () => r(null), { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }));
+      if (!p) { mg.className = "msg bad"; mg.textContent = "Location nahi mili, dobara try karein"; busy = false; upd(); return }
+      const r = await api({ a: "mark", type: t, ...cred(), lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy });
+      mg.className = "msg " + (r.ok ? "good" : "bad"); mg.textContent = r.ok ? (t === "in" ? "Check In" : "Check Out") + " ho gaya: " + r.time + " (" + r.dist + " m)" : r.msg;
+      if (r.ok) { const dt = iso(new Date()); rec = t === "in" ? { date: dt, inTime: r.time, outTime: "", status: "", local: 1 } : { ...(rec || { date: dt }), outTime: r.time, local: 1 } }
+      await load(); busy = false; upd()
+    }
+
+    let loaded = false, retrying = false;
+    async function load() {
+      let r = await api({ a: "history", ...cred() }); if (!r.ok && /Network/.test(r.msg)) r = await api({ a: "history", ...cred() });
+      if (!r.ok) {
+        if (/band|galat|juda/.test(r.msg)) { logout(); return }
+        $("mg").className = "msg bad"; $("mg").textContent = "Server se jaankari nahi mili, dobara koshish ho rahi hai...";
+        if (!retrying) { retrying = true; setTimeout(async () => { retrying = false; await load(); upd() }, 5000) } upd(); return
+      }
+      loaded = true; if (/koshish/.test($("mg").textContent)) $("mg").textContent = "";
+      const t = r.today, ym = t.slice(0, 7); TODAYHOL = r.todayHoliday || ""; rec = r.list.find(x => x.date === t) || (rec && rec.local && rec.date === t ? rec : null);
+      const ST = rec && rec.status, au = ST === "AUTO", adm = !!ST && !!AD[ST] && !(ST === "FULL" && rec.inTime);
+      rec ? localStorage.setItem("att_rec", JSON.stringify({ m: S.m, date: t, rec: { ...rec, local: 0, cached: 0 } })) : localStorage.removeItem("att_rec");
+      $("ti").textContent = rec?.inTime || "--:--"; $("to").textContent = rec?.outTime ? (au ? "Auto " + rec.outTime : rec.outTime) : "--:--";
+      $("th").textContent = au ? "Absent" : adm ? AD[ST][3] : rec?.outTime ? fh(mins(rec.inTime, rec.outTime)) : "-";
+      const hs = {}, mp = {}; (r.hol || []).forEach(h => hs[h.date] = 1); r.list.filter(x => x.date.startsWith(ym)).forEach(x => mp[x.date] = x);
+      const dayN = +t.slice(8), late = (r.now || "") >= AUTO(); let pc = 0, ac = 0;
+      for (let i = 1; i <= dayN; i++) {
+        const ds = ym + "-" + String(i).padStart(2, "0"), x = mp[ds], dw = new Date(+ym.slice(0, 4), +ym.slice(5, 7) - 1, i).getDay();
+        if (x) { if (!x.status || x.status === "FULL" || x.status === "OW") pc++; else if (x.status === "AUTO") ac++ }
+        else if (!hs[ds] && dw !== 0 && (ds < t || late)) ac++
+      }
+      $("hp").textContent = pc; $("ha").textContent = ac
+    }
+
+    /* ---- report ---- */
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    function mv(n) { rm.setMonth(rm.getMonth() + n); report() }
+    const WDN = ["Ravivar", "Somvar", "Mangalvar", "Budhvar", "Guruvar", "Shukravar", "Shanivar"];
+    function rowHTML(o) {
+      const wd = WDN[new Date(o.d + "T00:00:00").getDay()];
+      if (o.h) return `<div class="row"><div><b>${dmy(o.d)}</b><small>${wd}</small></div><div class="t"><b style="color:var(--vio)">Chhutti</b><small>${esc(o.h.name)}</small></div></div>`;
+      const x = o.x, k = x.status || ""; let top, sub, col = "";
+      if (k === "CL" || k === "ML" || k === "OW" || (k === "FULL" && !x.inTime)) { top = { CL: "Casual Leave (CL)", ML: "Medical Leave (ML)", OW: "Office Work", FULL: "Full day (Present)" }[k]; sub = "Admin ne mark kiya"; col = "var(--amb)" }
+      else {
+        top = (x.inTime || "-") + " &rarr; " + (x.outTime || "-");
+        if (k === "AUTO") { sub = "Auto Check Out - Absent"; col = "var(--bad)" }
+        else sub = fh(mins(x.inTime, x.outTime)) + (x.inDist ? " \u2022 " + x.inDist + " m" : "") + (k === "FULL" ? " \u2022 Admin: Full day" : "")
+      }
+      return `<div class="row"><div><b>${dmy(x.date)}</b><small>${wd}</small></div><div class="t"><b>${top}</b><small${col ? ` style="color:${col};font-weight:700"` : ""}>${sub}</small></div></div>`
+    }
+    async function report() {
+      const y = rm.getFullYear(), m = rm.getMonth(), last = new Date(y, m + 1, 0).getDate(), ym = y + "-" + String(m + 1).padStart(2, "0"), now = new Date();
+      $("mt").textContent = rm.toLocaleDateString("en-IN", { month: "long", year: "numeric" }); $("nx").disabled = (y === now.getFullYear() && m === now.getMonth());
+      $("pt").textContent = S ? cfg.name + " - Attendance " + $("mt").textContent : "";
+      const r = await api({ a: "history", ...cred(), from: ym + "-01", to: ym + "-" + String(last).padStart(2, "0") });
+      rrows = (r.ok ? r.list : []).filter(x => x.date.startsWith(ym)).sort((a, b) => a.date < b.date ? 1 : -1);
+      const hol = (r.ok && r.hol) || [], hs = {}; hol.forEach(x => hs[x.date] = x.name);
+      const map = {}, td = iso(now), late = now.getHours() >= 20; rrows.forEach(x => map[x.date] = x); let pr = 0, ab = 0, lv = 0, ow = 0, wk = 0, mn = 0;
+      let h = '<div class="wd">र</div><div class="wd">सो</div><div class="wd">मं</div><div class="wd">बु</div><div class="wd">गु</div><div class="wd">शु</div><div class="wd">श</div>' + '<div></div>'.repeat(new Date(y, m, 1).getDay());
+      for (let d = 1; d <= last; d++) {
+        const ds = ym + "-" + String(d).padStart(2, "0"), dw = new Date(y, m, d).getDay(), x = map[ds]; let c = "";
+        if (x) {
+          const k = x.status; wk++;
+          if (k === "AUTO") { c = "a"; ab++ } else if (k === "CL" || k === "ML") { c = "l"; lv++ } else if (k === "OW") { c = "o"; ow++; mn += mins(x.inTime, x.outTime) } else { c = "p"; pr++; mn += mins(x.inTime, x.outTime) }
+        }
+        else if (hs[ds]) c = "h"; else if (dw === 0) c = "off"; else if (ds < td || (ds === td && late)) { c = "a"; ab++; wk++ }
+        h += `<div class="cd ${c}${ds === td ? " t" : ""}"${hs[ds] ? ` title="${esc(hs[ds])}"` : ""}>${d}</div>`
+      }
+      $("cg").innerHTML = h; $("rp").textContent = pr; $("ra").textContent = ab; $("rl2").textContent = lv; $("ro").textContent = ow; $("rh").textContent = mn ? Math.floor(mn / 60) + "h" : "0h"; $("rr").textContent = wk ? Math.min(100, Math.round((pr + ow) / wk * 100)) + "%" : "0%";
+      const items = [...rrows.map(x => ({ d: x.date, x })), ...hol.filter(x => !map[x.date]).map(x => ({ d: x.date, h: x }))].sort((a, b) => a.d < b.d ? 1 : -1);
+      $("rl").innerHTML = items.map(rowHTML).join("") || '<div class="empty">Is mahine ka koi record nahi</div>'
+    }
+    function csv() {
+      if (!rrows.length) return; const L = { "": "Present", FULL: "Present (Admin Full day)", CL: "Casual Leave", ML: "Medical Leave", OW: "Office Work", AUTO: "Absent (Auto out)" };
+      const c = [["Date", "In", "Out", "Hours", "Status", "Distance(m)"], ...[...rrows].reverse().map(x => { const k = x.status || "", hr = (k === "" || k === "FULL" || k === "OW") ? fh(mins(x.inTime, x.outTime)) : ""; return [dmy(x.date), x.inTime, x.outTime, hr, L[k] || k, x.inDist] })].map(a => a.map(v => `"${v || ""}"`).join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + c], { type: "text/csv" })); a.download = "my_attendance_" + iso(rm).slice(0, 7) + ".csv"; a.click()
+    }
+
+    (async () => { const s = JSON.parse(localStorage.getItem("att_me") || "null"); if (!s) return; $("lg").hidden = true; const r = await api({ a: "login", mobile: s.m, userId: s.u }); if (r.ok && r.deviceLock) start(s, r); else { $("lg").hidden = false; $("lm").textContent = r.ok ? "Server purana hai (phone lock band). Admin se New version Deploy karwayein" : (r.msg || "") } })();
+  </script>
+
+  <script>
+    /* ===== 3D effects (UI only) ===== */
+    (() => {
+      if (matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+      const rs = el => { el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg") };
+      document.querySelectorAll("[data-tilt]").forEach(el => {
+        const mx = +el.dataset.tilt || 10;
+        el.addEventListener("pointermove", e => { const r = el.getBoundingClientRect(); el.style.setProperty("--ry", ((e.clientX - r.left) / r.width - .5) * mx + "deg"); el.style.setProperty("--rx", -((e.clientY - r.top) / r.height - .5) * mx + "deg") });
+        ["pointerleave", "pointerup", "pointercancel"].forEach(t => el.addEventListener(t, () => rs(el)))
+      });
+      const pn = document.getElementById("pn");
+      pn.addEventListener("pointermove", e => { if (pn.disabled && e.pointerType === "touch") return; const r = pn.getBoundingClientRect(); pn.style.setProperty("--ry", ((e.clientX - r.left) / r.width - .5) * 22 + "deg"); pn.style.setProperty("--rx", -((e.clientY - r.top) / r.height - .5) * 22 + "deg") });
+      ["pointerleave", "pointerup", "pointercancel"].forEach(t => pn.addEventListener(t, () => rs(pn)));
+      pn.addEventListener("pointerdown", () => { if (pn.disabled) return; const s = document.createElement("span"); s.className = "rip"; pn.appendChild(s); s.addEventListener("animationend", () => s.remove()); try { navigator.vibrate && navigator.vibrate(15) } catch (e) { } });
+      let q = 0; addEventListener("deviceorientation", e => { if (q) return; q = requestAnimationFrame(() => { q = 0; const g = Math.max(-30, Math.min(30, e.gamma || 0)), b = Math.max(-30, Math.min(30, (e.beta || 45) - 45)); document.documentElement.style.setProperty("--gx", g); document.documentElement.style.setProperty("--gy", b) }) });
+    })();
+  </script>
+</body>
+
+</html>
