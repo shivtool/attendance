@@ -6,8 +6,10 @@
 :root{--bg:#eef2f7;--ink:#14213d;--mut:#66758a;--pri:#0b5ed7;--ok:#12855a;--bad:#c62f3e;--line:#dce3ec;--navy:#0f2a43}
 *{box-sizing:border-box}html,body{margin:0}
 body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
-.hdr{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
-.hdr b{font-size:17px}.hdr button{background:#ffffff22;color:#fff;border:0;padding:7px 12px;border-radius:8px}
+.hdr{background:var(--navy);color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.hdr b{font-size:17px}.hdr .rt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.hdr button{background:#ffffff22;color:#fff;border:0;padding:7px 12px;border-radius:8px}
+.hdr select{background:#ffffff22;color:#fff;border:1px solid #ffffff44;border-radius:8px;padding:7px 10px;max-width:220px;font-size:14px}.hdr select option{color:#14213d}
 nav{display:flex;gap:4px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--line);padding:6px 10px;position:sticky;top:52px;z-index:4}
 nav button{flex:1;white-space:nowrap;border:0;background:none;padding:10px 14px;border-radius:8px;font-weight:600;color:var(--mut)}nav button.on{background:#e8f0fe;color:var(--pri)}
 main{max-width:1150px;margin:auto;padding:14px}
@@ -22,7 +24,7 @@ input,select{width:100%;padding:10px;border:1px solid #cfd5e1;border-radius:8px;
 th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;white-space:nowrap}th{background:#f6f8fb;color:var(--mut)}
 .tag{padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600}.tag.p{background:#dff5ea;color:var(--ok)}.tag.a{background:#fde4e6;color:var(--bad)}.tag.l{background:#fdf0d5;color:#8a5a00}.tag.b{background:#e0ecff;color:#1d4a85}.tag.h{background:#ece6ff;color:#5a3fb0}
 #login{max-width:380px;margin:10vh auto;padding:0 16px}#msg{color:var(--bad);font-size:13px;margin-top:8px;min-height:18px}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;z-index:9;display:none}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:30px;z-index:9;display:none;max-width:92vw;text-align:center}
 .load{position:fixed;top:0;left:0;right:0;height:3px;background:var(--pri);z-index:20;display:none}
 .note{background:#fff4d6;color:#7a5200;border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px;line-height:1.5}
 [hidden]{display:none!important}
@@ -44,7 +46,6 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
 .sign{display:flex;justify-content:space-between;margin-top:46px;font-size:12.5px;color:#334}.sign div{border-top:1px solid #556;padding-top:6px;min-width:190px;text-align:center}
 .gen{font-size:11px;color:#778;text-align:center;margin-top:16px}
 .pb{page-break-before:always}
-
 @media print{
  @page{size:A4 landscape;margin:10mm}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -67,16 +68,31 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
 </div></div>
 
 <div id="app" hidden>
-<div class="hdr"><b id="org">Attendance Admin</b><button onclick="logout()">Logout</button></div>
+<div class="hdr"><b>Attendance Admin</b><div class="rt"><select id="osw" onchange="setOrg(this.value)" title="Sansthan chunein"></select><button onclick="logout()">Logout</button></div></div>
 <nav id="nav"></nav>
 <main>
-<div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"><b>Chetavni:</b> Server ka code purana hai, isliye phone lock aur chhutti / admin-mark jaisi suvidhayein kaam nahi karengi. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.</div>
+<div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"></div>
+
 <section id="t-dash"><div class="note" id="hbanner" hidden style="background:#ece6ff;color:#43359a;margin:0 0 14px"></div><div class="grid" id="stats"></div><div class="card"><h3>Aaj ki attendance <span id="today"></span></h3><div class="tw"><table id="tdash"></table></div></div></section>
+
+<section id="t-orgs" hidden>
+ <div class="card"><h3 id="otitle">Naya sansthan banayein</h3><input type="hidden" id="oid"><div class="row">
+  <div><label>Sansthan ka naam</label><input id="on" maxlength="60" placeholder="jaise Shree Vidyalaya"></div>
+  <div><label>Latitude</label><input id="la" inputmode="decimal"></div><div><label>Longitude</label><input id="lo" inputmode="decimal"></div>
+  <div><label>Radius (meter, 30 se 2000)</label><input id="ra" type="number" value="100"></div>
+  <div><label>ID Code (3 akshar; khali = naam ke pehle 3 akshar)</label><input id="oc" maxlength="3" autocapitalize="off" placeholder="jaise shr"></div></div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri current location lo</button><button class="btn" onclick="saveOrg()">Save</button><button class="btn g" onclick="clearOrgForm()">Naya form</button></div>
+  <div class="note">Location ke liye us sansthan ke andar khade hokar "Meri current location lo" dabayein (phone par, HTTPS link se). Sansthan banane ke baad Staff tab se staff ko us sansthan mein jodein. Har staff ki User ID apne aap banti hai: sansthan ke pehle 3 akshar (chhote) + 3 ank ka kram, jaise <b>shr001</b>, <b>shr002</b>. Is code se shuru hone wali ID kisi aur sansthan mein kabhi login nahi hoti. Do sansthan ke pehle 3 akshar same hon to ID Code mein alag 3 akshar likhein. ID Code ek baar ban gaya to badalta nahi. Staff app mein pehli baar login par sansthan chunta hai, par wo tabhi login hoga jab aapne use usi sansthan mein joda ho. Band kiya hua sansthan staff ko list mein nahi dikhta aur uske staff attendance nahi laga sakte.</div></div>
+ <div class="card"><h3>Sabhi sansthan</h3><div class="tw"><table id="torg"></table></div></div></section>
 
 <section id="t-staff" hidden>
  <div class="card"><h3>Staff add / edit</h3><div class="row">
- <div><label>Name</label><input id="sn"></div><div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10"></div>
- <div><label>User ID</label><input id="su"></div><div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button></div></div>
+ <div><label>Sansthan</label><select id="so" onchange="updIdPreview()"></select></div>
+ <div><label>Name</label><input id="sn"></div><div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10" oninput="updIdPreview()"></div>
+ <div><label>User ID (apne aap banti hai)</label><div id="sidinfo" style="padding:10px;background:#eef3fb;border-radius:8px;font-size:14px;min-height:42px;display:flex;align-items:center"></div></div><div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button></div></div>
+ <div class="card" id="newid" hidden style="border-color:#12855a"></div>
+ <div class="card" id="fixres" hidden style="border-color:#c98a1b"></div>
+ <div class="note" id="idfix" hidden style="margin:0 0 14px"></div>
  <div class="card"><h3>Staff list</h3><div class="tw"><table id="tstaff"></table></div></div></section>
 
 <section id="t-mark" hidden>
@@ -85,14 +101,15 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
   <div><label>Tak (khali = sirf ek din)</label><input id="mto" type="date"></div>
   <div><label>Kya mark karein</label><select id="mty"><option value="FULL">Full day (Present)</option><option value="CL">CL - Casual Leave</option><option value="ML">ML - Medical Leave</option><option value="OW">Office Work (On Duty)</option><option value="CLEAR">Admin ka mark hatayein (Clear)</option></select></div>
   <button class="btn" onclick="applyMark()">Mark karein</button></div>
-  <div class="note"><b>Dhyan dein:</b> Neeche se staff chunein (ek ya kai). Kai din chunne par Ravivar aur chhutti ke din apne aap chhoot jaate hain; sirf ek din chunne par wahi din mark hota hai. Full day sirf aaj tak ki tarikh par ho sakta hai, CL/ML/Office Work aage ki tarikh par bhi. Mark kiye hue din staff Check In nahi kar sakta. Auto-out se Absent hue din ko Full day mark karke sudhaar sakte hain.</div></div>
+  <div class="note"><b>Dhyan dein:</b> Neeche se staff chunein (ek ya kai). Kai din chunne par Ravivar aur us staff ke sansthan ki chhutti ke din apne aap chhoot jaate hain; sirf ek din chunne par wahi din mark hota hai. Full day sirf aaj tak ki tarikh par ho sakta hai, CL/ML/Office Work aage ki tarikh par bhi. Mark kiye hue din staff Check In nahi kar sakta. Auto-out se Absent hue din ko Full day mark karke sudhaar sakte hain.</div></div>
  <div class="card"><h3>Staff chunein <span id="mdate"></span></h3><div class="tw"><table id="tmark"></table></div></div></section>
 
 <section id="t-hol" hidden>
  <div class="card"><h3>Chhutti jodein</h3><div class="row">
+  <div><label>Kis sansthan ke liye</label><select id="hoo"></select></div>
   <div><label>Tarikh (From)</label><input id="hf" type="date"></div><div><label>Tak (khali = sirf ek din)</label><input id="ht" type="date"></div>
-  <div><label>Chhutti ka naam</label><input id="hn" maxlength="60" placeholder="jaise Diwali, Gandhi Jayanti"></div><button class="btn" onclick="addHol()">Jodein</button></div>
-  <div class="note">Ravivar apne aap saptahik chhutti mana jata hai, use jodne ki zarurat nahi. Chhutti ke din staff Check In nahi kar sakta aur wo din Absent nahi ginta. Kisi se chhutti ke din kaam karwana ho to Attendance tab se us din Full day ya Office Work mark karein.</div></div>
+  <div><label>Chhutti ka naam</label><input id="hn" maxlength="60" placeholder="jaise Diwali"></div><button class="btn" onclick="addHol()">Jodein</button></div>
+  <div class="note">Ravivar apne aap saptahik chhutti mana jata hai. "Sabhi sansthan" chunne par chhutti sab par lagti hai. Chhutti ke din us sansthan ka staff Check In nahi kar sakta aur wo din Absent nahi ginta. Kisi se chhutti ke din kaam karwana ho to Attendance tab se Full day ya Office Work mark karein.</div></div>
  <div class="card"><h3>Chhuttiyon ki list &nbsp;<select id="hy" onchange="holList()" style="width:auto;display:inline-block;padding:6px 10px"></select></h3><div class="tw"><table id="thol"></table></div></div></section>
 
 <section id="t-rep" hidden>
@@ -103,20 +120,16 @@ th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;font-s
  </div>
  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="report()">Report dekhein</button><button class="btn g" onclick="printRep()">Print / PDF</button><button class="btn g" onclick="csv()">CSV (Excel)</button>
   <button class="btn g" onclick="quick('m')">Is mahine</button><button class="btn g" onclick="quick('p')">Pichhla mahina</button></div>
- <div class="note">Print dabane par "Save as PDF" chunkar PDF bhi bana sakte hain. Page A4 landscape mein set hai.</div></div>
+ <div class="note">Report upar chune hue sansthan ki banti hai ("Sabhi sansthan" chunne par sab ki). Print dabane par "Save as PDF" chunkar PDF bhi bana sakte hain. Page A4 landscape mein set hai.</div></div>
  <div id="rout"></div>
 </section>
 
 <section id="t-set" hidden>
- <div class="card"><h3>Office location</h3><div class="row">
- <div><label>Organisation name</label><input id="on"></div><div><label>Latitude</label><input id="la"></div>
- <div><label>Longitude</label><input id="lo"></div><div><label>Radius (meter)</label><input id="ra" type="number"></div></div>
- <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri current location lo</button><button class="btn" onclick="saveSet()">Save</button></div></div>
  <div class="card"><h3>Admin ID / Password badlein</h3><div class="row">
  <div><label>Naya Admin ID (kam se kam 4 akshar)</label><input id="nu" autocapitalize="off"></div>
  <div><label>Naya Password (kam se kam 8 akshar)</label><input id="np" type="password" autocomplete="new-password"></div>
  <button class="btn" onclick="saveAuth()">Badlein</button></div>
- <div class="note">Password sheet mein sidha nahi, chhupe (hash) roop mein save hota hai. Admin ID kisi staff ki User ID jaisi nahi honi chahiye. Badalne ke baad naye ID/Password se dobara login karna hoga.</div></div>
+ <div class="note">Password sheet mein sidha nahi, chhupe (hash) roop mein save hota hai. Admin ID kisi staff ki User ID jaisi nahi honi chahiye. Badalne ke baad naye ID/Password se dobara login karna hoga. Office ki location ab "Sansthan" tab mein har sansthan ke liye alag set hoti hai.</div></div>
 </section>
 </main></div>
 <div class="toast" id="toast"></div>
@@ -127,8 +140,9 @@ const API_URL="https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm
 const $=i=>document.getElementById(i),iso=d=>{const z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)};
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const dmy=s=>String(s).split("-").reverse().join("-");
-const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";setTimeout(()=>e.style.display="none",2800)};
-let TOK=sessionStorage.getItem("at")||"",users=[],hols=[],cfg={},rows=[],sumRows=[],lastTy="full",lastTitle="";
+const WD=["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"];
+const toast=t=>{const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",3200)};
+let TOK=sessionStorage.getItem("at")||"",orgs=[],users=[],hols=[],CUR=sessionStorage.getItem("ao")||"",curTab="dash",rows=[],sumRows=[],lastTy="full",lastTitle="";
 
 async function api(b){$("ld").style.display="block";
  try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),30000);
@@ -139,23 +153,42 @@ async function api(b){$("ld").style.display="block";
 async function doLogin(){$("msg").textContent="";const u=$("au").value.trim(),p=$("pw").value;if(!u||!p){$("msg").textContent="Admin ID aur Password dalein";return}
  const r=await api({a:"adminLogin",user:u,pass:p});if(!r.ok){$("msg").textContent=r.msg;return}
  TOK=r.token;sessionStorage.setItem("at",TOK);$("pw").value="";boot()}
-async function logout(){await api({a:"adminLogout"});TOK="";sessionStorage.removeItem("at");location.reload()}
-async function boot(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(!r.ok)return;enter(r)}
+async function logout(){await api({a:"adminLogout"});TOK="";sessionStorage.removeItem("at");sessionStorage.removeItem("ao");location.reload()}
+async function boot(){const r=await fresh();if(r)enter(r)}
 if(TOK)boot();
 
-const tabs={dash:"Dashboard",staff:"Staff",mark:"Attendance",hol:"Holiday",rep:"Report",set:"Settings"};
+const tabs={dash:"Dashboard",orgs:"Sansthan",staff:"Staff",mark:"Attendance",hol:"Holiday",rep:"Report",set:"Settings"};
 $("nav").innerHTML=Object.entries(tabs).map(([k,v])=>`<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("");
-function enter(r){$("login").hidden=true;$("app").hidden=false;$("warn").hidden=!!(r.deviceLock&&r.hol);sync(r);quick("m",true);dash(r);document.querySelector('#nav button').classList.add("on")}
-function sync(r){users=r.users;hols=r.hol||[];cfg=r.cfg;$("org").textContent=cfg.org||"Attendance Admin";
- $("rs").innerHTML='<option value="">Sabhi staff</option>'+users.map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join("")}
-async function tab(k){for(const t in tabs)$("t-"+t).hidden=t!==k;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
- if(k==="dash"){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);dash(r)}}
- if(k==="staff")stf();if(k==="mark")loadMark();if(k==="hol")refreshHol();
- if(k==="set"){$("on").value=cfg.org||"";$("la").value=cfg.lat||"";$("lo").value=cfg.lng||"";$("ra").value=cfg.radius||100}}
+
+/* ---------- common helpers ---------- */
+const orgName=id=>id==="*"?"Sabhi sansthan":((orgs.find(o=>o.orgId===id)||{}).name||id||"-");
+const inScope=s=>!CUR||s.orgId===CUR;
+const uScope=()=>users.filter(inScope);
+const rowInScope=(x,set)=>!CUR||x.orgId===CUR||set.has(x.mobile);
+const holFor=(org,ds)=>{const h=hols.find(h=>h.date===ds&&(h.orgId==="*"||!h.orgId||h.orgId===org));return h?h.name:""};
+const HSM={};const hsFor=org=>HSM[org]||(HSM[org]=Object.fromEntries(hols.filter(h=>h.orgId==="*"||!h.orgId||h.orgId===org).map(h=>[h.date,h.name])));
+const orgOfUser=m=>(users.find(u=>u.mobile===m)||{}).orgId||"";
+
+async function fresh(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok)sync(r);return r.ok?r:null}
+function sync(r){orgs=r.orgs||[];users=r.users||[];hols=r.hol||[];for(const k in HSM)delete HSM[k];
+ if(CUR&&!orgs.some(o=>o.orgId===CUR)){CUR="";sessionStorage.removeItem("ao")}
+ $("osw").innerHTML='<option value="">Sabhi sansthan</option>'+orgs.map(o=>`<option value="${o.orgId}"${o.orgId===CUR?" selected":""}>${esc(o.name)}${o.active==="YES"?"":" (band)"}</option>`).join("");
+ const opts=orgs.map(o=>`<option value="${o.orgId}">${esc(o.name)}${o.active==="YES"?"":" (band)"}</option>`).join("");
+ const keep=(id,html,def)=>{const el=$(id),v=el.value;el.innerHTML=html;el.value=v&&[...el.options].some(x=>x.value===v)?v:def};
+ keep("so",opts,CUR||(orgs[0]||{}).orgId||"");keep("hoo",'<option value="*">Sabhi sansthan</option>'+opts,CUR||"*");
+ updIdPreview();keep("rs",'<option value="">Sabhi staff</option>'+uScope().map(s=>`<option value="${s.mobile}">${esc(s.name)}</option>`).join(""),"");
+ const w=$("warn");
+ if(!r.orgs){w.hidden=false;w.innerHTML='<b>Chetavni:</b> Server ka code purana hai, isliye sansthan, chhutti aur admin-mark jaisi suvidhayein kaam nahi karengi. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.'}
+ else if(!orgs.length){w.hidden=false;w.innerHTML='<b>Chetavni:</b> Server mein koi sansthan nahi mila. Apps Script mein function <b>upgrade</b> ek baar Run karein.'}
+ else w.hidden=true}
+function enter(r){$("login").hidden=true;$("app").hidden=false;quick("m",true);tab("dash")}
+function setOrg(v){CUR=v;sessionStorage.setItem("ao",v);if(v){$("so").value=v;$("hoo").value=v}tab(curTab)}
+async function tab(k){curTab=k;for(const t in tabs)$("t-"+t).hidden=t!==k;document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.k===k));
+ if(k==="mark"){loadMark();return}
+ const r=await fresh();if(!r)return;
+ if(k==="dash")dash(r);if(k==="orgs")renderOrgs();if(k==="staff")stf();if(k==="hol")holList()}
 
 /* ---------- dashboard ---------- */
-const WD=["Ravivar","Somvar","Mangalvar","Budhvar","Guruvar","Shukravar","Shanivar"];
-const holName=ds=>(hols.find(h=>h.date===ds)||{}).name||"";
 function stTag(x){const k=x.status||"";
  if(k==="AUTO")return'<span class="tag a">Absent (Auto out)</span>';
  if(k==="CL")return'<span class="tag l">CL - Casual Leave</span>';
@@ -163,37 +196,85 @@ function stTag(x){const k=x.status||"";
  if(k==="OW")return'<span class="tag b">Office Work</span>';
  if(k==="FULL")return'<span class="tag p">Present (Admin - Full day)</span>';
  return'<span class="tag p">Present</span>'}
-function dash(r){const t=iso(new Date()),all=r.att,act=users.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile));
- const pr=all.filter(x=>!x.status||x.status==="FULL"||x.status==="OW"),lv=all.filter(x=>x.status==="CL"||x.status==="ML"),au=all.filter(x=>x.status==="AUTO");
- const hn=holName(t),off=!!hn||new Date().getDay()===0;
- $("today").textContent="("+dmy(t)+")";$("hbanner").hidden=!off;$("hbanner").textContent=hn?"Aaj chhutti hai: "+hn+" (staff Check In nahi kar sakta)":"Aaj Ravivar (saptahik chhutti) hai";
- $("stats").innerHTML=[["Total staff",act.length],["Present",pr.length],["Leave (CL/ML)",lv.length],["Absent",off?0:Math.max(act.length-pr.length-lv.length,0)],["Checked out",pr.filter(x=>x.outTime).length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
- const row=(x,o)=>`<tr><td>${esc(x.name)}</td><td>${x.inTime||"-"}</td><td>${x.outTime||"-"}${o||""}</td><td>${x.inDist?x.inDist+" m":"-"}</td><td>${stTag(x)}</td></tr>`;
- $("tdash").innerHTML="<tr><th>Name</th><th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+pr.map(x=>row(x)).join("")+lv.map(x=>row(x)).join("")+au.map(x=>row(x," (auto)")).join("")
- +(off?"":act.filter(s=>!got.has(s.mobile)).map(s=>`<tr><td>${esc(s.name)}</td><td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join(""))}
+function dash(r){const t=iso(new Date()),sc=uScope(),set=new Set(sc.map(s=>s.mobile)),all=r.att.filter(x=>rowInScope(x,set));
+ const act=sc.filter(s=>s.active==="YES"),got=new Set(all.map(x=>x.mobile)),sun=new Date().getDay()===0,offOrg=new Set(),names=[];
+ orgs.forEach(o=>{if(!CUR||o.orgId===CUR){const n=holFor(o.orgId,t);if(n){offOrg.add(o.orgId);names.push(CUR?n:o.name+": "+n)}}});
+ const isOff=s=>sun||offOrg.has(s.orgId),pr=all.filter(x=>!x.status||x.status==="FULL"||x.status==="OW"),lv=all.filter(x=>x.status==="CL"||x.status==="ML"),au=all.filter(x=>x.status==="AUTO");
+ $("today").textContent="("+dmy(t)+")";$("hbanner").hidden=!(sun||names.length);$("hbanner").textContent=sun?"Aaj Ravivar (saptahik chhutti) hai":"Aaj chhutti: "+names.join(", ")+" (us din staff Check In nahi kar sakta)";
+ const abs=act.filter(s=>!got.has(s.mobile)&&!isOff(s));
+ $("stats").innerHTML=[["Total staff",act.length],["Present",pr.length],["Leave (CL/ML)",lv.length],["Absent",abs.length],["Checked out",pr.filter(x=>x.outTime).length]].map(([k,v])=>`<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
+ const oc=!CUR,row=(x,o)=>`<tr><td>${esc(x.name)}</td>${oc?`<td>${esc(orgName(x.orgId||orgOfUser(x.mobile)))}</td>`:""}<td>${x.inTime||"-"}</td><td>${x.outTime||"-"}${o||""}</td><td>${x.inDist?x.inDist+" m":"-"}</td><td>${stTag(x)}</td></tr>`;
+ $("tdash").innerHTML="<tr><th>Name</th>"+(oc?"<th>Sansthan</th>":"")+"<th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>"+pr.map(x=>row(x)).join("")+lv.map(x=>row(x)).join("")+au.map(x=>row(x," (auto)")).join("")
+ +abs.map(s=>`<tr><td>${esc(s.name)}</td>${oc?`<td>${esc(orgName(s.orgId))}</td>`:""}<td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join("")}
+
+/* ---------- sansthan (organizations) ---------- */
+function renderOrgs(){$("torg").innerHTML="<tr><th>Naam</th><th>ID Code</th><th>Location</th><th>Radius</th><th>Staff</th><th>Status</th><th></th></tr>"+(orgs.map(o=>{const n=users.filter(u=>u.orgId===o.orgId).length,on=o.active==="YES";
+  return`<tr><td><b>${esc(o.name)}</b>${CUR===o.orgId?' <span class="tag b">chuna hua</span>':""}</td><td><b>${esc(o.code||"-")}</b></td><td><a href="https://maps.google.com/?q=${esc(o.lat)},${esc(o.lng)}" target="_blank">${Number(o.lat).toFixed(5)}, ${Number(o.lng).toFixed(5)}</a></td><td>${esc(o.radius)} m</td><td>${n}</td>
+  <td><span class="tag ${on?"p":"a"}">${on?"Chalu":"Band"}</span></td>
+  <td><button class="btn g s" onclick="editOrg('${o.orgId}')">Edit</button> <button class="btn g s" onclick="pickOrg('${o.orgId}')">Chunein</button> <button class="btn g s" onclick="togOrg('${o.orgId}')">${on?"Band karein":"Chalu karein"}</button> <button class="btn r s" onclick="delOrg('${o.orgId}')">Delete</button></td></tr>`}).join("")||'<tr><td colspan="7">Koi sansthan nahi. Upar se naya banayein.</td></tr>')}
+function clearOrgForm(){$("oid").value="";$("on").value="";$("la").value="";$("lo").value="";$("ra").value=100;$("oc").value="";$("oc").disabled=false;$("otitle").textContent="Naya sansthan banayein"}
+function editOrg(id){const o=orgs.find(x=>x.orgId===id);$("oid").value=id;$("on").value=o.name;$("la").value=o.lat;$("lo").value=o.lng;$("ra").value=o.radius;$("oc").value=o.code||"";$("oc").disabled=!!o.code;$("otitle").textContent="Sansthan badlein: "+o.name;scrollTo(0,0)}
+function pickOrg(id){$("osw").value=id;setOrg(id);toast("Ab sab kuch is sansthan ka dikhega")}
+function myLoc(){navigator.geolocation.getCurrentPosition(p=>{$("la").value=p.coords.latitude.toFixed(6);$("lo").value=p.coords.longitude.toFixed(6);toast("Location mil gayi (GPS ±"+Math.round(p.coords.accuracy)+" m)")},()=>toast("Location permission dein"),{enableHighAccuracy:true})}
+async function saveOrg(){const n=$("on").value.trim(),la=parseFloat($("la").value),lo=parseFloat($("lo").value),ra=parseInt($("ra").value,10),id=$("oid").value;
+ if(n.length<2)return toast("Sansthan ka naam likhein");if(isNaN(la)||isNaN(lo))return toast("Latitude / Longitude dalein");if(!(ra>=30&&ra<=2000))return toast("Radius 30 se 2000 meter ke beech rakhein");
+ const ex=orgs.find(o=>o.orgId===id),r=await api({a:"adminSaveOrg",orgId:id,name:n,code:$("oc").value.trim().toLowerCase(),lat:la,lng:lo,radius:ra,active:ex?ex.active:"YES"});
+ if(!r.ok)return toast(r.msg);toast(id?"Sansthan badal gaya":"Naya sansthan ban gaya");clearOrgForm();await fresh();renderOrgs()}
+async function togOrg(id){const o=orgs.find(x=>x.orgId===id),on=o.active==="YES";
+ if(on&&!confirm('"'+o.name+'" band karein?\nIske staff attendance nahi laga payenge aur ye staff ko list mein nahi dikhega.'))return;
+ const r=await api({a:"adminSaveOrg",orgId:id,name:o.name,lat:o.lat,lng:o.lng,radius:o.radius,active:on?"NO":"YES"});if(!r.ok)return toast(r.msg);await fresh();renderOrgs()}
+async function delOrg(id){const o=orgs.find(x=>x.orgId===id);if(!confirm('"'+o.name+'" delete karein?\nYe tabhi hoga jab isme koi staff ya attendance record na ho.'))return;
+ const r=await api({a:"adminDelOrg",orgId:id});if(!r.ok)return toast(r.msg);toast("Sansthan delete ho gaya");await fresh();renderOrgs()}
 
 /* ---------- staff ---------- */
-function stf(){$("tstaff").innerHTML="<tr><th>Name</th><th>Mobile</th><th>User ID</th><th>Designation</th><th>Status</th><th>Phone</th><th></th></tr>"+users.map(s=>`<tr><td>${esc(s.name)}</td><td>${s.mobile}</td><td>${esc(s.userId)}</td><td>${esc(s.designation)}</td><td><span class="tag ${s.active==="YES"?"p":"a"}">${s.active==="YES"?"Active":"Blocked"}</span></td>
+let lastMsg="",fixList=[];
+const idRe=o=>new RegExp("^"+o.code+"\\d{3,}$","i");
+const idOk=u=>{const o=orgs.find(x=>x.orgId===u.orgId);return !!o&&!!o.code&&idRe(o).test(u.userId)};
+function nextIdPreview(o){let n=0;users.forEach(u=>{if(u.orgId===o.orgId&&idRe(o).test(u.userId))n=Math.max(n,+u.userId.slice(o.code.length))});n++;return o.code+String(n).padStart(3,"0")}
+function updIdPreview(){const o=orgs.find(x=>x.orgId===$("so").value),m=$("sm").value.trim(),ex=users.find(u=>u.mobile===m),b=$("sidinfo");
+ if(!o){b.textContent="Pehle Sansthan tab mein sansthan banayein";return}
+ if(!o.code){b.textContent="Is sansthan ka ID code nahi hai (Apps Script mein upgrade chalayein)";return}
+ b.innerHTML=ex&&ex.orgId===o.orgId?`<b>${esc(ex.userId)}</b>&nbsp;<span style="color:#66758a">(badlegi nahi)</span>`:(ex&&ex.orgId?`Naye sansthan ki nayi ID banegi: <b>&nbsp;${esc(nextIdPreview(o))}</b>`:`Apne aap banegi: <b>&nbsp;${esc(nextIdPreview(o))}</b>`)}
+function stf(){const sc=uScope(),old=sc.filter(u=>!idOk(u)),b=$("idfix");
+ b.hidden=!old.length;b.innerHTML=old.length?`<b>${old.length} staff ki User ID purane format ki hai.</b> Naye format (sansthan code + kram) mein badalne par sabka login naye ID se hoga; purani ID band ho jayegi aur staff ko nayi ID batani hogi. <button class="btn s" style="margin-left:8px" onclick="fixIds()">Naye format mein badlein</button>`:"";
+ $("tstaff").innerHTML="<tr><th>Name</th><th>Sansthan</th><th>Mobile</th><th>User ID</th><th>Designation</th><th>Status</th><th>Phone</th><th></th></tr>"+sc.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(orgName(s.orgId))}</td><td>${s.mobile}</td><td><b>${esc(s.userId)}</b>${idOk(s)?"":' <span class="tag l">purani ID</span>'}</td><td>${esc(s.designation)}</td><td><span class="tag ${s.active==="YES"?"p":"a"}">${s.active==="YES"?"Active":"Blocked"}</span></td>
  <td><span class="tag ${s.bound==="YES"?"p":"a"}">${s.bound==="YES"?"Juda hua":"Abhi nahi"}</span></td>
  <td><button class="btn g s" onclick="editS('${s.mobile}')">Edit</button> <button class="btn g s" onclick="togS('${s.mobile}')">${s.active==="YES"?"Block":"Unblock"}</button>${s.bound==="YES"?` <button class="btn g s" onclick="resetD('${s.mobile}')">Phone reset</button>`:""} <button class="btn r s" onclick="delS('${s.mobile}')">Delete</button></td></tr>`).join("")}
-async function reload(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);stf()}}
-async function saveStaff(){const m=$("sm").value.trim(),n=$("sn").value.trim(),u=$("su").value.trim();
- if(!/^\d{10}$/.test(m))return toast("Mobile 10 digit ka dalein");if(!n||!u)return toast("Name aur User ID zaruri hai");
- const o=users.find(s=>s.mobile===m),r=await api({a:"adminSaveUser",name:n,mobile:m,userId:u,designation:$("sd").value.trim(),active:o?o.active:"YES"});
- if(!r.ok)return toast(r.msg);["sn","sm","su","sd"].forEach(i=>$(i).value="");toast("Saved");reload()}
-async function resetD(m){if(confirm("Is staff ka phone link hata dein? Wo naye phone se login karke dobara juda sakta hai.")){const r=await api({a:"adminResetDevice",mobile:m});toast(r.ok?"Phone reset ho gaya":r.msg);reload()}}
-function editS(m){const s=users.find(x=>x.mobile===m);$("sn").value=s.name;$("sm").value=s.mobile;$("su").value=s.userId;$("sd").value=s.designation;scrollTo(0,0)}
-async function togS(m){const s=users.find(x=>x.mobile===m);await api({a:"adminSaveUser",name:s.name,mobile:s.mobile,userId:s.userId,designation:s.designation,active:s.active==="YES"?"NO":"YES"});reload()}
-async function delS(m){if(confirm("Staff delete karein?")){await api({a:"adminDelUser",mobile:m});reload()}}
+async function saveStaff(){const m=$("sm").value.trim(),n=$("sn").value.trim(),o=$("so").value;
+ if(!o)return toast("Pehle Sansthan tab mein sansthan banayein, phir yahan chunein");
+ if(!/^\d{10}$/.test(m))return toast("Mobile 10 digit ka dalein");if(!n)return toast("Name zaruri hai");
+ const ex=users.find(s=>s.mobile===m);let move=false;
+ if(ex&&ex.orgId&&ex.orgId!==o){if(!confirm('Ye staff abhi "'+orgName(ex.orgId)+'" mein hai.\n"'+orgName(o)+'" mein le jayein?\n\nNaye sansthan ki nayi User ID banegi aur purani ID band ho jayegi.'))return;move=true}
+ const r=await api({a:"adminSaveUser",name:n,mobile:m,designation:$("sd").value.trim(),active:ex?ex.active:"YES",orgId:o,confirmMove:move});
+ if(!r.ok)return toast(r.msg);["sn","sm","sd"].forEach(i=>$(i).value="");await fresh();stf();updIdPreview();
+ if(r.created||r.moved)showNewId(r,n,m);else toast("Saved")}
+function showNewId(r,n,m){lastMsg="Attendance login\nSansthan: "+r.org+"\nMobile: "+m+"\nUser ID: "+r.userId;const c=$("newid");c.hidden=false;
+ c.innerHTML=`<h3>${r.moved?"Staff naye sansthan mein gaya - nayi User ID":"Naya staff joda gaya"}</h3><div style="font-size:15px;line-height:1.8"><b>${esc(n)}</b> &bull; ${esc(r.org)}<br>Mobile: <b>${esc(m)}</b><br>User ID: <b style="font-size:22px;letter-spacing:1px">${esc(r.userId)}</b></div>
+ <div class="note">Ye User ID staff ko zaroor bata dein. Staff app mein pehli baar sansthan <b>${esc(r.org)}</b> chunega, phir apna mobile aur ye User ID dalega.${r.moved?" Purani ID ab band hai.":""}</div>
+ <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="copyMsg()">Message copy karein</button><button class="btn g" onclick="document.getElementById('newid').hidden=true">Band karein</button></div>`;c.scrollIntoView({behavior:"smooth"})}
+function copyMsg(){if(navigator.clipboard)navigator.clipboard.writeText(lastMsg).then(()=>toast("Copy ho gaya"),()=>prompt("Copy karein:",lastMsg));else prompt("Copy karein:",lastMsg)}
+async function fixIds(){const sc=uScope().filter(u=>!idOk(u));if(!sc.length)return;
+ if(!confirm(sc.length+" staff ki User ID naye format mein badli jayegi.\nPurani ID turant band ho jayegi aur staff ko nayi ID batani hogi.\n\nPakka karein?"))return;
+ const r=await api({a:"adminFixIds",orgId:CUR});if(!r.ok)return toast(r.msg);fixList=r.list;await fresh();stf();
+ const c=$("fixres");c.hidden=false;
+ c.innerHTML=`<h3>${r.list.length} staff ki ID badli gayi - staff ko nayi ID bata dein</h3><div class="tw"><table><tr><th>Naam</th><th>Sansthan</th><th>Mobile</th><th>Purani ID</th><th>Nayi ID</th></tr>${r.list.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.org)}</td><td>${x.mobile}</td><td>${esc(x.oldId)}</td><td><b>${esc(x.newId)}</b></td></tr>`).join("")}</table></div>
+ <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="fixCsv()">CSV download</button><button class="btn g" onclick="document.getElementById('fixres').hidden=true">Band karein</button></div>`;c.scrollIntoView({behavior:"smooth"})}
+function fixCsv(){const t=[["Naam","Sansthan","Mobile","Purani ID","Nayi ID"],...fixList.map(x=>[x.name,x.org,x.mobile,x.oldId,x.newId])].map(a=>a.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),a=document.createElement("a");
+ a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download="nayi_user_id.csv";a.click()}
+async function resetD(m){if(confirm("Is staff ka phone link hata dein? Wo naye phone se login karke dobara juda sakta hai.")){const r=await api({a:"adminResetDevice",mobile:m});toast(r.ok?"Phone reset ho gaya":r.msg);await fresh();stf()}}
+function editS(m){const s=users.find(x=>x.mobile===m);$("sn").value=s.name;$("sm").value=s.mobile;$("sd").value=s.designation;if(s.orgId)$("so").value=s.orgId;updIdPreview();scrollTo(0,0)}
+async function togS(m){const s=users.find(x=>x.mobile===m);const r=await api({a:"adminSaveUser",name:s.name,mobile:s.mobile,designation:s.designation,active:s.active==="YES"?"NO":"YES",orgId:s.orgId});if(!r.ok)toast(r.msg);await fresh();stf()}
+async function delS(m){if(confirm("Staff delete karein?")){await api({a:"adminDelUser",mobile:m});await fresh();stf()}}
 
 /* ---------- admin attendance marking ---------- */
 async function loadMark(){if(!$("mf").value)$("mf").value=iso(new Date());const dt=$("mf").value;
  const r=await api({a:"adminData",from:dt,to:dt});if(!r.ok)return;sync(r);renderMark(r.att)}
-function renderMark(att){const dt=$("mf").value,dw=new Date(dt+"T00:00:00").getDay(),hn=holName(dt),act=users.filter(s=>s.active==="YES"),m={};att.forEach(x=>m[x.mobile]=x);
+function renderMark(att){const dt=$("mf").value,dw=new Date(dt+"T00:00:00").getDay(),act=uScope().filter(s=>s.active==="YES"),m={},oc=!CUR;att.forEach(x=>m[x.mobile]=x);
+ const hn=CUR?holFor(CUR,dt):"";
  $("mdate").textContent="("+dmy(dt)+(hn?" - "+esc(hn):dw===0?" - Ravivar":"")+")";
- $("tmark").innerHTML='<tr><th><input type="checkbox" onchange="mAll(this.checked)" aria-label="Sabhi chunein"></th><th>Naam</th><th>Pad</th><th>Us din ki sthiti</th></tr>'+act.map(s=>{const x=m[s.mobile];let st;
-  if(x)st=stTag(x);else if(hn)st='<span class="tag h">Chhutti</span>';else if(dw===0)st='<span class="tag h">Ravivar</span>';else if(dt>iso(new Date()))st="-";else st='<span class="tag a">Absent</span>';
-  return`<tr><td><input type="checkbox" class="mc" value="${s.mobile}"></td><td>${esc(s.name)}</td><td>${esc(s.designation)}</td><td>${st}</td></tr>`}).join("")}
+ $("tmark").innerHTML='<tr><th><input type="checkbox" onchange="mAll(this.checked)" aria-label="Sabhi chunein"></th><th>Naam</th>'+(oc?"<th>Sansthan</th>":"")+'<th>Pad</th><th>Us din ki sthiti</th></tr>'+act.map(s=>{const x=m[s.mobile],h=holFor(s.orgId,dt);let st;
+  if(x)st=stTag(x);else if(h)st=`<span class="tag h">Chhutti: ${esc(h)}</span>`;else if(dw===0)st='<span class="tag h">Ravivar</span>';else if(dt>iso(new Date()))st="-";else st='<span class="tag a">Absent</span>';
+  return`<tr><td><input type="checkbox" class="mc" value="${s.mobile}"></td><td>${esc(s.name)}</td>${oc?`<td>${esc(orgName(s.orgId))}</td>`:""}<td>${esc(s.designation)}</td><td>${st}</td></tr>`}).join("")}
 function mAll(v){document.querySelectorAll(".mc").forEach(c=>c.checked=v)}
 async function applyMark(){const f=$("mf").value,t=$("mto").value||f,ty=$("mty").value,sel=[...document.querySelectorAll(".mc:checked")].map(c=>c.value);
  if(!f)return toast("Tarikh chunein");if(t<f)return toast("'Tak' tarikh 'From' se pehle nahi ho sakti");if(!sel.length)return toast("Kam se kam ek staff chunein");
@@ -205,14 +286,13 @@ async function applyMark(){const f=$("mf").value,t=$("mto").value||f,ty=$("mty")
 /* ---------- holiday ---------- */
 function holList(){const sel=$("hy"),cur=sel.value||String(new Date().getFullYear()),ys=new Set([new Date().getFullYear()-1,new Date().getFullYear(),new Date().getFullYear()+1]);
  hols.forEach(h=>ys.add(+h.date.slice(0,4)));sel.innerHTML=[...ys].sort().map(y=>`<option${String(y)===cur?" selected":""}>${y}</option>`).join("");
- const list=hols.filter(h=>h.date.startsWith(sel.value)).sort((a,b)=>a.date<b.date?-1:1);
- $("thol").innerHTML="<tr><th>#</th><th>Tarikh</th><th>Din</th><th>Chhutti ka naam</th><th></th></tr>"+(list.map((h,i)=>`<tr><td>${i+1}</td><td>${dmy(h.date)}</td><td>${WD[new Date(h.date+"T00:00:00").getDay()]}</td><td>${esc(h.name)}</td><td><button class="btn r s" onclick="delHol('${h.date}')">Hatayein</button></td></tr>`).join("")||'<tr><td colspan="5">Is saal ki koi chhutti nahi jodi gayi</td></tr>')}
-async function refreshHol(){const t=iso(new Date()),r=await api({a:"adminData",from:t,to:t});if(r.ok){sync(r);holList()}}
-async function addHol(){const f=$("hf").value,t=$("ht").value||f,n=$("hn").value.trim();
+ const list=hols.filter(h=>h.date.startsWith(sel.value)&&(!CUR||h.orgId==="*"||!h.orgId||h.orgId===CUR)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+ $("thol").innerHTML="<tr><th>#</th><th>Tarikh</th><th>Din</th><th>Chhutti ka naam</th><th>Sansthan</th><th></th></tr>"+(list.map((h,i)=>`<tr><td>${i+1}</td><td>${dmy(h.date)}</td><td>${WD[new Date(h.date+"T00:00:00").getDay()]}</td><td>${esc(h.name)}</td><td>${esc(orgName(h.orgId||"*"))}</td><td><button class="btn r s" onclick="delHol('${h.date}','${h.orgId||"*"}')">Hatayein</button></td></tr>`).join("")||'<tr><td colspan="6">Is saal ki koi chhutti nahi jodi gayi</td></tr>')}
+async function addHol(){const f=$("hf").value,t=$("ht").value||f,n=$("hn").value.trim(),o=$("hoo").value||"*";
  if(!f)return toast("Tarikh chunein");if(t<f)return toast("'Tak' tarikh 'From' se pehle nahi ho sakti");if(!n)return toast("Chhutti ka naam likhein");
- const r=await api({a:"adminAddHoliday",from:f,to:t,name:n});if(!r.ok)return toast(r.msg);
- toast(r.added+" din jude"+(r.skipped?", "+r.skipped+" pehle se the":""));$("hn").value="";$("ht").value="";refreshHol()}
-async function delHol(dt){if(!confirm(dmy(dt)+" ki chhutti hatayein?"))return;const r=await api({a:"adminDelHoliday",date:dt});if(!r.ok)return toast(r.msg);toast("Chhutti hata di gayi");refreshHol()}
+ const r=await api({a:"adminAddHoliday",from:f,to:t,name:n,orgId:o});if(!r.ok)return toast(r.msg);
+ toast(r.added+" din jude"+(r.skipped?", "+r.skipped+" pehle se the":""));$("hn").value="";$("ht").value="";await fresh();holList()}
+async function delHol(dt,o){if(!confirm(dmy(dt)+" ki chhutti ("+orgName(o)+") hatayein?"))return;const r=await api({a:"adminDelHoliday",date:dt,orgId:o});if(!r.ok)return toast(r.msg);toast("Chhutti hata di gayi");await fresh();holList()}
 
 /* ---------- report ---------- */
 const mm=(a,b)=>{if(!a||!b)return 0;const[x,y]=a.split(":"),[p,q]=b.split(":"),m=(p*60+ +q)-(x*60+ +y);return m>0?m:0};
@@ -227,10 +307,11 @@ async function report(){
  if(!f||!t||f>t)return toast("Sahi date chunein (From, To se pehle ho)");
  if((new Date(t)-new Date(f))/864e5>366)return toast("Zyada se zyada 1 saal ka range chunein");
  const r=await api({a:"adminData",from:f,to:t});if(!r.ok)return toast(r.msg);sync(r);$("rs").value=sel;
- const days=eachDay(f,t),now=new Date(),today=iso(now),late=now.getHours()>=20,HS={};hols.forEach(h=>HS[h.date]=h.name);
- const att=r.att.filter(x=>!sel||x.mobile===sel),map={};att.forEach(x=>map[x.mobile+"|"+x.date]=x);const has=new Set(att.map(x=>x.mobile));
- const list=users.filter(s=>(!sel||s.mobile===sel)&&(s.active==="YES"||has.has(s.mobile)));
- sumRows=list.map(s=>{let P=0,OW=0,CL=0,ML=0,A=0,AU=0,W=0,H=0,mn=0,hd=0;
+ const days=eachDay(f,t),now=new Date(),today=iso(now),late=now.getHours()>=20;
+ const all=r.att.filter(x=>!sel||x.mobile===sel),map={},hasAny=new Set(all.map(x=>x.mobile));all.forEach(x=>map[x.mobile+"|"+x.date]=x);
+ const list=users.filter(s=>(!sel||s.mobile===sel)&&inScope(s)&&(s.active==="YES"||hasAny.has(s.mobile))).sort((a,b)=>orgName(a.orgId).localeCompare(orgName(b.orgId))||a.name.localeCompare(b.name));
+ const lset=new Set(list.map(s=>s.mobile));
+ sumRows=list.map(s=>{let P=0,OW=0,CL=0,ML=0,A=0,AU=0,W=0,H=0,mn=0,hd=0;const HS=hsFor(s.orgId);
   const hr=x=>{const m=mm(x.inTime,x.outTime);if(m){mn+=m;hd++}};
   const cells=days.map(ds=>{const x=map[s.mobile+"|"+ds],dw=new Date(ds+"T00:00:00").getDay();
    if(x){const k=x.status;
@@ -244,49 +325,48 @@ async function report(){
    if(ds>today||(ds===today&&!late))return"";
    A++;W++;return"A"});
   return{s,P,OW,CL,ML,A,AU,W,H,mn,hd,pct:W?Math.round((P+OW)/W*100):0,cells}});
- rows=att.slice().sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name));
- lastTy=ty;lastTitle="Attendance_Report_"+f+"_to_"+t;
- const nm=sel?esc((users.find(u=>u.mobile===sel)||{}).name||""):"Sabhi staff",org=esc(cfg.org||"Attendance"),per=dmy(f)+" se "+dmy(t),hl=hols.filter(h=>h.date>=f&&h.date<=t);
- let h=`<div class="sheet"><div class="lh"><div><h2>${org}</h2><div class="sub">ATTENDANCE REPORT &bull; ${ty==="sum"?"Summary":ty==="reg"?"Register":ty==="det"?"Details":"Poori report"}</div></div>
+ rows=all.filter(x=>!CUR||x.orgId===CUR||lset.has(x.mobile)).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.name.localeCompare(b.name));
+ lastTy=ty;lastTitle="Attendance_Report_"+(CUR?orgName(CUR).replace(/[^A-Za-z0-9]+/g,"_")+"_":"")+f+"_to_"+t;
+ const nm=sel?esc((users.find(u=>u.mobile===sel)||{}).name||""):"Sabhi staff",orgL=esc(CUR?orgName(CUR):"Sabhi sansthan"),per=dmy(f)+" se "+dmy(t);
+ const hl=hols.filter(h=>h.date>=f&&h.date<=t&&(!CUR||h.orgId==="*"||!h.orgId||h.orgId===CUR));
+ let h=`<div class="sheet"><div class="lh"><div><h2>${orgL}</h2><div class="sub">ATTENDANCE REPORT &bull; ${ty==="sum"?"Summary":ty==="reg"?"Register":ty==="det"?"Details":"Poori report"}</div></div>
   <div class="meta">Avadhi: <b>${per}</b> (${days.length} din)<br>Staff: <b>${nm}</b><br>Taiyar kiya: ${dmy(today)} ${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}</div></div>`;
  if(ty==="full"||ty==="sum")h+=summaryHTML(hl);
  if(ty==="full"||ty==="reg")h+=(ty==="full"?'<div class="pb"></div>':"")+registerHTML(days);
  if(ty==="full"||ty==="det")h+=(ty==="full"?'<div class="pb"></div>':"")+detailsHTML();
- h+=`<div class="sign"><div>Taiyar karne wale ke hastakshar</div><div>Pradhanacharya / Adhikrit hastakshar</div></div><div class="gen">Computer dwara taiyar report &bull; ${org}</div></div>`;
+ h+=`<div class="sign"><div>Taiyar karne wale ke hastakshar</div><div>Pradhanacharya / Adhikrit hastakshar</div></div><div class="gen">Computer dwara taiyar report &bull; ${orgL}</div></div>`;
  $("rout").innerHTML=h;$("rout").scrollIntoView({behavior:"smooth"})}
 
-function summaryHTML(hl){const T={W:0,P:0,OW:0,CL:0,ML:0,A:0,AU:0,mn:0};
+function summaryHTML(hl){const T={W:0,P:0,OW:0,CL:0,ML:0,A:0,AU:0,mn:0},oc=!CUR;
  const b=sumRows.map((o,i)=>{for(const k in T)T[k]+=o[k];
-  return`<tr><td class="c">${i+1}</td><td>${esc(o.s.name)}</td><td>${esc(o.s.designation)}</td><td class="n">${o.W}</td><td class="n">${o.P}</td><td class="n">${o.OW}</td><td class="n">${o.CL}</td><td class="n">${o.ML}</td><td class="n">${o.A}</td><td class="n">${o.AU}</td><td class="n">${o.pct}%</td><td class="n">${fh(o.mn)}</td><td class="n">${o.hd?fh(Math.round(o.mn/o.hd)):"-"}</td></tr>`}).join("");
- const hh=hl.length?`<div class="leg"><b>Chhuttiyan (${hl.length}):</b> ${hl.map(h=>dmy(h.date).slice(0,5)+" "+esc(h.name)).join(", ")}</div>`:"";
- return`<h4>1. Staff-wise Summary</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Naam</th><th>Pad</th><th>Karya divas</th><th>Present</th><th>Office Work</th><th>CL</th><th>ML</th><th>Absent</th><th>Auto-out (Absent)</th><th>Upasthiti %</th><th>Kul ghante</th><th>Ausat / din</th></tr></thead><tbody>${b||'<tr><td colspan="13" class="c">Koi staff nahi</td></tr>'}</tbody>
- <tfoot><tr><td></td><td colspan="2">Kul</td><td class="n">${T.W}</td><td class="n">${T.P}</td><td class="n">${T.OW}</td><td class="n">${T.CL}</td><td class="n">${T.ML}</td><td class="n">${T.A}</td><td class="n">${T.AU}</td><td class="n">${T.W?Math.round((T.P+T.OW)/T.W*100):0}%</td><td class="n">${fh(T.mn)}</td><td></td></tr></tfoot></table></div>
+  return`<tr><td class="c">${i+1}</td><td>${esc(o.s.name)}</td>${oc?`<td>${esc(orgName(o.s.orgId))}</td>`:""}<td>${esc(o.s.designation)}</td><td class="n">${o.W}</td><td class="n">${o.P}</td><td class="n">${o.OW}</td><td class="n">${o.CL}</td><td class="n">${o.ML}</td><td class="n">${o.A}</td><td class="n">${o.AU}</td><td class="n">${o.pct}%</td><td class="n">${fh(o.mn)}</td><td class="n">${o.hd?fh(Math.round(o.mn/o.hd)):"-"}</td></tr>`}).join("");
+ const hh=hl.length?`<div class="leg"><b>Chhuttiyan (${hl.length}):</b> ${hl.map(h=>dmy(h.date).slice(0,5)+" "+esc(h.name)+(oc&&h.orgId!=="*"?" ("+esc(orgName(h.orgId))+")":"")).join(", ")}</div>`:"";
+ const nc=oc?14:13;
+ return`<h4>1. Staff-wise Summary</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Naam</th>${oc?"<th>Sansthan</th>":""}<th>Pad</th><th>Karya divas</th><th>Present</th><th>Office Work</th><th>CL</th><th>ML</th><th>Absent</th><th>Auto-out (Absent)</th><th>Upasthiti %</th><th>Kul ghante</th><th>Ausat / din</th></tr></thead><tbody>${b||`<tr><td colspan="${nc}" class="c">Koi staff nahi</td></tr>`}</tbody>
+ <tfoot><tr><td></td><td colspan="${oc?3:2}">Kul</td><td class="n">${T.W}</td><td class="n">${T.P}</td><td class="n">${T.OW}</td><td class="n">${T.CL}</td><td class="n">${T.ML}</td><td class="n">${T.A}</td><td class="n">${T.AU}</td><td class="n">${T.W?Math.round((T.P+T.OW)/T.W*100):0}%</td><td class="n">${fh(T.mn)}</td><td></td></tr></tfoot></table></div>
  <div class="leg">Karya divas = Ravivar aur chhutti ke bina beete hue din (in din upasthit hone par wo din bhi judta hai). Upasthiti % = (Present + Office Work) &divide; Karya divas. CL/ML chhutti ke din alag ginte jaate hain. Auto-out: shaam 8 baje tak Check Out nahi hua, isliye Absent ginta gaya.</div>${hh}`}
 
 function registerHTML(days){
  if(days.length>31)return`<h4>2. Register (P / A)</h4><div class="note">Register ke liye 31 din tak ka range chunein. Lambe range ke liye Summary ya Details dekhein.</div>`;
- const wd=["र","सो","मं","बु","गु","शु","श"],hd=days.map(d=>`<th>${+d.slice(8)}<small>${wd[new Date(d+"T00:00:00").getDay()]}</small></th>`).join("");
- const b=sumRows.map((o,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(o.s.name)}</td>${o.cells.map(c=>`<td class="${c?"c"+c:""}">${c==="X"?"A*":c}</td>`).join("")}<td class="cP">${o.P+o.OW}</td><td class="cCL">${o.CL+o.ML}</td><td class="cA">${o.A}</td></tr>`).join("");
+ const wd=["र","सो","मं","बु","गु","शु","श"],hd=days.map(d=>`<th>${+d.slice(8)}<small>${wd[new Date(d+"T00:00:00").getDay()]}</small></th>`).join(""),oc=!CUR;
+ const b=sumRows.map((o,i)=>`<tr><td>${i+1}</td><td class="nm">${esc(o.s.name)}${oc?` <small style="color:#667">(${esc(orgName(o.s.orgId))})</small>`:""}</td>${o.cells.map(c=>`<td class="${c?"c"+c:""}">${c==="X"?"A*":c}</td>`).join("")}<td class="cP">${o.P+o.OW}</td><td class="cCL">${o.CL+o.ML}</td><td class="cA">${o.A}</td></tr>`).join("");
  return`<h4>2. Din-wise Register</h4><div class="tw"><table class="reg"><thead><tr><th>#</th><th class="nm">Naam</th>${hd}<th>P</th><th>L</th><th>A</th></tr></thead><tbody>${b}</tbody></table></div>
  <div class="leg"><span><b>P</b> Present</span><span><b>A</b> Absent</span><span><b>A*</b> Auto Check-out (Absent)</span><span><b>CL</b> Casual Leave</span><span><b>ML</b> Medical Leave</span><span><b>OW</b> Office Work</span><span><b>H</b> Chhutti</span><span><b>S</b> Ravivar</span><span>Khali = abhi baaki din</span><br>Aakhri 3 stambh: P = Present + Office Work, L = CL + ML, A = Absent</div>`}
 
-function detailsHTML(){
- const cl=k=>k==="AUTO"?"a":k==="CL"||k==="ML"?"l":k==="OW"?"b":"p";
+function detailsHTML(){const oc=!CUR,
+ cl=k=>k==="AUTO"?"a":k==="CL"||k==="ML"?"l":k==="OW"?"b":"p";
  const b=rows.map((r,i)=>{const k=r.status||"",hrs=(k===""||k==="FULL"||k==="OW")?fh(mm(r.inTime,r.outTime)):"-";
-  return`<tr><td class="c">${i+1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td><td>${r.mobile}</td><td class="c">${r.inTime||"-"}</td><td class="c">${r.outTime||"-"}${k==="AUTO"?" (auto)":""}</td><td class="n">${hrs}</td><td class="c"><span class="tag ${cl(k)}">${SLB[k]||k}</span></td><td class="n">${r.inDist?r.inDist+" m":"-"}</td><td class="nop">${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>`:"-"}</td></tr>`}).join("");
- return`<h4>3. Poora Vivaran (Details)</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Tarikh</th><th>Naam</th><th>Mobile</th><th>In</th><th>Out</th><th>Ghante</th><th>Sthiti</th><th>In doori</th><th class="nop">Map</th></tr></thead><tbody>${b||'<tr><td colspan="10" class="c">Is avadhi mein koi record nahi</td></tr>'}</tbody></table></div>`}
+  return`<tr><td class="c">${i+1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td>${oc?`<td>${esc(orgName(r.orgId||orgOfUser(r.mobile)))}</td>`:""}<td>${r.mobile}</td><td class="c">${r.inTime||"-"}</td><td class="c">${r.outTime||"-"}${k==="AUTO"?" (auto)":""}</td><td class="n">${hrs}</td><td class="c"><span class="tag ${cl(k)}">${SLB[k]||k}</span></td><td class="n">${r.inDist?r.inDist+" m":"-"}</td><td class="nop">${r.inLat?`<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>`:"-"}</td></tr>`}).join("");
+ return`<h4>3. Poora Vivaran (Details)</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Tarikh</th><th>Naam</th>${oc?"<th>Sansthan</th>":""}<th>Mobile</th><th>In</th><th>Out</th><th>Ghante</th><th>Sthiti</th><th>In doori</th><th class="nop">Map</th></tr></thead><tbody>${b||`<tr><td colspan="${oc?11:10}" class="c">Is avadhi mein koi record nahi</td></tr>`}</tbody></table></div>`}
 
 function printRep(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");const old=document.title;document.title=lastTitle;window.onafterprint=()=>{document.title=old};print()}
 function csv(){if(!$("rout").innerHTML)return toast("Pehle 'Report dekhein' dabayein");
- let c;if(lastTy==="sum")c=[["Naam","Pad","Mobile","Karya divas","Present","Office Work","CL","ML","Absent","Auto-out Absent","Chhuttiyan","Upasthiti %","Kul ghante"],...sumRows.map(o=>[o.s.name,o.s.designation,o.s.mobile,o.W,o.P,o.OW,o.CL,o.ML,o.A,o.AU,o.H,o.pct+"%",fh(o.mn)])];
- else c=[["Date","Name","Mobile","In","Out","Hours","Status","InDistance(m)","OutDistance(m)"],...rows.map(r=>{const k=r.status||"";return[dmy(r.date),r.name,r.mobile,r.inTime,r.outTime,(k===""||k==="FULL"||k==="OW")?fh(mm(r.inTime,r.outTime)):"",SLB[k]||k,r.inDist,r.outDist]})];
+ let c;if(lastTy==="sum")c=[["Sansthan","Naam","Pad","Mobile","Karya divas","Present","Office Work","CL","ML","Absent","Auto-out Absent","Chhuttiyan","Upasthiti %","Kul ghante"],...sumRows.map(o=>[orgName(o.s.orgId),o.s.name,o.s.designation,o.s.mobile,o.W,o.P,o.OW,o.CL,o.ML,o.A,o.AU,o.H,o.pct+"%",fh(o.mn)])];
+ else c=[["Date","Sansthan","Name","Mobile","In","Out","Hours","Status","InDistance(m)","OutDistance(m)"],...rows.map(r=>{const k=r.status||"";return[dmy(r.date),orgName(r.orgId||orgOfUser(r.mobile)),r.name,r.mobile,r.inTime,r.outTime,(k===""||k==="FULL"||k==="OW")?fh(mm(r.inTime,r.outTime)):"",SLB[k]||k,r.inDist,r.outDist]})];
  const t=c.map(a=>a.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n"),a=document.createElement("a");
  a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv"}));a.download=lastTitle+(lastTy==="sum"?"_summary":"")+".csv";a.click()}
 
 /* ---------- settings ---------- */
-function myLoc(){navigator.geolocation.getCurrentPosition(p=>{$("la").value=p.coords.latitude.toFixed(6);$("lo").value=p.coords.longitude.toFixed(6);toast("Location mil gayi")},()=>toast("Location permission dein"),{enableHighAccuracy:true})}
-async function saveSet(){const la=parseFloat($("la").value),lo=parseFloat($("lo").value);if(isNaN(la)||isNaN(lo))return toast("Latitude/Longitude dalein");
- const r=await api({a:"adminSaveConfig",org:$("on").value.trim(),lat:la,lng:lo,radius:parseInt($("ra").value)||100});toast(r.ok?"Saved":r.msg);if(r.ok){cfg={org:$("on").value.trim(),lat:la,lng:lo,radius:$("ra").value};$("org").textContent=cfg.org||"Attendance Admin"}}
 async function saveAuth(){const u=$("nu").value.trim(),p=$("np").value;if(u.length<4||p.length<8)return toast("ID 4+ aur Password 8+ akshar ka rakhein");
  if(!confirm("Admin ID/Password badal dein? Dobara login karna hoga."))return;
  const r=await api({a:"adminSaveAuth",user:u,newPass:p});if(!r.ok)return toast(r.msg);toast("Badal gaya, dobara login karein");setTimeout(logout,1200)}
