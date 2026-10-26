@@ -2,1114 +2,916 @@
 <html lang="hi">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Attendance Admin</title>
-    <style>
-         :root {
-            --bg: #eef2f7;
-            --ink: #14213d;
-            --mut: #66758a;
-            --pri: #0b5ed7;
-            --ok: #12855a;
-            --bad: #c62f3e;
-            --line: #dce3ec;
-            --navy: #0f2a43
-        }
-        
-        * {
-            box-sizing: border-box
-        }
-        
-        html,
-        body {
-            margin: 0
-        }
-        
-        body {
-            font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--ink);
-            font-size: 15px
-        }
-        
-        .hdr {
-            background: var(--navy);
-            color: #fff;
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 5;
-            flex-wrap: wrap
-        }
-        
-        .hdr b {
-            font-size: 17px
-        }
-        
-        .hdr .rt {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap
-        }
-        
-        .hdr button {
-            background: #ffffff22;
-            color: #fff;
-            border: 0;
-            padding: 7px 12px;
-            border-radius: 8px
-        }
-        
-        .hdr select {
-            background: #ffffff22;
-            color: #fff;
-            border: 1px solid #ffffff44;
-            border-radius: 8px;
-            padding: 7px 10px;
-            max-width: 220px;
-            font-size: 14px
-        }
-        
-        .hdr select option {
-            color: #14213d
-        }
-        
-        nav {
-            display: flex;
-            gap: 4px;
-            overflow-x: auto;
-            background: #fff;
-            border-bottom: 1px solid var(--line);
-            padding: 6px 10px;
-            position: sticky;
-            top: 52px;
-            z-index: 4
-        }
-        
-        nav button {
-            flex: 1;
-            white-space: nowrap;
-            border: 0;
-            background: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            color: var(--mut)
-        }
-        
-        nav button.on {
-            background: #e8f0fe;
-            color: var(--pri)
-        }
-        
-        main {
-            max-width: 1150px;
-            margin: auto;
-            padding: 14px
-        }
-        
-        .card {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 14px
-        }
-        
-        h3 {
-            margin: 0 0 10px;
-            font-size: 16px
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-bottom: 14px
-        }
-        
-        .stat {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px
-        }
-        
-        .stat small {
-            color: var(--mut)
-        }
-        
-        .stat div {
-            font-size: 28px;
-            font-weight: 700;
-            margin-top: 4px
-        }
-        
-        label {
-            display: block;
-            font-size: 13px;
-            color: var(--mut);
-            margin: 8px 0 3px
-        }
-        
-        input,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cfd5e1;
-            border-radius: 8px;
-            font-size: 15px;
-            background: #fff
-        }
-        
-        .row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
-            gap: 10px;
-            align-items: end
-        }
-        
-        .btn {
-            background: var(--pri);
-            color: #fff;
-            border: 0;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer
-        }
-        
-        .btn.g {
-            background: #eef1f6;
-            color: var(--ink)
-        }
-        
-        .btn.r {
-            background: var(--bad)
-        }
-        
-        .btn.s {
-            padding: 6px 10px;
-            font-size: 13px
-        }
-        
-        .tw {
-            overflow-x: auto
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 560px
-        }
-        
-        th,
-        td {
-            padding: 9px 8px;
-            border-bottom: 1px solid var(--line);
-            text-align: left;
-            font-size: 14px;
-            white-space: nowrap
-        }
-        
-        th {
-            background: #f6f8fb;
-            color: var(--mut)
-        }
-        
-        .tag {
-            padding: 2px 9px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600
-        }
-        
-        .tag.p {
-            background: #dff5ea;
-            color: var(--ok)
-        }
-        
-        .tag.a {
-            background: #fde4e6;
-            color: var(--bad)
-        }
-        
-        .tag.l {
-            background: #fdf0d5;
-            color: #8a5a00
-        }
-        
-        .tag.b {
-            background: #e0ecff;
-            color: #1d4a85
-        }
-        
-        .tag.h {
-            background: #ece6ff;
-            color: #5a3fb0
-        }
-        
-        #login {
-            max-width: 380px;
-            margin: 10vh auto;
-            padding: 0 16px
-        }
-        
-        #msg {
-            color: var(--bad);
-            font-size: 13px;
-            margin-top: 8px;
-            min-height: 18px
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--ink);
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 30px;
-            z-index: 9;
-            display: none;
-            max-width: 92vw;
-            text-align: center
-        }
-        
-        .load {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--pri);
-            z-index: 20;
-            display: none
-        }
-        
-        .note {
-            background: #fff4d6;
-            color: #7a5200;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 13px;
-            margin-top: 10px;
-            line-height: 1.5
-        }
-        
-        [hidden] {
-            display: none !important
-        }
-        /* ---- report sheet (screen + print) ---- */
-        
-        .sheet {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 6px;
-            padding: 22px;
-            margin-bottom: 14px;
-            color: #111
-        }
-        
-        .lh {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 14px;
-            border-bottom: 3px double #0f2a43;
-            padding-bottom: 10px;
-            margin-bottom: 14px;
-            flex-wrap: wrap
-        }
-        
-        .lh h2 {
-            margin: 0;
-            font-size: 22px;
-            color: #0f2a43;
-            letter-spacing: .3px
-        }
-        
-        .lh .sub {
-            font-size: 13px;
-            color: #445;
-            margin-top: 3px
-        }
-        
-        .lh .meta {
-            font-size: 12.5px;
-            color: #334;
-            text-align: right;
-            line-height: 1.6
-        }
-        
-        .sheet h4 {
-            margin: 18px 0 8px;
-            font-size: 14px;
-            color: #0f2a43;
-            text-transform: uppercase;
-            letter-spacing: .6px;
-            border-left: 4px solid #0b5ed7;
-            padding-left: 8px
-        }
-        
-        .sheet table {
-            min-width: 0;
-            border: 1px solid #b9c4d2
-        }
-        
-        .sheet th,
-        .sheet td {
-            border: 1px solid #cdd6e1;
-            padding: 6px 7px;
-            font-size: 12.5px
-        }
-        
-        .sheet th {
-            background: #e9eff7;
-            color: #0f2a43
-        }
-        
-        .sheet tfoot td {
-            background: #f3f6fa;
-            font-weight: 700
-        }
-        
-        .sheet td.n {
-            text-align: right
-        }
-        
-        .sheet td.c,
-        .sheet th.c {
-            text-align: center
-        }
-        
-        .reg td,
-        .reg th {
-            padding: 3px 2px;
-            text-align: center;
-            font-size: 11.5px;
-            min-width: 23px
-        }
-        
-        .reg td.nm,
-        .reg th.nm {
-            text-align: left;
-            padding: 4px 6px;
-            min-width: 130px;
-            white-space: nowrap
-        }
-        
-        .reg th small {
-            display: block;
-            font-weight: 400;
-            color: #667;
-            font-size: 9.5px
-        }
-        
-        .cP {
-            color: #0b6b49;
-            font-weight: 700;
-            background: #e3f6ee
-        }
-        
-        .cA {
-            color: #b3202e;
-            font-weight: 700;
-            background: #fde8ea
-        }
-        
-        .cX {
-            color: #fff;
-            font-weight: 700;
-            background: #c62f3e
-        }
-        
-        .cS {
-            color: #8795a6;
-            background: #edf0f4
-        }
-        
-        .cH {
-            color: #5a3fb0;
-            background: #ece6ff;
-            font-weight: 700
-        }
-        
-        .cCL,
-        .cML {
-            color: #8a5a00;
-            background: #fdf0d5;
-            font-weight: 700
-        }
-        
-        .cOW {
-            color: #1d4a85;
-            background: #e0ecff;
-            font-weight: 700
-        }
-        
-        .leg {
-            font-size: 11.5px;
-            color: #445;
-            margin-top: 8px
-        }
-        
-        .leg span {
-            margin-right: 14px
-        }
-        
-        .sign {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 46px;
-            font-size: 12.5px;
-            color: #334
-        }
-        
-        .sign div {
-            border-top: 1px solid #556;
-            padding-top: 6px;
-            min-width: 190px;
-            text-align: center
-        }
-        
-        .gen {
-            font-size: 11px;
-            color: #778;
-            text-align: center;
-            margin-top: 16px
-        }
-        
-        .pb {
-            page-break-before: always
-        }
-        
-        @media print {
-            @page {
-                size: A4 landscape;
-                margin: 10mm
-            }
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact
-            }
-            body {
-                background: #fff;
-                font-size: 11px
-            }
-            .hdr,
-            nav,
-            .noprint,
-            .toast,
-            .load,
-            #login {
-                display: none !important
-            }
-            main {
-                padding: 0;
-                max-width: none
-            }
-            section:not(#t-rep) {
-                display: none !important
-            }
-            .sheet {
-                border: 0;
-                padding: 0;
-                margin: 0
-            }
-            .tw {
-                overflow: visible
-            }
-            .nop {
-                display: none !important
-            }
-            tr {
-                page-break-inside: avoid
-            }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Attendance Admin</title>
+  <style>
+    :root {
+      --bg: #eef2f7;
+      --ink: #14213d;
+      --mut: #66758a;
+      --pri: #0b5ed7;
+      --ok: #12855a;
+      --bad: #c62f3e;
+      --line: #dce3ec;
+      --navy: #0f2a43
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 15px
+    }
+
+    .hdr {
+      background: var(--navy);
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      flex-wrap: wrap
+    }
+
+    .hdr b {
+      font-size: 17px
+    }
+
+    .hdr .rt {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .hdr button {
+      background: #ffffff22;
+      color: #fff;
+      border: 0;
+      padding: 7px 12px;
+      border-radius: 8px
+    }
+
+    .hdr select {
+      background: #ffffff22;
+      color: #fff;
+      border: 1px solid #ffffff44;
+      border-radius: 8px;
+      padding: 7px 10px;
+      max-width: 220px;
+      font-size: 14px
+    }
+
+    .hdr select option {
+      color: #14213d
+    }
+
+    nav {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 6px 10px;
+      position: sticky;
+      top: 52px;
+      z-index: 4
+    }
+
+    nav button {
+      flex: 1;
+      white-space: nowrap;
+      border: 0;
+      background: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--mut)
+    }
+
+    nav button.on {
+      background: #e8f0fe;
+      color: var(--pri)
+    }
+
+    main {
+      max-width: 1150px;
+      margin: auto;
+      padding: 14px
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 16px
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .stat {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px
+    }
+
+    .stat small {
+      color: var(--mut)
+    }
+
+    .stat div {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 4px
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--mut);
+      margin: 8px 0 3px
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cfd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #fff
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 10px;
+      align-items: end
+    }
+
+    .btn {
+      background: var(--pri);
+      color: #fff;
+      border: 0;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer
+    }
+
+    .btn.g {
+      background: #eef1f6;
+      color: var(--ink)
+    }
+
+    .btn.r {
+      background: var(--bad)
+    }
+
+    .btn.s {
+      padding: 6px 10px;
+      font-size: 13px
+    }
+
+    .tw {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px
+    }
+
+    th,
+    td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+      white-space: nowrap
+    }
+
+    th {
+      background: #f6f8fb;
+      color: var(--mut)
+    }
+
+    .tag {
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .tag.p {
+      background: #dff5ea;
+      color: var(--ok)
+    }
+
+    .tag.a {
+      background: #fde4e6;
+      color: var(--bad)
+    }
+
+    .tag.l {
+      background: #fdf0d5;
+      color: #8a5a00
+    }
+
+    .tag.b {
+      background: #e0ecff;
+      color: #1d4a85
+    }
+
+    .tag.h {
+      background: #ece6ff;
+      color: #5a3fb0
+    }
+
+    #login {
+      max-width: 380px;
+      margin: 10vh auto;
+      padding: 0 16px
+    }
+
+    #msg {
+      color: var(--bad);
+      font-size: 13px;
+      margin-top: 8px;
+      min-height: 18px
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      z-index: 9;
+      display: none;
+      max-width: 92vw;
+      text-align: center
+    }
+
+    .load {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--pri);
+      z-index: 20;
+      display: none
+    }
+
+    .note {
+      background: #fff4d6;
+      color: #7a5200;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      margin-top: 10px;
+      line-height: 1.5
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    /* ---- report sheet (screen + print) ---- */
+    .sheet {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 22px;
+      margin-bottom: 14px;
+      color: #111
+    }
+
+    .lh {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      border-bottom: 3px double #0f2a43;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap
+    }
+
+    .lh h2 {
+      margin: 0;
+      font-size: 22px;
+      color: #0f2a43;
+      letter-spacing: .3px
+    }
+
+    .lh .sub {
+      font-size: 13px;
+      color: #445;
+      margin-top: 3px
+    }
+
+    .lh .meta {
+      font-size: 12.5px;
+      color: #334;
+      text-align: right;
+      line-height: 1.6
+    }
+
+    .sheet h4 {
+      margin: 18px 0 8px;
+      font-size: 14px;
+      color: #0f2a43;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      border-left: 4px solid #0b5ed7;
+      padding-left: 8px
+    }
+
+    .sheet table {
+      min-width: 0;
+      border: 1px solid #b9c4d2
+    }
+
+    .sheet th,
+    .sheet td {
+      border: 1px solid #cdd6e1;
+      padding: 6px 7px;
+      font-size: 12.5px
+    }
+
+    .sheet th {
+      background: #e9eff7;
+      color: #0f2a43
+    }
+
+    .sheet tfoot td {
+      background: #f3f6fa;
+      font-weight: 700
+    }
+
+    .sheet td.n {
+      text-align: right
+    }
+
+    .sheet td.c,
+    .sheet th.c {
+      text-align: center
+    }
+
+    .reg td,
+    .reg th {
+      padding: 3px 2px;
+      text-align: center;
+      font-size: 11.5px;
+      min-width: 23px
+    }
+
+    .reg td.nm,
+    .reg th.nm {
+      text-align: left;
+      padding: 4px 6px;
+      min-width: 130px;
+      white-space: nowrap
+    }
+
+    .reg th small {
+      display: block;
+      font-weight: 400;
+      color: #667;
+      font-size: 9.5px
+    }
+
+    .cP {
+      color: #0b6b49;
+      font-weight: 700;
+      background: #e3f6ee
+    }
+
+    .cA {
+      color: #b3202e;
+      font-weight: 700;
+      background: #fde8ea
+    }
+
+    .cX {
+      color: #fff;
+      font-weight: 700;
+      background: #c62f3e
+    }
+
+    .cS {
+      color: #8795a6;
+      background: #edf0f4
+    }
+
+    .cH {
+      color: #5a3fb0;
+      background: #ece6ff;
+      font-weight: 700
+    }
+
+    .cCL,
+    .cML {
+      color: #8a5a00;
+      background: #fdf0d5;
+      font-weight: 700
+    }
+
+    .cOW {
+      color: #1d4a85;
+      background: #e0ecff;
+      font-weight: 700
+    }
+
+    .leg {
+      font-size: 11.5px;
+      color: #445;
+      margin-top: 8px
+    }
+
+    .leg span {
+      margin-right: 14px
+    }
+
+    .sign {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 46px;
+      font-size: 12.5px;
+      color: #334
+    }
+
+    .sign div {
+      border-top: 1px solid #556;
+      padding-top: 6px;
+      min-width: 190px;
+      text-align: center
+    }
+
+    .gen {
+      font-size: 11px;
+      color: #778;
+      text-align: center;
+      margin-top: 16px
+    }
+
+    .pb {
+      page-break-before: always
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm
+      }
+
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact
+      }
+
+      body {
+        background: #fff;
+        font-size: 11px
+      }
+
+      .hdr,
+      nav,
+      .noprint,
+      .toast,
+      .load,
+      #login {
+        display: none !important
+      }
+
+      main {
+        padding: 0;
+        max-width: none
+      }
+
+      section:not(#t-rep) {
+        display: none !important
+      }
+
+      .sheet {
+        border: 0;
+        padding: 0;
+        margin: 0
+      }
+
+      .tw {
+        overflow: visible
+      }
+
+      .nop {
+        display: none !important
+      }
+
+      tr {
+        page-break-inside: avoid
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class="load" id="ld"></div>
+  <div class="load" id="ld"></div>
 
-    <div id="login">
-        <div class="card">
-            <h3 style="font-size:20px">Admin Login</h3>
-            <label>Admin ID</label><input id="au" autocomplete="username" autocapitalize="off">
-            <label>Password</label><input id="pw" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-            <button class="btn" style="width:100%;margin-top:14px" onclick="doLogin()">Login</button>
-            <div id="msg"></div>
-        </div>
+  <div id="login">
+    <div class="card">
+      <h3 style="font-size:20px">Admin Login</h3>
+      <label>Admin ID</label><input id="au" autocomplete="username" autocapitalize="off"
+        onkeydown="if(event.key==='Enter')$('pw').focus()">
+      <label>Password</label><input id="pw" type="password" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" style="width:100%;margin-top:14px" onclick="doLogin()">Login</button>
+      <div id="msg"></div>
+      <div style="color:#66758a;font-size:12px;margin-top:6px">Super Admin aur Sansthan Admin, dono yahin se login karte hain.</div>
     </div>
+  </div>
 
-    <div id="app" hidden>
-        <div class="hdr"><b>Attendance Admin</b>
-            <div class="rt"><span id="who" class="tag" style="background:#ffffff22;color:#fff"></span><select id="osw" onchange="setOrg(this.value)" title="Sansthan chunein"></select><button onclick="logout()">Logout</button>
-            </div>
+  <div id="app" hidden>
+    <div class="hdr"><b>Attendance Admin</b>
+      <div class="rt"><span id="who" class="tag" style="background:#ffffff22;color:#fff"></span><select id="osw"
+          onchange="setOrg(this.value)" title="Sansthan chunein"></select><button onclick="logout()">Logout</button>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+    <main>
+      <div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"></div>
+
+      <section id="t-dash">
+        <div class="note" id="hbanner" hidden style="background:#ece6ff;color:#43359a;margin:0 0 14px"></div>
+        <div class="grid" id="stats"></div>
+        <div class="card">
+          <h3>Aaj ki attendance <span id="today"></span></h3>
+          <div class="tw">
+            <table id="tdash"></table>
+          </div>
         </div>
-        <nav id="nav"></nav>
-        <main>
-            <div class="note" id="warn" hidden style="background:#fde4e6;color:#9a2630;margin:0 0 14px"></div>
+      </section>
 
-            <section id="t-dash">
-                <div class="note" id="hbanner" hidden style="background:#ece6ff;color:#43359a;margin:0 0 14px"></div>
-                <div class="grid" id="stats"></div>
-                <div class="card">
-                    <h3>Aaj ki attendance <span id="today"></span></h3>
-                    <div class="tw">
-                        <table id="tdash"></table>
-                    </div>
-                </div>
-            </section>
+      <section id="t-orgs" hidden>
+        <div class="card">
+          <h3 id="otitle">Naya sansthan banayein</h3><input type="hidden" id="oid">
+          <div class="row">
+            <div><label>Sansthan ka naam</label><input id="on" maxlength="60" placeholder="jaise Shree Vidyalaya"></div>
+            <div><label>Latitude</label><input id="la" inputmode="decimal"></div>
+            <div><label>Longitude</label><input id="lo" inputmode="decimal"></div>
+            <div><label>Radius (meter, 30 se 2000)</label><input id="ra" type="number" value="100"></div>
+            <div><label>ID Code (3 akshar; khali = naam ke pehle 3 akshar)</label><input id="oc" maxlength="3"
+                autocapitalize="off" placeholder="jaise shr"></div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri
+              current location lo</button><button class="btn" onclick="saveOrg()">Save</button><button class="btn g"
+              onclick="clearOrgForm()">Naya form</button></div>
+          <div class="note">Location ke liye us sansthan ke andar khade hokar "Meri current location lo" dabayein (phone
+            par, HTTPS link se). Sansthan banane ke baad Staff tab se staff ko us sansthan mein jodein. Har staff ki
+            User ID apne aap banti hai: sansthan ke pehle 3 akshar (chhote) + 3 ank ka kram, jaise <b>shr001</b>,
+            <b>shr002</b>. Is code se shuru hone wali ID kisi aur sansthan mein kabhi login nahi hoti. Do sansthan ke
+            pehle 3 akshar same hon to ID Code mein alag 3 akshar likhein. ID Code ek baar ban gaya to badalta nahi.
+            Staff app mein pehli baar login par sansthan chunta hai, par wo tabhi login hoga jab aapne use usi sansthan
+            mein joda ho. Band kiya hua sansthan staff ko list mein nahi dikhta aur uske staff attendance nahi laga
+            sakte.</div>
+        </div>
+        <div class="card">
+          <h3>Sabhi sansthan</h3>
+          <div class="tw">
+            <table id="torg"></table>
+          </div>
+        </div>
+      </section>
 
-            <section id="t-orgs" hidden>
-                <div class="card">
-                    <h3 id="otitle">Naya sansthan banayein</h3><input type="hidden" id="oid">
-                    <div class="row">
-                        <div><label>Sansthan ka naam</label><input id="on" maxlength="60" placeholder="jaise Shree Vidyalaya"></div>
-                        <div><label>Latitude</label><input id="la" inputmode="decimal"></div>
-                        <div><label>Longitude</label><input id="lo" inputmode="decimal"></div>
-                        <div><label>Radius (meter, 30 se 2000)</label><input id="ra" type="number" value="100"></div>
-                        <div><label>ID Code (3 akshar; khali = naam ke pehle 3 akshar)</label><input id="oc" maxlength="3" autocapitalize="off" placeholder="jaise shr"></div>
-                    </div>
-                    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" onclick="myLoc()">Meri
-              current location lo</button><button class="btn" onclick="saveOrg()">Save</button><button class="btn g" onclick="clearOrgForm()">Naya form</button></div>
-                    <div class="note">Location ke liye us sansthan ke andar khade hokar "Meri current location lo" dabayein (phone par, HTTPS link se). Sansthan banane ke baad Staff tab se staff ko us sansthan mein jodein. Har staff ki User ID apne aap banti hai: sansthan
-                        ke pehle 3 akshar (chhote) + 3 ank ka kram, jaise <b>shr001</b>,
-                        <b>shr002</b>. Is code se shuru hone wali ID kisi aur sansthan mein kabhi login nahi hoti. Do sansthan ke pehle 3 akshar same hon to ID Code mein alag 3 akshar likhein. ID Code ek baar ban gaya to badalta nahi. Staff app mein pehli
-                        baar login par sansthan chunta hai, par wo tabhi login hoga jab aapne use usi sansthan mein joda ho. Band kiya hua sansthan staff ko list mein nahi dikhta aur uske staff attendance nahi laga sakte.
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Sabhi sansthan</h3>
-                    <div class="tw">
-                        <table id="torg"></table>
-                    </div>
-                </div>
-            </section>
+      <section id="t-staff" hidden>
+        <div class="card">
+          <h3>Staff add / edit</h3>
+          <div class="row">
+            <div><label>Sansthan</label><select id="so" onchange="updIdPreview()"></select></div>
+            <div><label>Name</label><input id="sn"></div>
+            <div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10"
+                oninput="updIdPreview()"></div>
+            <div><label>User ID (apne aap banti hai)</label>
+              <div id="sidinfo"
+                style="padding:10px;background:#eef3fb;border-radius:8px;font-size:14px;min-height:42px;display:flex;align-items:center">
+              </div>
+            </div>
+            <div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button>
+          </div>
+        </div>
+        <div class="card" id="newid" hidden style="border-color:#12855a"></div>
+        <div class="card" id="fixres" hidden style="border-color:#c98a1b"></div>
+        <div class="note" id="idfix" hidden style="margin:0 0 14px"></div>
+        <div class="card">
+          <h3>Staff list</h3>
+          <div class="tw">
+            <table id="tstaff"></table>
+          </div>
+        </div>
+      </section>
 
-            <section id="t-staff" hidden>
-                <div class="card">
-                    <h3>Staff add / edit</h3>
-                    <div class="row">
-                        <div><label>Sansthan</label><select id="so" onchange="updIdPreview()"></select></div>
-                        <div><label>Name</label><input id="sn"></div>
-                        <div><label>Mobile (10 digit)</label><input id="sm" inputmode="numeric" maxlength="10" oninput="updIdPreview()"></div>
-                        <div><label>User ID (apne aap banti hai)</label>
-                            <div id="sidinfo" style="padding:10px;background:#eef3fb;border-radius:8px;font-size:14px;min-height:42px;display:flex;align-items:center">
-                            </div>
-                        </div>
-                        <div><label>Designation</label><input id="sd"></div><button class="btn" onclick="saveStaff()">Save</button>
-                    </div>
-                </div>
-                <div class="card" id="newid" hidden style="border-color:#12855a"></div>
-                <div class="card" id="fixres" hidden style="border-color:#c98a1b"></div>
-                <div class="note" id="idfix" hidden style="margin:0 0 14px"></div>
-                <div class="card">
-                    <h3>Staff list</h3>
-                    <div class="tw">
-                        <table id="tstaff"></table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="t-mark" hidden>
-                <div class="card">
-                    <h3>Attendance mark karein (Admin)</h3>
-                    <div class="row">
-                        <div><label>Tarikh (From)</label><input id="mf" type="date" onchange="loadMark()"></div>
-                        <div><label>Tak (khali = sirf ek din)</label><input id="mto" type="date"></div>
-                        <div><label>Kya mark karein</label><select id="mty">
+      <section id="t-mark" hidden>
+        <div class="card">
+          <h3>Attendance mark karein (Admin)</h3>
+          <div class="row">
+            <div><label>Tarikh (From)</label><input id="mf" type="date" onchange="loadMark()"></div>
+            <div><label>Tak (khali = sirf ek din)</label><input id="mto" type="date"></div>
+            <div><label>Kya mark karein</label><select id="mty">
                 <option value="FULL">Full day (Present)</option>
                 <option value="CL">CL - Casual Leave</option>
                 <option value="ML">ML - Medical Leave</option>
                 <option value="OW">Office Work (On Duty)</option>
                 <option value="CLEAR">Admin ka mark hatayein (Clear)</option>
               </select></div>
-                        <button class="btn" onclick="applyMark()">Mark karein</button>
-                    </div>
-                    <div class="note"><b>Dhyan dein:</b> Neeche se staff chunein (ek ya kai). Kai din chunne par Ravivar aur us staff ke sansthan ki chhutti ke din apne aap chhoot jaate hain; sirf ek din chunne par wahi din mark hota hai. Full day sirf aaj tak ki tarikh
-                        par ho sakta hai, CL/ML/Office Work aage ki tarikh par bhi. Mark kiye hue din staff Check In nahi kar sakta. Auto-out se Absent hue din ko Full day mark karke sudhaar sakte hain.
-                    </div>
-                </div>
-                <div class="card">
-                    <h3>Staff chunein <span id="mdate"></span></h3>
-                    <div class="tw">
-                        <table id="tmark"></table>
-                    </div>
-                </div>
-            </section>
+            <button class="btn" onclick="applyMark()">Mark karein</button>
+          </div>
+          <div class="note"><b>Dhyan dein:</b> Neeche se staff chunein (ek ya kai). Kai din chunne par Ravivar aur us
+            staff ke sansthan ki chhutti ke din apne aap chhoot jaate hain; sirf ek din chunne par wahi din mark hota
+            hai. Full day sirf aaj tak ki tarikh par ho sakta hai, CL/ML/Office Work aage ki tarikh par bhi. Mark kiye
+            hue din staff Check In nahi kar sakta. Auto-out se Absent hue din ko Full day mark karke sudhaar sakte hain.
+          </div>
+        </div>
+        <div class="card">
+          <h3>Staff chunein <span id="mdate"></span></h3>
+          <div class="tw">
+            <table id="tmark"></table>
+          </div>
+        </div>
+      </section>
 
-            <section id="t-hol" hidden>
-                <div class="card">
-                    <h3>Chhutti jodein</h3>
-                    <div class="row">
-                        <div><label>Kis sansthan ke liye</label><select id="hoo"></select></div>
-                        <div><label>Tarikh (From)</label><input id="hf" type="date"></div>
-                        <div><label>Tak (khali = sirf ek din)</label><input id="ht" type="date"></div>
-                        <div><label>Chhutti ka naam</label><input id="hn" maxlength="60" placeholder="jaise Diwali"></div><button class="btn" onclick="addHol()">Jodein</button>
-                    </div>
-                    <div class="note">Ravivar apne aap saptahik chhutti mana jata hai. "Sabhi sansthan" chunne par chhutti sab par lagti hai. Chhutti ke din us sansthan ka staff Check In nahi kar sakta aur wo din Absent nahi ginta. Kisi se chhutti ke din kaam karwana ho
-                        to Attendance tab se Full day ya Office Work mark karein.</div>
-                </div>
-                <div class="card">
-                    <h3>Chhuttiyon ki list &nbsp;<select id="hy" onchange="holList()" style="width:auto;display:inline-block;padding:6px 10px"></select></h3>
-                    <div class="tw">
-                        <table id="thol"></table>
-                    </div>
-                </div>
-            </section>
+      <section id="t-hol" hidden>
+        <div class="card">
+          <h3>Chhutti jodein</h3>
+          <div class="row">
+            <div><label>Kis sansthan ke liye</label><select id="hoo"></select></div>
+            <div><label>Tarikh (From)</label><input id="hf" type="date"></div>
+            <div><label>Tak (khali = sirf ek din)</label><input id="ht" type="date"></div>
+            <div><label>Chhutti ka naam</label><input id="hn" maxlength="60" placeholder="jaise Diwali"></div><button
+              class="btn" onclick="addHol()">Jodein</button>
+          </div>
+          <div class="note">Ravivar apne aap saptahik chhutti mana jata hai. "Sabhi sansthan" chunne par chhutti sab par
+            lagti hai. Chhutti ke din us sansthan ka staff Check In nahi kar sakta aur wo din Absent nahi ginta. Kisi se
+            chhutti ke din kaam karwana ho to Attendance tab se Full day ya Office Work mark karein.</div>
+        </div>
+        <div class="card">
+          <h3>Chhuttiyon ki list &nbsp;<select id="hy" onchange="holList()"
+              style="width:auto;display:inline-block;padding:6px 10px"></select></h3>
+          <div class="tw">
+            <table id="thol"></table>
+          </div>
+        </div>
+      </section>
 
-            <section id="t-rep" hidden>
-                <div class="card noprint">
-                    <h3>Report banayein</h3>
-                    <div class="row">
-                        <div><label>From</label><input id="rf" type="date"></div>
-                        <div><label>To</label><input id="rt" type="date"></div>
-                        <div><label>Staff</label><select id="rs">
+      <section id="t-rep" hidden>
+        <div class="card noprint">
+          <h3>Report banayein</h3>
+          <div class="row">
+            <div><label>From</label><input id="rf" type="date"></div>
+            <div><label>To</label><input id="rt" type="date"></div>
+            <div><label>Staff</label><select id="rs">
                 <option value="">Sabhi staff</option>
               </select></div>
-                        <div><label>Report ka prakar</label><select id="rty">
+            <div><label>Report ka prakar</label><select id="rty">
                 <option value="full">Poori report (Summary + Register + Details)</option>
                 <option value="sum">Sirf Summary</option>
                 <option value="reg">Sirf Register (P / A)</option>
                 <option value="det">Sirf Details</option>
               </select></div>
-                    </div>
-                    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="report()">Report
-              dekhein</button><button class="btn g" onclick="printRep()">Print / PDF</button><button class="btn g" onclick="csv()">CSV (Excel)</button>
-                        <button class="btn g" onclick="quick('m')">Is mahine</button><button class="btn g" onclick="quick('p')">Pichhla mahina</button>
-                    </div>
-                    <div class="note">Report upar chune hue sansthan ki banti hai ("Sabhi sansthan" chunne par sab ki). Print dabane par "Save as PDF" chunkar PDF bhi bana sakte hain. Page A4 landscape mein set hai.</div>
-                </div>
-                <div id="rout"></div>
-            </section>
-
-            <section id="t-admins" hidden>
-                <div class="card">
-                    <h3>Naya Sansthan Admin banayein</h3>
-                    <div class="row">
-                        <div><label>Sansthan</label><select id="aorg"></select></div>
-                        <div><label>Admin ka naam</label><input id="an" maxlength="40" placeholder="jaise Pradhanacharya"></div>
-                        <button class="btn" onclick="addAdmin()">Admin banayein</button>
-                    </div>
-                    <div class="note">Admin ID aur ek asthayi password server khud banata hai (password sirf ek baar dikhta hai). Pehli login par admin ko naya password rakhna padta hai. <b>Sansthan admin</b> sirf apne sansthan ka staff, attendance, chhutti aur report
-                        dekh/badal sakta hai; sansthan banana/badalna/band karna sirf Super Admin kar sakta hai.</div>
-                </div>
-                <div class="card" id="newadm" hidden style="border-color:#12855a"></div>
-                <div class="card">
-                    <h3>Sansthan Admins</h3>
-                    <div class="tw">
-                        <table id="tadm"></table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="t-audit" hidden>
-                <div class="card">
-                    <h3>Gatividhi log <small style="color:#66758a;font-weight:400">(pichhli 300, sabse nayi pehle)</small></h3>
-                    <div class="tw">
-                        <table id="taud"></table>
-                    </div>
-                    <div class="note">Yahan har zaroori kaam (login, staff jodna/hatana, attendance mark, chhutti, sansthan aur admin ke badlav, mana kiye gaye prayas) ka samay aur kisne kiya, ye likha hota hai. Password kabhi nahi likhe jate.</div>
-                </div>
-            </section>
-
-            <section id="t-set" hidden>
-                <div class="card">
-                    <h3>Apna password badlein</h3>
-                    <div class="row">
-                        <div id="nuBox"><label>Naya Admin ID (khali = wahi rahe)</label><input id="nu" autocapitalize="off" autocomplete="off"></div>
-                        <div><label>Abhi ka password</label><input id="op" type="password" autocomplete="current-password"></div>
-                        <div><label>Naya password (8+ akshar, akshar aur ank dono)</label><input id="np" type="password" autocomplete="new-password"></div>
-                        <div><label>Naya password dobara</label><input id="np2" type="password" autocomplete="new-password"></div>
-                        <button class="btn" onclick="saveAuth()">Badlein</button>
-                    </div>
-                    <div class="note">Password badalte hi baaki sabhi purane login (dusre phone/browser) turant band ho jate hain. Password sheet mein sidha nahi, salt ke saath chhupe (hash) roop mein save hota hai. Office ki location "Sansthan" tab mein (sirf Super Admin)
-                        set hoti hai.</div>
-                </div>
-            </section>
-        </main>
-    </div>
-    <div id="force" hidden style="position:fixed;inset:0;background:#0f2a43f2;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px">
-        <div class="card" style="max-width:420px;width:100%;margin:0">
-            <h3 style="font-size:19px">Naya password set karein</h3>
-            <p style="margin:0 0 6px;color:#66758a;font-size:14px">Suraksha ke liye pehli login par (ya password reset ke baad) naya password rakhna zaruri hai.</p>
-            <label>Abhi ka (asthayi) password</label><input id="fp0" type="password" autocomplete="current-password">
-            <label>Naya password (8+ akshar, akshar aur ank dono)</label><input id="fp1" type="password" autocomplete="new-password">
-            <label>Naya password dobara</label><input id="fp2" type="password" autocomplete="new-password" onkeydown="if(event.key==='Enter')forceSave()">
-            <button class="btn" style="width:100%;margin-top:14px" onclick="forceSave()">Save karke aage badhein</button>
-            <div id="fmsg" style="color:#c62f3e;font-size:13px;margin-top:8px;min-height:18px"></div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="report()">Report
+              dekhein</button><button class="btn g" onclick="printRep()">Print / PDF</button><button class="btn g"
+              onclick="csv()">CSV (Excel)</button>
+            <button class="btn g" onclick="quick('m')">Is mahine</button><button class="btn g"
+              onclick="quick('p')">Pichhla mahina</button>
+          </div>
+          <div class="note">Report upar chune hue sansthan ki banti hai ("Sabhi sansthan" chunne par sab ki). Print
+            dabane par "Save as PDF" chunkar PDF bhi bana sakte hain. Page A4 landscape mein set hai.</div>
         </div>
+        <div id="rout"></div>
+      </section>
+
+      <section id="t-admins" hidden>
+        <div class="card">
+          <h3>Naya Sansthan Admin banayein</h3>
+          <div class="row">
+            <div><label>Sansthan</label><select id="aorg"></select></div>
+            <div><label>Admin ka naam</label><input id="an" maxlength="40" placeholder="jaise Pradhanacharya"></div>
+            <button class="btn" onclick="addAdmin()">Admin banayein</button>
+          </div>
+          <div class="note">Admin ID aur ek asthayi password server khud banata hai (password sirf ek baar dikhta hai).
+            Pehli login par admin ko naya password rakhna padta hai. <b>Sansthan admin</b> sirf apne sansthan ka staff,
+            attendance, chhutti aur report dekh/badal sakta hai; sansthan banana/badalna/band karna sirf Super Admin kar
+            sakta hai.</div>
+        </div>
+        <div class="card" id="newadm" hidden style="border-color:#12855a"></div>
+        <div class="card">
+          <h3>Sansthan Admins</h3>
+          <div class="tw">
+            <table id="tadm"></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="t-audit" hidden>
+        <div class="card">
+          <h3>Gatividhi log <small style="color:#66758a;font-weight:400">(pichhli 300, sabse nayi pehle)</small></h3>
+          <div class="tw">
+            <table id="taud"></table>
+          </div>
+          <div class="note">Yahan har zaroori kaam (login, staff jodna/hatana, attendance mark, chhutti, sansthan aur
+            admin ke badlav, mana kiye gaye prayas) ka samay aur kisne kiya, ye likha hota hai. Password kabhi nahi
+            likhe jate.</div>
+        </div>
+      </section>
+
+      <section id="t-set" hidden>
+        <div class="card">
+          <h3>Apna password badlein</h3>
+          <div class="row">
+            <div id="nuBox"><label>Naya Admin ID (khali = wahi rahe)</label><input id="nu" autocapitalize="off"
+                autocomplete="off"></div>
+            <div><label>Abhi ka password</label><input id="op" type="password" autocomplete="current-password"></div>
+            <div><label>Naya password (8+ akshar, akshar aur ank dono)</label><input id="np" type="password"
+                autocomplete="new-password"></div>
+            <div><label>Naya password dobara</label><input id="np2" type="password" autocomplete="new-password"></div>
+            <button class="btn" onclick="saveAuth()">Badlein</button>
+          </div>
+          <div class="note">Password badalte hi baaki sabhi purane login (dusre phone/browser) turant band ho jate hain.
+            Password sheet mein sidha nahi, salt ke saath chhupe (hash) roop mein save hota hai. Office ki location
+            "Sansthan" tab mein (sirf Super Admin) set hoti hai.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="force" hidden
+    style="position:fixed;inset:0;background:#0f2a43f2;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div class="card" style="max-width:420px;width:100%;margin:0">
+      <h3 style="font-size:19px">Naya password set karein</h3>
+      <p style="margin:0 0 6px;color:#66758a;font-size:14px">Suraksha ke liye pehli login par (ya password reset ke
+        baad) naya password rakhna zaruri hai.</p>
+      <label>Abhi ka (asthayi) password</label><input id="fp0" type="password" autocomplete="current-password">
+      <label>Naya password (8+ akshar, akshar aur ank dono)</label><input id="fp1" type="password"
+        autocomplete="new-password">
+      <label>Naya password dobara</label><input id="fp2" type="password" autocomplete="new-password"
+        onkeydown="if(event.key==='Enter')forceSave()">
+      <button class="btn" style="width:100%;margin-top:14px" onclick="forceSave()">Save karke aage badhein</button>
+      <div id="fmsg" style="color:#c62f3e;font-size:13px;margin-top:8px;min-height:18px"></div>
     </div>
-    <div class="toast" id="toast"></div>
+  </div>
+  <div class="toast" id="toast"></div>
 
-    <script>
-        /* ====== APNA APPS SCRIPT URL ====== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbw-NZuXWZDepcKT2PJTaqObUm9c7Qx8mq1fQwTEIeWw4mxNOFQwaaKhnqoU5radUJi3/exec";
-        const $ = i => document.getElementById(i),
-            iso = d => {
-                const z = new Date(d.getTime() - d.getTimezoneOffset() * 6e4);
-                return z.toISOString().slice(0, 10)
-            };
-        const esc = s => String(s ? ? "").replace(/[&<>"]/g, c => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;"
-        }[c]));
-        const dmy = s => String(s).split("-").reverse().join("-");
-        const WD = ["Ravivar", "Somvar", "Mangalvar", "Budhvar", "Guruvar", "Shukravar", "Shanivar"];
-        const toast = t => {
-            const e = $("toast");
-            e.textContent = t;
-            e.style.display = "block";
-            clearTimeout(toast.t);
-            toast.t = setTimeout(() => e.style.display = "none", 3200)
-        };
-        let TOK = sessionStorage.getItem("at") || "",
-            orgs = [],
-            users = [],
-            hols = [],
-            CUR = sessionStorage.getItem("ao") || "",
-            curTab = "dash",
-            rows = [],
-            sumRows = [],
-            lastTy = "full",
-            lastTitle = "",
-            ME = null,
-            TEMPPW = "",
-            lastT = 0,
-            lastR = null,
-            admList = [],
-            lastAdm = "";
+  <script>
+    /* ====== APNA APPS SCRIPT URL ====== */
+    const API_URL = "https://script.google.com/macros/s/AKfycby3R-zHxm-x5MuGnqSdZdqAM0FS236jHw6eua3qRTy1j5RJoKKp32uVA57PTPyB1sBGmA/exec";
+    const $ = i => document.getElementById(i), iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset() * 6e4); return z.toISOString().slice(0, 10) };
+    const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    /* aaj ki tarikh/samay hamesha IST (UTC+5:30) mein, chahe phone/browser ka timezone kuch bhi ho */
+    const ist = () => new Date(Date.now() + 19800000), todayS = () => ist().toISOString().slice(0, 10);
+    const dmy = s => String(s).split("-").reverse().join("-");
+    const WD = ["Ravivar", "Somvar", "Mangalvar", "Budhvar", "Guruvar", "Shukravar", "Shanivar"];
+    const toast = t => { const e = $("toast"); e.textContent = t; e.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = "none", 3200) };
+    let TOK = sessionStorage.getItem("at") || "", orgs = [], users = [], hols = [], CUR = sessionStorage.getItem("ao") || "", curTab = "dash", rows = [], sumRows = [], lastTy = "full", lastTitle = "", ME = null, TEMPPW = "", lastT = 0, lastR = null, admList = [], lastAdm = "";
 
-        async function api(b) {
-            if (/^admin(Save|Del|Mark|Add|Reset|Fix)/.test(b.a)) lastT = 0;
-            $("ld").style.display = "block";
-            try {
-                const ac = new AbortController(),
-                    tm = setTimeout(() => ac.abort(), 30000);
-                const r = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify({...b,
-                        token: TOK
-                    }),
-                    signal: ac.signal
-                });
-                clearTimeout(tm);
-                const j = await r.json();
-                if (j.expired) {
-                    TOK = "";
-                    sessionStorage.removeItem("at");
-                    location.reload()
-                }
-                if (j.mustChange && ME) {
-                    ME.mustChange = true;
-                    showForce()
-                }
-                return j
-            } catch (e) {
-                return {
-                    ok: false,
-                    msg: "Network error, internet check karein"
-                }
-            } finally {
-                $("ld").style.display = "none"
-            }
-        }
+    let busy = 0;
+    async function api(b) {
+      if (/^admin(Save|Del|Mark|Add|Reset|Fix)/.test(b.a)) lastT = 0; busy++; $("ld").style.display = "block";
+      try {
+        const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 30000);
+        const r = await fetch(API_URL, { method: "POST", body: JSON.stringify({ ...b, token: TOK }), signal: ac.signal }); clearTimeout(tm); const j = await r.json();
+        if (j.expired) { TOK = ""; sessionStorage.removeItem("at"); location.reload() } if (j.mustChange && ME) { ME.mustChange = true; showForce() } return j
+      }
+      catch (e) { return { ok: false, msg: "Network error, internet check karein" } } finally { if (--busy <= 0) { busy = 0; $("ld").style.display = "none" } }
+    }
 
-        async function doLogin() {
-            $("msg").textContent = "";
-            const u = $("au").value.trim(),
-                p = $("pw").value;
-            if (!u || !p) {
-                $("msg").textContent = "Admin ID aur Password dalein";
-                return
-            }
-            const r = await api({
-                a: "adminLogin",
-                user: u,
-                pass: p
-            });
-            if (!r.ok) {
-                $("msg").textContent = r.msg;
-                return
-            }
-            TOK = r.token;
-            sessionStorage.setItem("at", TOK);
-            ME = r.me;
-            TEMPPW = r.me.mustChange ? p : "";
-            $("pw").value = "";
-            afterLogin()
-        }
-        async function logout() {
-            await api({
-                a: "adminLogout"
-            });
-            TOK = "";
-            sessionStorage.removeItem("at");
-            sessionStorage.removeItem("ao");
-            location.reload()
-        }
-        async function boot() {
-            const m = await api({
-                a: "adminMe"
-            });
-            if (!m.ok) return;
-            ME = m.me;
-            afterLogin()
-        }
-        async function afterLogin() {
-            if (ME.mustChange) {
-                showForce();
-                return
-            }
-            const r = await fresh();
-            if (r) enter(r)
-        }
+    async function doLogin() {
+      $("msg").textContent = ""; const u = $("au").value.trim(), p = $("pw").value; if (!u || !p) { $("msg").textContent = "Admin ID aur Password dalein"; return }
+      const r = await api({ a: "adminLogin", user: u, pass: p }); if (!r.ok) { $("msg").textContent = r.msg; return }
+      TOK = r.token; sessionStorage.setItem("at", TOK); ME = r.me; TEMPPW = r.me.mustChange ? p : ""; $("pw").value = ""; afterLogin()
+    }
+    async function logout() { await api({ a: "adminLogout" }); TOK = ""; sessionStorage.removeItem("at"); sessionStorage.removeItem("ao"); location.reload() }
+    async function boot() { const m = await api({ a: "adminMe" }); if (!m.ok) { $("login").hidden = false; return } ME = m.me; afterLogin() }
+    async function afterLogin() { if (ME.mustChange) { showForce(); return } const r = await fresh(); if (r) enter(r) }
+    function showForce() { $("login").hidden = true; $("force").hidden = false; if (TEMPPW) { $("fp0").value = TEMPPW; TEMPPW = "" } }
+    async function forceSave() {
+      const o = $("fp0").value, n = $("fp1").value, n2 = $("fp2").value, m = $("fmsg"); m.textContent = "";
+      if (!o) { m.textContent = "Abhi ka password likhein"; return } if (n !== n2) { m.textContent = "Dono naye password same likhein"; return }
+      const r = await api({ a: "adminSaveAuth", oldPass: o, newPass: n }); if (!r.ok) { m.textContent = r.msg; return }
+      TOK = r.token; sessionStorage.setItem("at", TOK); ME = r.me; $("force").hidden = true;["fp0", "fp1", "fp2"].forEach(i => $(i).value = ""); afterLogin()
+    }
+    if (TOK) { $("login").hidden = true; boot() }
 
-        function showForce() {
-            $("login").hidden = true;
-            $("force").hidden = false;
-            if (TEMPPW) {
-                $("fp0").value = TEMPPW;
-                TEMPPW = ""
-            }
-        }
-        async function forceSave() {
-            const o = $("fp0").value,
-                n = $("fp1").value,
-                n2 = $("fp2").value,
-                m = $("fmsg");
-            m.textContent = "";
-            if (!o) {
-                m.textContent = "Abhi ka password likhein";
-                return
-            }
-            if (n !== n2) {
-                m.textContent = "Dono naye password same likhein";
-                return
-            }
-            const r = await api({
-                a: "adminSaveAuth",
-                oldPass: o,
-                newPass: n
-            });
-            if (!r.ok) {
-                m.textContent = r.msg;
-                return
-            }
-            TOK = r.token;
-            sessionStorage.setItem("at", TOK);
-            ME = r.me;
-            $("force").hidden = true;
-            ["fp0", "fp1", "fp2"].forEach(i => $(i).value = "");
-            afterLogin()
-        }
-        if (TOK) boot();
+    let tabs = {};
+    function buildNav() {
+      tabs = { dash: "Dashboard" }; if (ME.role === "super") { tabs.orgs = "Sansthan"; tabs.admins = "Admin" }
+      Object.assign(tabs, { staff: "Staff", mark: "Attendance", hol: "Holiday", rep: "Report", audit: "Gatividhi", set: "Settings" });
+      $("nav").innerHTML = Object.entries(tabs).map(([k, v]) => `<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("")
+    }
 
-        let tabs = {};
+    /* ---------- common helpers ---------- */
+    const orgName = id => id === "*" ? "Sabhi sansthan" : ((orgs.find(o => o.orgId === id) || {}).name || id || "-");
+    const inScope = s => !CUR || s.orgId === CUR;
+    const uScope = () => users.filter(inScope);
+    const rowInScope = (x, set) => !CUR || x.orgId === CUR || set.has(x.mobile);
+    const holFor = (org, ds) => { const h = hols.find(h => h.date === ds && (h.orgId === "*" || !h.orgId || h.orgId === org)); return h ? h.name : "" };
+    const HSM = {}; const hsFor = org => HSM[org] || (HSM[org] = Object.fromEntries(hols.filter(h => h.orgId === "*" || !h.orgId || h.orgId === org).map(h => [h.date, h.name])));
+    const orgOfUser = m => (users.find(u => u.mobile === m) || {}).orgId || "";
 
-        function buildNav() {
-            tabs = {
-                dash: "Dashboard"
-            };
-            if (ME.role === "super") {
-                tabs.orgs = "Sansthan";
-                tabs.admins = "Admin"
-            }
-            Object.assign(tabs, {
-                staff: "Staff",
-                mark: "Attendance",
-                hol: "Holiday",
-                rep: "Report",
-                audit: "Gatividhi",
-                set: "Settings"
-            });
-            $("nav").innerHTML = Object.entries(tabs).map(([k, v]) => `<button data-k="${k}" onclick="tab('${k}')">${v}</button>`).join("")
-        }
+    async function fresh(soft) {
+      if (soft && lastR && Date.now() - lastT < 20000) { sync(lastR); return lastR }
+      const t = todayS(), r = await api({ a: "adminData", from: t, to: t }); if (r.ok) { sync(r); lastR = r; lastT = Date.now() } return r.ok ? r : null
+    }
+    const isSup = () => !!ME && ME.role === "super";
+    function sync(r) {
+      orgs = r.orgs || []; users = r.users || []; hols = r.hol || []; for (const k in HSM) delete HSM[k];
+      if (!isSup() && ME) CUR = ME.orgId;
+      if (CUR && !orgs.some(o => o.orgId === CUR)) { CUR = ""; sessionStorage.removeItem("ao") }
+      $("osw").innerHTML = '<option value="">Sabhi sansthan</option>' + orgs.map(o => `<option value="${o.orgId}"${o.orgId === CUR ? " selected" : ""}>${esc(o.name)}${o.active === "YES" ? "" : " (band)"}</option>`).join("");
+      const opts = orgs.map(o => `<option value="${o.orgId}">${esc(o.name)}${o.active === "YES" ? "" : " (band)"}</option>`).join("");
+      const keep = (id, html, def) => { const el = $(id), v = el.value; el.innerHTML = html; el.value = v && [...el.options].some(x => x.value === v) ? v : def };
+      keep("so", opts, CUR || (orgs[0] || {}).orgId || ""); keep("aorg", opts, (orgs[0] || {}).orgId || "");
+      keep("hoo", (isSup() ? '<option value="*">Sabhi sansthan</option>' : "") + opts, CUR || (isSup() ? "*" : (orgs[0] || {}).orgId || ""));
+      updIdPreview(); keep("rs", '<option value="">Sabhi staff</option>' + uScope().map(s => `<option value="${s.mobile}">${esc(s.name)}</option>`).join(""), "");
+      const w = $("warn");
+      if (!r.orgs || !r.me) { w.hidden = false; w.innerHTML = '<b>Chetavni:</b> Server ka code purana hai, isliye role-based admin, sansthan aur chhutti jaisi suvidhayein kaam nahi karengi. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.' }
+      else if (!orgs.length) { w.hidden = false; w.innerHTML = '<b>Chetavni:</b> Server mein koi sansthan nahi mila. Apps Script mein function <b>upgrade</b> ek baar Run karein.' }
+      else w.hidden = true
+    }
+    function enter(r) {
+      $("login").hidden = true; $("app").hidden = false; buildNav(); const sup = isSup();
+      $("who").textContent = sup ? "Super Admin" : ME.name + " \u2022 " + ME.orgName; $("osw").hidden = !sup; $("nuBox").hidden = !sup;
+      if (!sup) CUR = ME.orgId; quick("m", true); tab("dash")
+    }
+    function setOrg(v) { if (!isSup()) return; CUR = v; sessionStorage.setItem("ao", v); if (v) { $("so").value = v; $("hoo").value = v } tab(curTab) }
+    async function tab(k) {
+      curTab = k; for (const t in tabs) $("t-" + t).hidden = t !== k; document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.k === k));
+      if (k === "mark") { loadMark(); return }
+      if (k === "set") return;
+      if (k === "audit") { loadAudit(); return }
+      if (k === "admins") { await fresh(true); loadAdmins(); return }
+      const r = await fresh(k !== "dash"); if (!r) return;      // dashboard hamesha taaza (staff live attendance laga rahe hote hain)
+      if (k === "dash") dash(r); if (k === "orgs") renderOrgs(); if (k === "staff") stf(); if (k === "hol") holList()
+    }
 
-        /* ---------- common helpers ---------- */
-        const orgName = id => id === "*" ? "Sabhi sansthan" : ((orgs.find(o => o.orgId === id) || {}).name || id || "-");
-        const inScope = s => !CUR || s.orgId === CUR;
-        const uScope = () => users.filter(inScope);
-        const rowInScope = (x, set) => !CUR || x.orgId === CUR || set.has(x.mobile);
-        const holFor = (org, ds) => {
-            const h = hols.find(h => h.date === ds && (h.orgId === "*" || !h.orgId || h.orgId === org));
-            return h ? h.name : ""
-        };
-        const HSM = {};
-        const hsFor = org => HSM[org] || (HSM[org] = Object.fromEntries(hols.filter(h => h.orgId === "*" || !h.orgId || h.orgId === org).map(h => [h.date, h.name])));
-        const orgOfUser = m => (users.find(u => u.mobile === m) || {}).orgId || "";
-
-        async function fresh(soft) {
-            if (soft && lastR && Date.now() - lastT < 20000) {
-                sync(lastR);
-                return lastR
-            }
-            const t = iso(new Date()),
-                r = await api({
-                    a: "adminData",
-                    from: t,
-                    to: t
-                });
-            if (r.ok) {
-                sync(r);
-                lastR = r;
-                lastT = Date.now()
-            }
-            return r.ok ? r : null
-        }
-        const isSup = () => !!ME && ME.role === "super";
-
-        function sync(r) {
-            orgs = r.orgs || [];
-            users = r.users || [];
-            hols = r.hol || [];
-            for (const k in HSM) delete HSM[k];
-            if (!isSup() && ME) CUR = ME.orgId;
-            if (CUR && !orgs.some(o => o.orgId === CUR)) {
-                CUR = "";
-                sessionStorage.removeItem("ao")
-            }
-            $("osw").innerHTML = '<option value="">Sabhi sansthan</option>' + orgs.map(o => `<option value="${o.orgId}"${o.orgId === CUR ? " selected" : ""}>${esc(o.name)}${o.active === "YES" ? "" : " (band)"}</option>`).join("");
-            const opts = orgs.map(o => `<option value="${o.orgId}">${esc(o.name)}${o.active === "YES" ? "" : " (band)"}</option>`).join("");
-            const keep = (id, html, def) => {
-                const el = $(id),
-                    v = el.value;
-                el.innerHTML = html;
-                el.value = v && [...el.options].some(x => x.value === v) ? v : def
-            };
-            keep("so", opts, CUR || (orgs[0] || {}).orgId || "");
-            keep("aorg", opts, (orgs[0] || {}).orgId || "");
-            keep("hoo", (isSup() ? '<option value="*">Sabhi sansthan</option>' : "") + opts, CUR || (isSup() ? "*" : (orgs[0] || {}).orgId || ""));
-            updIdPreview();
-            keep("rs", '<option value="">Sabhi staff</option>' + uScope().map(s => `<option value="${s.mobile}">${esc(s.name)}</option>`).join(""), "");
-            const w = $("warn");
-            if (!r.orgs || !r.me) {
-                w.hidden = false;
-                w.innerHTML = '<b>Chetavni:</b> Server ka code purana hai, isliye role-based admin, sansthan aur chhutti jaisi suvidhayein kaam nahi karengi. Apps Script mein <b>Deploy &rarr; Manage deployments &rarr; pencil &rarr; Version: New version &rarr; Deploy</b> karein.'
-            } else if (!orgs.length) {
-                w.hidden = false;
-                w.innerHTML = '<b>Chetavni:</b> Server mein koi sansthan nahi mila. Apps Script mein function <b>upgrade</b> ek baar Run karein.'
-            } else w.hidden = true
-        }
-
-        function enter(r) {
-            $("login").hidden = true;
-            $("app").hidden = false;
-            buildNav();
-            const sup = isSup();
-            $("who").textContent = sup ? "Super Admin" : ME.name + " \u2022 " + ME.orgName;
-            $("osw").hidden = !sup;
-            $("nuBox").hidden = !sup;
-            if (!sup) CUR = ME.orgId;
-            quick("m", true);
-            tab("dash")
-        }
-
-        function setOrg(v) {
-            if (!isSup()) return;
-            CUR = v;
-            sessionStorage.setItem("ao", v);
-            if (v) {
-                $("so").value = v;
-                $("hoo").value = v
-            }
-            tab(curTab)
-        }
-        async function tab(k) {
-            curTab = k;
-            for (const t in tabs) $("t-" + t).hidden = t !== k;
-            document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.k === k));
-            if (k === "mark") {
-                loadMark();
-                return
-            }
-            if (k === "set") return;
-            if (k === "audit") {
-                loadAudit();
-                return
-            }
-            if (k === "admins") {
-                await fresh(true);
-                loadAdmins();
-                return
-            }
-            const r = await fresh(k !== "dash");
-            if (!r) return; // dashboard hamesha taaza (staff live attendance laga rahe hote hain)
-            if (k === "dash") dash(r);
-            if (k === "orgs") renderOrgs();
-            if (k === "staff") stf();
-            if (k === "hol") holList()
-        }
-
-        /* ---------- dashboard ---------- */
-        function stTag(x) {
-            const k = x.status || "";
-            if (k === "AUTO") return '<span class="tag a">Absent (Auto out)</span>';
-            if (k === "CL") return '<span class="tag l">CL - Casual Leave</span>';
-            if (k === "ML") return '<span class="tag l">ML - Medical Leave</span>';
-            if (k === "OW") return '<span class="tag b">Office Work</span>';
-            if (k === "FULL") return '<span class="tag p">Present (Admin - Full day)</span>';
-            return '<span class="tag p">Present</span>'
-        }
-
-        function dash(r) {
-            const t = iso(new Date()),
-                sc = uScope(),
-                set = new Set(sc.map(s => s.mobile)),
-                all = r.att.filter(x => rowInScope(x, set));
-            const act = sc.filter(s => s.active === "YES"),
-                got = new Set(all.map(x => x.mobile)),
-                sun = new Date().getDay() === 0,
-                offOrg = new Set(),
-                names = [];
-            orgs.forEach(o => {
-                if (!CUR || o.orgId === CUR) {
-                    const n = holFor(o.orgId, t);
-                    if (n) {
-                        offOrg.add(o.orgId);
-                        names.push(CUR ? n : o.name + ": " + n)
-                    }
-                }
-            });
-            const isOff = s => sun || offOrg.has(s.orgId),
-                pr = all.filter(x => !x.status || x.status === "FULL" || x.status === "OW"),
-                lv = all.filter(x => x.status === "CL" || x.status === "ML"),
-                au = all.filter(x => x.status === "AUTO");
-            $("today").textContent = "(" + dmy(t) + ")";
-            $("hbanner").hidden = !(sun || names.length);
-            $("hbanner").textContent = sun ? "Aaj Ravivar (saptahik chhutti) hai" : "Aaj chhutti: " + names.join(", ") + " (us din staff Check In nahi kar sakta)";
-            const abs = act.filter(s => !got.has(s.mobile) && !isOff(s));
-            $("stats").innerHTML = [
-                ["Total staff", act.length],
-                ["Present", pr.length],
-                ["Leave (CL/ML)", lv.length],
-                ["Absent", abs.length],
-                ["Checked out", pr.filter(x => x.outTime).length]
-            ].map(([k, v]) => `<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
-            const oc = !CUR,
-                row = (x, o) => `<tr><td>${esc(x.name)}</td>${oc ? `<td>${esc(orgName(x.orgId || orgOfUser(x.mobile)))}</td>` : ""}<td>${x.inTime || "-"}</td><td>${x.outTime || "-"}${o || ""}</td><td>${x.inDist ? x.inDist + " m" : "-"}</td><td>${stTag(x)}</td></tr>`;
+    /* ---------- dashboard ---------- */
+    function stTag(x) {
+      const k = x.status || "";
+      if (k === "AUTO") return '<span class="tag a">Absent (Auto out)</span>';
+      if (k === "CL") return '<span class="tag l">CL - Casual Leave</span>';
+      if (k === "ML") return '<span class="tag l">ML - Medical Leave</span>';
+      if (k === "OW") return '<span class="tag b">Office Work</span>';
+      if (k === "FULL") return '<span class="tag p">Present (Admin - Full day)</span>';
+      return '<span class="tag p">Present</span>'
+    }
+    function dash(r) {
+      const t = todayS(), sc = uScope(), set = new Set(sc.map(s => s.mobile)), all = r.att.filter(x => rowInScope(x, set));
+      const act = sc.filter(s => s.active === "YES"), got = new Set(all.map(x => x.mobile)), sun = ist().getUTCDay() === 0, offOrg = new Set(), names = [], lateD = ist().getUTCHours() >= 20, absL = lateD ? "Absent" : "Abhi aaye nahi";
+      orgs.forEach(o => { if (!CUR || o.orgId === CUR) { const n = holFor(o.orgId, t); if (n) { offOrg.add(o.orgId); names.push(CUR ? n : o.name + ": " + n) } } });
+      const isOff = s => sun || offOrg.has(s.orgId), pr = all.filter(x => !x.status || x.status === "FULL" || x.status === "OW"), lv = all.filter(x => x.status === "CL" || x.status === "ML"), au = all.filter(x => x.status === "AUTO");
+      $("today").textContent = "(" + dmy(t) + ")"; $("hbanner").hidden = !(sun || names.length); $("hbanner").textContent = sun ? "Aaj Ravivar (saptahik chhutti) hai" : "Aaj chhutti: " + names.join(", ") + " (us din staff Check In nahi kar sakta)";
+      const abs = act.filter(s => !got.has(s.mobile) && !isOff(s));
+      $("stats").innerHTML = [["Total staff", act.length], ["Present", pr.length], ["Leave (CL/ML)", lv.length], [absL, abs.length], ["Checked out", pr.filter(x => x.outTime).length]].map(([k, v]) => `<div class="stat"><small>${k}</small><div>${v}</div></div>`).join("");
+      const oc = !CUR, row = (x, o) => `<tr><td>${esc(x.name)}</td>${oc ? `<td>${esc(orgName(x.orgId || orgOfUser(x.mobile)))}</td>` : ""}<td>${x.inTime || "-"}</td><td>${x.outTime || "-"}${o || ""}</td><td>${x.inDist ? x.inDist + " m" : "-"}</td><td>${stTag(x)}</td></tr>`;
       $("tdash").innerHTML = "<tr><th>Name</th>" + (oc ? "<th>Sansthan</th>" : "") + "<th>In</th><th>Out</th><th>Distance</th><th>Status</th></tr>" + pr.map(x => row(x)).join("") + lv.map(x => row(x)).join("") + au.map(x => row(x, " (auto)")).join("")
-        + abs.map(s => `<tr><td>${esc(s.name)}</td>${oc ? `<td>${esc(orgName(s.orgId))}</td>` : ""}<td>-</td><td>-</td><td>-</td><td><span class="tag a">Absent</span></td></tr>`).join("")
+        + abs.map(s => `<tr><td>${esc(s.name)}</td>${oc ? `<td>${esc(orgName(s.orgId))}</td>` : ""}<td>-</td><td>-</td><td>-</td><td><span class="tag a">${absL}</span></td></tr>`).join("")
     }
 
     /* ---------- sansthan (organizations) ---------- */
     function renderOrgs() {
       $("torg").innerHTML = "<tr><th>Naam</th><th>ID Code</th><th>Location</th><th>Radius</th><th>Staff</th><th>Status</th><th></th></tr>" + (orgs.map(o => {
         const n = users.filter(u => u.orgId === o.orgId).length, on = o.active === "YES";
-        return `<tr><td><b>${esc(o.name)}</b>${CUR === o.orgId ? ' <span class="tag b">chuna hua</span>' : ""}</td><td><b>${esc(o.code || "-")}</b></td><td><a href="https://maps.google.com/?q=${esc(o.lat)},${esc(o.lng)}" target="_blank">${Number(o.lat).toFixed(5)}, ${Number(o.lng).toFixed(5)}</a></td><td>${esc(o.radius)} m</td><td>${n}</td>
+        return `<tr><td><b>${esc(o.name)}</b>${CUR === o.orgId ? ' <span class="tag b">chuna hua</span>' : ""}</td><td><b>${esc(o.code || "-")}</b></td><td><a href="https://maps.google.com/?q=${esc(o.lat)},${esc(o.lng)}" target="_blank" rel="noopener">${Number(o.lat).toFixed(5)}, ${Number(o.lng).toFixed(5)}</a></td><td>${esc(o.radius)} m</td><td>${n}</td>
   <td><span class="tag ${on ? "p" : "a"}">${on ? "Chalu" : "Band"}</span></td>
   <td><button class="btn g s" onclick="editOrg('${o.orgId}')">Edit</button> <button class="btn g s" onclick="pickOrg('${o.orgId}')">Chunein</button> <button class="btn g s" onclick="togOrg('${o.orgId}')">${on ? "Band karein" : "Chalu karein"}</button> <button class="btn r s" onclick="delOrg('${o.orgId}')">Delete</button></td></tr>`
       }).join("") || '<tr><td colspan="7">Koi sansthan nahi. Upar se naya banayein.</td></tr>')
@@ -1184,11 +986,11 @@
     async function resetD(m) { if (confirm("Is staff ka phone link hata dein? Wo naye phone se login karke dobara juda sakta hai.")) { const r = await api({ a: "adminResetDevice", mobile: m }); toast(r.ok ? "Phone reset ho gaya" : r.msg); await fresh(); stf() } }
     function editS(m) { const s = users.find(x => x.mobile === m); $("sn").value = s.name; $("sm").value = s.mobile; $("sd").value = s.designation; if (s.orgId) $("so").value = s.orgId; updIdPreview(); scrollTo(0, 0) }
     async function togS(m) { const s = users.find(x => x.mobile === m); const r = await api({ a: "adminSaveUser", name: s.name, mobile: s.mobile, designation: s.designation, active: s.active === "YES" ? "NO" : "YES", orgId: s.orgId }); if (!r.ok) toast(r.msg); await fresh(); stf() }
-    async function delS(m) { if (confirm("Staff delete karein?")) { await api({ a: "adminDelUser", mobile: m }); await fresh(); stf() } }
+    async function delS(m) { const s = users.find(x => x.mobile === m); if (!confirm("Staff delete karein?\n" + (s ? s.name + " (" + m + ")" : m) + "\nIska purana attendance record sheet mein rahega.")) return; const r = await api({ a: "adminDelUser", mobile: m }); if (!r.ok) toast(r.msg); await fresh(); stf() }
 
     /* ---------- admin attendance marking ---------- */
     async function loadMark() {
-      if (!$("mf").value) $("mf").value = iso(new Date()); const dt = $("mf").value;
+      if (!$("mf").value) $("mf").value = todayS(); const dt = $("mf").value;
       const r = await api({ a: "adminData", from: dt, to: dt }); if (!r.ok) return; sync(r); renderMark(r.att)
     }
     function renderMark(att) {
@@ -1197,7 +999,7 @@
       $("mdate").textContent = "(" + dmy(dt) + (hn ? " - " + esc(hn) : dw === 0 ? " - Ravivar" : "") + ")";
       $("tmark").innerHTML = '<tr><th><input type="checkbox" onchange="mAll(this.checked)" aria-label="Sabhi chunein"></th><th>Naam</th>' + (oc ? "<th>Sansthan</th>" : "") + '<th>Pad</th><th>Us din ki sthiti</th></tr>' + act.map(s => {
         const x = m[s.mobile], h = holFor(s.orgId, dt); let st;
-        if (x) st = stTag(x); else if (h) st = `<span class="tag h">Chhutti: ${esc(h)}</span>`; else if (dw === 0) st = '<span class="tag h">Ravivar</span>'; else if (dt > iso(new Date())) st = "-"; else st = '<span class="tag a">Absent</span>';
+        if (x) st = stTag(x); else if (h) st = `<span class="tag h">Chhutti: ${esc(h)}</span>`; else if (dw === 0) st = '<span class="tag h">Ravivar</span>'; else if (dt > todayS()) st = "-"; else st = '<span class="tag a">Absent</span>';
         return `<tr><td><input type="checkbox" class="mc" value="${s.mobile}"></td><td>${esc(s.name)}</td>${oc ? `<td>${esc(orgName(s.orgId))}</td>` : ""}<td>${esc(s.designation)}</td><td>${st}</td></tr>`
       }).join("")
     }
@@ -1232,8 +1034,10 @@
     const SLB = { "": "Present", FULL: "Present (Admin - Full day)", CL: "CL - Casual Leave", ML: "ML - Medical Leave", OW: "Office Work (On Duty)", AUTO: "Absent (Auto out)" };
     function eachDay(f, t) { const a = [], d = new Date(f + "T00:00:00"), e = new Date(t + "T00:00:00"); for (; d <= e; d.setDate(d.getDate() + 1))a.push(iso(d)); return a }
     function quick(w, silent) {
-      const n = new Date(); let a, b; if (w === "m") { a = new Date(n.getFullYear(), n.getMonth(), 1); b = n } else { a = new Date(n.getFullYear(), n.getMonth() - 1, 1); b = new Date(n.getFullYear(), n.getMonth(), 0) }
-      $("rf").value = iso(a); $("rt").value = iso(b); if (!silent) report()
+      const n = ist(), y = n.getUTCFullYear(), m = n.getUTCMonth(), p = x => String(x).padStart(2, "0"); let a, b;
+      if (w === "m") { a = y + "-" + p(m + 1) + "-01"; b = todayS() }
+      else { const py = m ? y : y - 1, pm = m ? m : 12, last = new Date(Date.UTC(y, m, 0)).getUTCDate(); a = py + "-" + p(pm) + "-01"; b = py + "-" + p(pm) + "-" + p(last) }
+      $("rf").value = a; $("rt").value = b; if (!silent) report()
     }
 
     async function report() {
@@ -1241,7 +1045,7 @@
       if (!f || !t || f > t) return toast("Sahi date chunein (From, To se pehle ho)");
       if ((new Date(t) - new Date(f)) / 864e5 > 366) return toast("Zyada se zyada 1 saal ka range chunein");
       const r = await api({ a: "adminData", from: f, to: t }); if (!r.ok) return toast(r.msg); sync(r); $("rs").value = sel;
-      const days = eachDay(f, t), now = new Date(), today = iso(now), late = now.getHours() >= 20;
+      const days = eachDay(f, t), now = ist(), today = todayS(), late = now.getUTCHours() >= 20;
       const all = r.att.filter(x => !sel || x.mobile === sel), map = {}, hasAny = new Set(all.map(x => x.mobile)); all.forEach(x => map[x.mobile + "|" + x.date] = x);
       const list = users.filter(s => (!sel || s.mobile === sel) && inScope(s) && (s.active === "YES" || hasAny.has(s.mobile))).sort((a, b) => orgName(a.orgId).localeCompare(orgName(b.orgId)) || a.name.localeCompare(b.name));
       const lset = new Set(list.map(s => s.mobile));
@@ -1270,7 +1074,7 @@
       const nm = sel ? esc((users.find(u => u.mobile === sel) || {}).name || "") : "Sabhi staff", orgL = esc(CUR ? orgName(CUR) : "Sabhi sansthan"), per = dmy(f) + " se " + dmy(t);
       const hl = hols.filter(h => h.date >= f && h.date <= t && (!CUR || h.orgId === "*" || !h.orgId || h.orgId === CUR));
       let h = `<div class="sheet"><div class="lh"><div><h2>${orgL}</h2><div class="sub">ATTENDANCE REPORT &bull; ${ty === "sum" ? "Summary" : ty === "reg" ? "Register" : ty === "det" ? "Details" : "Poori report"}</div></div>
-  <div class="meta">Avadhi: <b>${per}</b> (${days.length} din)<br>Staff: <b>${nm}</b><br>Taiyar kiya: ${dmy(today)} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}</div></div>`;
+  <div class="meta">Avadhi: <b>${per}</b> (${days.length} din)<br>Staff: <b>${nm}</b><br>Taiyar kiya: ${dmy(today)} ${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")}</div></div>`;
       if (ty === "full" || ty === "sum") h += summaryHTML(hl);
       if (ty === "full" || ty === "reg") h += (ty === "full" ? '<div class="pb"></div>' : "") + registerHTML(days);
       if (ty === "full" || ty === "det") h += (ty === "full" ? '<div class="pb"></div>' : "") + detailsHTML();
@@ -1303,7 +1107,7 @@
       cl = k => k === "AUTO" ? "a" : k === "CL" || k === "ML" ? "l" : k === "OW" ? "b" : "p";
       const b = rows.map((r, i) => {
         const k = r.status || "", hrs = (k === "" || k === "FULL" || k === "OW") ? fh(mm(r.inTime, r.outTime)) : "-";
-        return `<tr><td class="c">${i + 1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td>${oc ? `<td>${esc(orgName(r.orgId || orgOfUser(r.mobile)))}</td>` : ""}<td>${r.mobile}</td><td class="c">${r.inTime || "-"}</td><td class="c">${r.outTime || "-"}${k === "AUTO" ? " (auto)" : ""}</td><td class="n">${hrs}</td><td class="c"><span class="tag ${cl(k)}">${SLB[k] || k}</span></td><td class="n">${r.inDist ? r.inDist + " m" : "-"}</td><td class="nop">${r.inLat ? `<a href="https://maps.google.com/?q=${r.inLat},${r.inLng}" target="_blank">Map</a>` : "-"}</td></tr>`
+        return `<tr><td class="c">${i + 1}</td><td>${dmy(r.date)}</td><td>${esc(r.name)}</td>${oc ? `<td>${esc(orgName(r.orgId || orgOfUser(r.mobile)))}</td>` : ""}<td>${r.mobile}</td><td class="c">${r.inTime || "-"}</td><td class="c">${r.outTime || "-"}${k === "AUTO" ? " (auto)" : ""}</td><td class="n">${hrs}</td><td class="c"><span class="tag ${cl(k)}">${esc(SLB[k] || k)}</span></td><td class="n">${r.inDist ? r.inDist + " m" : "-"}</td><td class="nop">${r.inLat ? `<a href="https://maps.google.com/?q=${esc(r.inLat)},${esc(r.inLng)}" target="_blank" rel="noopener">Map</a>` : "-"}</td></tr>`
       }).join("");
       return `<h4>3. Poora Vivaran (Details)</h4><div class="tw"><table><thead><tr><th class="c">#</th><th>Tarikh</th><th>Naam</th>${oc ? "<th>Sansthan</th>" : ""}<th>Mobile</th><th>In</th><th>Out</th><th>Ghante</th><th>Sthiti</th><th>In doori</th><th class="nop">Map</th></tr></thead><tbody>${b || `<tr><td colspan="${oc ? 11 : 10}" class="c">Is avadhi mein koi record nahi</td></tr>`}</tbody></table></div>`
     }
@@ -1355,7 +1159,7 @@
       const r = await api({ a: "adminSaveAuth", oldPass: o, newPass: p, user: u }); if (!r.ok) return toast(r.msg);
       TOK = r.token; sessionStorage.setItem("at", TOK); if (r.me) ME = r.me;["op", "np", "np2", "nu"].forEach(i => $(i).value = ""); $("who").textContent = isSup() ? "Super Admin" : ME.name + " \u2022 " + ME.orgName; toast("Password badal gaya. Baaki purane login band ho gaye")
     }
-    </script>
+  </script>
 </body>
 
 </html>
