@@ -875,6 +875,7 @@
     }
     function setOrg(v) { if (!isSup()) return; CUR = v; sessionStorage.setItem("ao", v); if (v) { $("so").value = v; $("hoo").value = v } tab(curTab) }
     async function tab(k) {
+      if (!tabs[k]) k = "dash";      // jo tab is role ko nahi milta (Sansthan / Admin), wahan nahi jaa sakte
       curTab = k; for (const t in tabs) $("t-" + t).hidden = t !== k; document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.k === k));
       if (k === "mark") { loadMark(); return }
       if (k === "set") return;
@@ -921,17 +922,20 @@
     function pickOrg(id) { $("osw").value = id; setOrg(id); toast("Ab sab kuch is sansthan ka dikhega") }
     function myLoc() { navigator.geolocation.getCurrentPosition(p => { $("la").value = p.coords.latitude.toFixed(6); $("lo").value = p.coords.longitude.toFixed(6); toast("Location mil gayi (GPS ±" + Math.round(p.coords.accuracy) + " m)") }, () => toast("Location permission dein"), { enableHighAccuracy: true }) }
     async function saveOrg() {
+      if (!isSup()) return;
       const n = $("on").value.trim(), la = parseFloat($("la").value), lo = parseFloat($("lo").value), ra = parseInt($("ra").value, 10), id = $("oid").value;
       if (n.length < 2) return toast("Sansthan ka naam likhein"); if (isNaN(la) || isNaN(lo)) return toast("Latitude / Longitude dalein"); if (!(ra >= 30 && ra <= 2000)) return toast("Radius 30 se 2000 meter ke beech rakhein");
       const ex = orgs.find(o => o.orgId === id), r = await api({ a: "adminSaveOrg", orgId: id, name: n, code: $("oc").value.trim().toLowerCase(), lat: la, lng: lo, radius: ra, active: ex ? ex.active : "YES" });
       if (!r.ok) return toast(r.msg); toast(id ? "Sansthan badal gaya" : "Naya sansthan ban gaya"); clearOrgForm(); await fresh(); renderOrgs()
     }
     async function togOrg(id) {
+      if (!isSup()) return;
       const o = orgs.find(x => x.orgId === id), on = o.active === "YES";
       if (on && !confirm('"' + o.name + '" band karein?\nIske staff attendance nahi laga payenge aur ye staff ko list mein nahi dikhega.')) return;
       const r = await api({ a: "adminSaveOrg", orgId: id, name: o.name, lat: o.lat, lng: o.lng, radius: o.radius, active: on ? "NO" : "YES" }); if (!r.ok) return toast(r.msg); await fresh(); renderOrgs()
     }
     async function delOrg(id) {
+      if (!isSup()) return;
       const o = orgs.find(x => x.orgId === id); if (!confirm('"' + o.name + '" delete karein?\nYe tabhi hoga jab isme koi staff ya attendance record na ho.')) return;
       const r = await api({ a: "adminDelOrg", orgId: id }); if (!r.ok) return toast(r.msg); toast("Sansthan delete ho gaya"); await fresh(); renderOrgs()
     }
@@ -1122,7 +1126,7 @@
     }
 
     /* ---------- sansthan admins (sirf super admin) ---------- */
-    async function loadAdmins() { const r = await api({ a: "adminListAdmins" }); if (!r.ok) return toast(r.msg); admList = r.admins; renderAdmins() }
+    async function loadAdmins() { if (!isSup()) return; const r = await api({ a: "adminListAdmins" }); if (!r.ok) return toast(r.msg); admList = r.admins; renderAdmins() }
     function renderAdmins() {
       $("tadm").innerHTML = "<tr><th>Admin ID</th><th>Naam</th><th>Sansthan</th><th>Status</th><th>Aakhri login</th><th></th></tr>" + (admList.map(a => {
         const on = a.active === "YES", id = esc(a.adminId);
