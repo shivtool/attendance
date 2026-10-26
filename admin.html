@@ -804,11 +804,15 @@
     const toast = t => { const e = $("toast"); e.textContent = t; e.style.display = "block"; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = "none", 3200) };
     let TOK = sessionStorage.getItem("at") || "", orgs = [], users = [], hols = [], CUR = sessionStorage.getItem("ao") || "", curTab = "dash", rows = [], sumRows = [], lastTy = "full", lastTitle = "", ME = null, TEMPPW = "", lastT = 0, lastR = null, admList = [], lastAdm = "";
 
-    let busy = 0;
-    async function api(b) {
+    /* koi bhi chhupa hua error login box mein dikhe (pehle chupchap rehta tha) */
+    const showErr = m => { const e = $("msg"); if (e && !$("login").hidden) e.textContent = m; else if (typeof toast === "function") toast(m) };
+    window.addEventListener("error", ev => showErr("Page error: " + (ev.message || "anjaan")));
+    window.addEventListener("unhandledrejection", ev => showErr("Error: " + ((ev.reason && ev.reason.message) || ev.reason || "anjaan")));
+    let busy = 0, lastErr = "";
+    async function api(b, ms) {
       if (/^admin(Save|Del|Mark|Add|Reset|Fix)/.test(b.a)) lastT = 0; busy++; $("ld").style.display = "block";
       try {
-        const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 30000);
+        const ac = new AbortController(), tm = setTimeout(() => ac.abort(), ms || 30000);
         const r = await fetch(API_URL, { method: "POST", body: JSON.stringify({ ...b, token: TOK }), signal: ac.signal }); clearTimeout(tm); const j = await r.json();
         if (j.expired) { TOK = ""; sessionStorage.removeItem("at"); location.reload() } if (j.mustChange && ME) { ME.mustChange = true; showForce() } return j
       }
@@ -817,12 +821,23 @@
 
     async function doLogin() {
       $("msg").textContent = ""; const u = $("au").value.trim(), p = $("pw").value; if (!u || !p) { $("msg").textContent = "Admin ID aur Password dalein"; return }
-      const r = await api({ a: "adminLogin", user: u, pass: p }); if (!r.ok) { $("msg").textContent = r.msg; return }
+      $("msg").textContent = "Login ho raha hai..."; const r = await api({ a: "adminLogin", user: u, pass: p }); if (!r.ok) { $("msg").textContent = r.msg || "Server se jawab nahi mila"; return } $("msg").textContent = ""
       TOK = r.token; sessionStorage.setItem("at", TOK); ME = r.me; TEMPPW = r.me.mustChange ? p : ""; $("pw").value = ""; afterLogin()
     }
     async function logout() { await api({ a: "adminLogout" }); TOK = ""; sessionStorage.removeItem("at"); sessionStorage.removeItem("ao"); location.reload() }
-    async function boot() { const m = await api({ a: "adminMe" }); if (!m.ok) { $("login").hidden = false; return } ME = m.me; afterLogin() }
-    async function afterLogin() { if (ME.mustChange) { showForce(); return } const r = await fresh(); if (r) enter(r) }
+    async function boot() {
+      $("msg").textContent = "Pichhla login check ho raha hai... (dheema ho to seedha Login dabayein)";
+      const m = await api({ a: "adminMe" }, 12000);
+      if (!m.ok) { $("msg").textContent = m.expired ? "" : (m.msg || ""); return }
+      $("msg").textContent = ""; ME = m.me; afterLogin()
+    }
+    async function afterLogin() {
+      try {
+        if (ME.mustChange) { showForce(); return }
+        const r = await fresh();
+        if (r) enter(r); else { $("login").hidden = false; $("app").hidden = true; $("msg").textContent = "Login hua par data nahi aaya: " + lastErr }
+      } catch (e) { $("login").hidden = false; $("msg").textContent = "Error: " + e.message }
+    }
     function showForce() { $("login").hidden = true; $("force").hidden = false; if (TEMPPW) { $("fp0").value = TEMPPW; TEMPPW = "" } }
     async function forceSave() {
       const o = $("fp0").value, n = $("fp1").value, n2 = $("fp2").value, m = $("fmsg"); m.textContent = "";
@@ -830,7 +845,7 @@
       const r = await api({ a: "adminSaveAuth", oldPass: o, newPass: n }); if (!r.ok) { m.textContent = r.msg; return }
       TOK = r.token; sessionStorage.setItem("at", TOK); ME = r.me; $("force").hidden = true;["fp0", "fp1", "fp2"].forEach(i => $(i).value = ""); afterLogin()
     }
-    if (TOK) { $("login").hidden = true; boot() }
+    if (TOK) boot();      // login form hamesha dikhta rehta hai; session sahi mila to dashboard khul jata hai
 
     let tabs = {};
     function buildNav() {
@@ -850,7 +865,7 @@
 
     async function fresh(soft) {
       if (soft && lastR && Date.now() - lastT < 20000) { sync(lastR); return lastR }
-      const t = todayS(), r = await api({ a: "adminData", from: t, to: t }); if (r.ok) { sync(r); lastR = r; lastT = Date.now() } return r.ok ? r : null
+      const t = todayS(), r = await api({ a: "adminData", from: t, to: t }); if (r.ok) { sync(r); lastR = r; lastT = Date.now() } else lastErr = r.msg || "Data load nahi hua"; return r.ok ? r : null
     }
     const isSup = () => !!ME && ME.role === "super";
     function sync(r) {
